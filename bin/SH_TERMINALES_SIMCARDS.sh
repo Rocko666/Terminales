@@ -10,6 +10,7 @@
 #########################################################################################################
 # MODIFICACIONES																						#
 # FECHA  		AUTOR     		DESCRIPCION MOTIVO														#
+# 2023-01-31	Cristian Ortiz	Cambio alcance columna ................
 #########################################################################################################
 ##############
 # VARIABLES #
@@ -463,60 +464,67 @@ rm -r ${VAL_RUTA}/output/*
 echo "==== Lee tabla terminales simcards y genera archivo txt en ruta output ====" >> $VAL_LOG
 beeline -u $VAL_CADENA_JDBC -n $VAL_USUARIO --hiveconf tez.queue.name=$VAL_COLA_EJECUCION \
 --outputformat=dsv --delimiterForDSV='|' --showHeader=true -e "set hive.cli.print.header=true;
-SELECT a.fecha_proceso AS fecha_proceso,a.fecha_factura AS fecha_factura,a.linea_negocio AS linea_negocio,a.segmento AS segmento,a.sub_segmento AS sub_segmento,a.segmento_final AS segmento_final,a.telefono AS telefono,a.clasificacion AS clasificacion,a.tipo_documento AS tipo_documento,a.num_factura AS num_factura,a.num_factura_relacionada AS num_factura_relacionada,a.fecha_factura_relacionada AS fecha_factura_relacionada,a.oficina AS oficina,a.account_num AS account_num,a.nombre_cliente AS nombre_cliente,a.tipo_doc_cliente AS tipo_doc_cliente,a.identificacion_cliente AS identificacion_cliente,a.modelo_terminal AS modelo_terminal,a.imei AS imei,a.tipo_cargo AS tipo_cargo,a.modelo_guia_comercial AS modelo_guia_comercial,a.clasificacion_terminal AS clasificacion_terminal,a.cantidad AS cantidad,a.monto AS monto,a.num_abonado AS num_abonado,a.movimiento AS movimiento,a.id_tipo_movimiento AS id_tipo_movimiento,a.id_producto AS id_producto,a.plan_codigo AS plan_codigo,a.plan_nombre AS plan_nombre,a.tarifa_basica AS tarifa_basica,a.usuario_final AS usuario_final,a.nombre_usuario_final AS nombre_usuario_final,a.tipo_venta AS tipo_venta,a.cuotas_financiadas AS cuotas_financiadas,a.ejecutivo_perimetro AS ejecutivo_perimetro,a.jefe_perimetro AS jefe_perimetro,a.gerente_perimetro AS gerente_perimetro,a.nota_credito_masiva AS nota_credito_masiva,a.forma_pago_factura AS forma_pago_factura,a.cuota_inicial AS cuota_inicial,a.canal_comercial AS canal_comercial,a.id_canal AS id_canal,a.nom_distribuidor AS nom_distribuidor,a.ruc_distribuidor AS ruc_distribuidor,a.codigo_plaza AS codigo_plaza,a.nom_plaza AS nom_plaza,a.ciudad AS ciudad,a.provincia AS provincia,a.region AS region,a.nuevo_subcanal AS nuevo_subcanal,a.id_sub_canal AS id_sub_canal,a.tipo_movimiento_mes AS tipo_movimiento_mes,a.fecha_alta AS fecha_alta,a.antiguedad_meses AS antiguedad_meses,a.linea_negocio_homologado AS linea_negocio_homologado,a.id_hash AS id_hash
-FROM (SELECT '${VAL_FECHA_FORMATO}' AS fecha_proceso,
-(CASE WHEN fecha_factura IS NULL THEN '01/01/1990' ELSE 
-concat_ws('/',SUBSTR(fecha_factura,9,2),SUBSTR(fecha_factura,6,2),SUBSTR(fecha_factura,1,4)) END) AS fecha_factura,
-linea_negocio,segmento,sub_segmento,segmento_final,telefono,clasificacion,
-(CASE WHEN tipo_documento IS NULL THEN 'N/A' ELSE tipo_documento END) AS tipo_documento,
-num_factura,num_factura_relacionada,(CASE WHEN fecha_factura_relacionada IS NULL THEN '01/01/1990' ELSE
-concat_ws('/',SUBSTR(fecha_factura_relacionada,9,2),SUBSTR(fecha_factura_relacionada,6,2),SUBSTR(fecha_factura_relacionada,1,4)) END) AS fecha_factura_relacionada,
-oficina,account_num,nombre_cliente, 
-UPPER(CASE WHEN (COALESCE(regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(tipo_doc_cliente,'Ã¡','a'),'Ã©','e'),'Ã­','i'),'Ã³','o'),'Ãº','u'))) IS NULL THEN 'N/A' ELSE (COALESCE(regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(tipo_doc_cliente,'Ã¡','a'),'Ã©','e'),'Ã­','i'),'Ã³','o'),'Ãº','u'))) END) AS tipo_doc_cliente,
-identificacion_cliente,modelo_terminal,imei,tipo_cargo,modelo_guia_comercial,clasificacion_terminal,cantidad,
-CAST(CAST(monto AS decimal(12,2)) AS string) AS monto,num_abonado,movimiento,(CASE WHEN id_tipo_movimiento IS NULL THEN '-1' ELSE id_tipo_movimiento END) AS id_tipo_movimiento,
-(CASE WHEN id_producto IS NULL THEN '-1' ELSE id_producto END) AS id_producto,plan_codigo,
-plan_nombre,(CASE WHEN tarifa_basica IS NULL THEN '' ELSE CAST(CAST(tarifa_basica AS decimal(12,2)) AS string) END) AS tarifa_basica,
-usuario_final,nombre_usuario_final,tipo_venta,cuotas_financiadas,ejecutivo_perimetro,jefe_perimetro,gerente_perimetro,nota_credito_masiva,
-UPPER(COALESCE(regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(forma_pago_factura,'Ã¡','a'),'Ã©','e'),'Ã­','i'),'Ã³','o'),'Ãº','u'))) AS forma_pago_factura,
-(CASE WHEN cuota_inicial IS NULL THEN '-1' ELSE CAST(CAST(cuota_inicial AS decimal(12,2)) AS string) END) AS cuota_inicial,
-canal_comercial,(CASE WHEN id_canal IS NULL THEN '-1' ELSE id_canal END) AS id_canal,
-oficina_usuario AS nom_distribuidor,ruc_distribuidor,codigo_plaza,nom_plaza,ciudad,provincia,region,nuevo_subcanal,
-(CASE WHEN id_sub_canal IS NULL THEN '-1' ELSE id_sub_canal END) AS id_sub_canal,tipo_movimiento_mes,
-(CASE WHEN fecha_alta IS NULL THEN '01/01/1990' 
-ELSE concat_ws('/',SUBSTR(date_format(fecha_alta,'yyyy-MM-dd'),9,2),SUBSTR(date_format(fecha_alta,'yyyy-MM-dd'),6,2),SUBSTR(date_format(fecha_alta,'yyyy-MM-dd'),1,4)) END) AS fecha_alta,
-(CASE WHEN CAST(CAST(antiguedad_meses AS decimal(12,2)) AS string)<0 THEN '-1' 
-ELSE CAST(CAST(antiguedad_meses AS decimal(12,2)) AS string) END) AS antiguedad_meses,linea_negocio_homologado,id_hash
-FROM db_desarrollo2021.otc_t_terminales_simcards WHERE p_fecha_factura>=${VAL_FECHA_INI} AND p_fecha_factura<${VAL_DIA_UNO}
-AND clasificacion IN ('ACCESORIOS','TERMINALES') AND tipo_cargo = 'CARGO' AND tipo_documento<>'NOTA DE CREDITO'
-UNION ALL
-SELECT '${VAL_FECHA_FORMATO}' AS fecha_proceso,
-(CASE WHEN fecha_factura IS NULL THEN '01/01/1990' ELSE 
-concat_ws('/',SUBSTR(fecha_factura,9,2),SUBSTR(fecha_factura,6,2),SUBSTR(fecha_factura,1,4)) END) AS fecha_factura,
-linea_negocio,segmento,sub_segmento,segmento_final,telefono,clasificacion,
-(CASE WHEN tipo_documento IS NULL THEN 'N/A' ELSE tipo_documento END) AS tipo_documento,
-num_factura,num_factura_relacionada,(CASE WHEN fecha_factura_relacionada IS NULL THEN '01/01/1990' ELSE
-concat_ws('/',SUBSTR(fecha_factura_relacionada,9,2),SUBSTR(fecha_factura_relacionada,6,2),SUBSTR(fecha_factura_relacionada,1,4)) END) AS fecha_factura_relacionada,
-oficina,account_num,nombre_cliente,
-UPPER(CASE WHEN (COALESCE(regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(tipo_doc_cliente,'Ã¡','a'),'Ã©','e'),'Ã­','i'),'Ã³','o'),'Ãº','u'))) IS NULL THEN 'N/A' ELSE (COALESCE(regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(tipo_doc_cliente,'Ã¡','a'),'Ã©','e'),'Ã­','i'),'Ã³','o'),'Ãº','u'))) END) AS tipo_doc_cliente,
-identificacion_cliente,modelo_terminal,imei,tipo_cargo,modelo_guia_comercial,clasificacion_terminal,cantidad,
-CAST(CAST(monto AS decimal(12,2)) AS string) AS monto,num_abonado,movimiento,(CASE WHEN id_tipo_movimiento IS NULL THEN '-1' ELSE id_tipo_movimiento END) AS id_tipo_movimiento,
-(CASE WHEN id_producto IS NULL THEN '-1' ELSE id_producto END) AS id_producto,plan_codigo,
-plan_nombre,(CASE WHEN tarifa_basica IS NULL THEN '' ELSE CAST(CAST(tarifa_basica AS decimal(12,2)) AS string) END) AS tarifa_basica,
-usuario_final,nombre_usuario_final,tipo_venta,cuotas_financiadas,ejecutivo_perimetro,jefe_perimetro,gerente_perimetro,nota_credito_masiva,
-UPPER(COALESCE(regexp_replace(regexp_replace(regexp_replace(regexp_replace(regexp_replace(forma_pago_factura,'Ã¡','a'),'Ã©','e'),'Ã­','i'),'Ã³','o'),'Ãº','u'))) AS forma_pago_factura,
-(CASE WHEN cuota_inicial IS NULL THEN '-1' ELSE CAST(CAST(cuota_inicial AS decimal(12,2)) AS string) END) AS cuota_inicial,
-canal_comercial,(CASE WHEN id_canal IS NULL THEN '-1' ELSE id_canal END) AS id_canal,
-oficina_usuario AS nom_distribuidor,ruc_distribuidor,codigo_plaza,nom_plaza,ciudad,provincia,region,nuevo_subcanal,
-(CASE WHEN id_sub_canal IS NULL THEN '-1' ELSE id_sub_canal END) AS id_sub_canal,tipo_movimiento_mes,
-(CASE WHEN fecha_alta IS NULL THEN '01/01/1990' 
-ELSE concat_ws('/',SUBSTR(date_format(fecha_alta,'yyyy-MM-dd'),9,2),SUBSTR(date_format(fecha_alta,'yyyy-MM-dd'),6,2),SUBSTR(date_format(fecha_alta,'yyyy-MM-dd'),1,4)) END) AS fecha_alta,
-(CASE WHEN CAST(CAST(antiguedad_meses AS decimal(12,2)) AS string)<0 THEN '-1' 
-ELSE CAST(CAST(antiguedad_meses AS decimal(12,2)) AS string) END) AS antiguedad_meses,linea_negocio_homologado,id_hash
-FROM db_desarrollo2021.otc_t_terminales_simcards WHERE p_fecha_factura>=${VAL_FECHA_INI} AND p_fecha_factura<${VAL_DIA_UNO}
-AND clasificacion IN ('ACCESORIOS','TERMINALES') AND tipo_cargo = 'CARGO' AND tipo_documento='NOTA DE CREDITO' 
-AND concat_ws('',SUBSTR(fecha_factura_relacionada,1,4),SUBSTR(fecha_factura_relacionada,6,2),SUBSTR(fecha_factura_relacionada,9,2))>='${VAL_FECHA_INI}'
-AND concat_ws('',SUBSTR(fecha_factura_relacionada,1,4),SUBSTR(fecha_factura_relacionada,6,2),SUBSTR(fecha_factura_relacionada,9,2))<'${VAL_DIA_UNO}') a;" 2>> $VAL_LOG | sed 's/NULL//g' > ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO_PREVIO
+SELECT
+	fecha_proceso
+	,  fecha_factura
+	,  linea_negocio
+	,  segmento
+	,  sub_segmento
+	,  segmento_final
+	,  telefono
+	,  clasificacion
+	,  tipo_documento
+	,  num_factura
+	,  num_factura_relacionada
+	,  fecha_factura_relacionada
+	,  oficina
+	,  account_num
+	,  nombre_cliente
+	,  tipo_doc_cliente
+	,  identificacion_cliente
+	,  modelo_terminal
+	,  imei
+	,  tipo_cargo
+	,  modelo_guia_comercial
+	,  clasificacion_terminal
+	,  cantidad
+	,  monto
+	,  num_abonado
+	,  movimiento
+	,  id_tipo_movimiento
+	,  id_producto
+	,  plan_codigo
+	,  plan_nombre
+	,  tarifa_basica
+	,  usuario_final
+	,  nombre_usuario_final
+	,  tipo_venta
+	,  cuotas_financiadas
+	,  ejecutivo_perimetro
+	,  jefe_perimetro
+	,  gerente_perimetro
+	,  nota_credito_masiva
+	,  forma_pago_factura
+	,  cuota_inicial
+	,  canal_comercial
+	,  id_canal
+	,  nom_distribuidor
+	,  ruc_distribuidor
+	,  codigo_plaza
+	,  nom_plaza
+	,  ciudad
+	,  provincia
+	,  region
+	,  nuevo_subcanal
+	,  id_sub_canal
+	,  tipo_movimiento_mes
+	,  fecha_alta
+	,  antiguedad_meses
+	,  linea_negocio_homologado
+	,  id_hash
+    ,  aplica_comision
+FROM
+	db_desarrollo2021.tmp_terminales_simcards;" 2>> $VAL_LOG | sed 's/NULL//g' > ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO_PREVIO
 
 #CONVIERTE LOS NOMBRES DE LOS CAMPOS DE MINUSCULAS A MAYUSCULAS
 sed -i -e '1 s/\(.*\)/\U\1/' ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO_PREVIO
