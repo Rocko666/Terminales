@@ -442,7 +442,7 @@ num_telefonico,
 tipo_movimiento_mes,
 fecha_alta,
 linea_negocio_homologado,
-row_number() OVER (PARTITION BY account_num,num_telefonico ORDER BY fecha_alta DESC) AS rn
+row_number() OVER (PARTITION BY account_num ORDER BY fecha_alta DESC) AS rn
 FROM db_reportes.otc_t_360_general
 WHERE fecha_proceso=${fecha_antes_ayer}) a
 LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg b
@@ -1391,7 +1391,7 @@ UPPER(sub_segmento) AS sub_segmento,
 num_telefonico,
 numero_abonado,
 tipo_doc_cliente,
-ROW_NUMBER() over (PARTITION BY account_num, num_telefonico ORDER BY COALESCE(fecha_baja,current_timestamp()) DESC, fecha_alta DESC) rn
+ROW_NUMBER() over (PARTITION BY account_num ORDER BY COALESCE(fecha_baja,current_timestamp()) DESC, fecha_alta DESC) rn
 FROM db_desarrollo2021.tmp_mov_parque_completa_csts) a
 WHERE a.rn=1;
 
