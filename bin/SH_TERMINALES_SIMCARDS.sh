@@ -225,7 +225,7 @@ fi
 #PASO 4: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
 if [ "$ETAPA" = "4" ]; then
 echo "==== Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
-/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_1_2 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_T --tipo=$VAL_TIPO_CARGA &>> $VAL_LOG
+/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_1_2 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_T --tipo=$VAL_TIPO_CARGA 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'UnicodeDecodeError|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
@@ -255,7 +255,7 @@ fi
 #PASO 5: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
 if [ "$ETAPA" = "5" ]; then
 echo "==== Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
-/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_1_0 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_RDR --tipo=$VAL_TIPO_CARGA &>> $VAL_LOG
+/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_1_0 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_RDR --tipo=$VAL_TIPO_CARGA 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'UnicodeDecodeError|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
@@ -285,7 +285,7 @@ fi
 #PASO 6: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
 if [ "$ETAPA" = "6" ]; then
 echo "==== Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
-/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_2_1 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_TC --tipo=$VAL_TIPO_CARGA &>> $VAL_LOG
+/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_2_1 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_TC --tipo=$VAL_TIPO_CARGA 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'UnicodeDecodeError|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
@@ -315,7 +315,7 @@ fi
 #PASO 7: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
 if [ "$ETAPA" = "7" ]; then
 echo "==== Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
-/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_2_0 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_UO --tipo=$VAL_TIPO_CARGA &>> $VAL_LOG
+/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_2_0 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_UO --tipo=$VAL_TIPO_CARGA 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'UnicodeDecodeError|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
@@ -345,7 +345,7 @@ fi
 #PASO 8: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
 if [ "$ETAPA" = "8" ]; then
 echo "==== Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
-/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_1_3 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_CANAL --tipo=$VAL_TIPO_CARGA &>> $VAL_LOG
+/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_1_3 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_CANAL --tipo=$VAL_TIPO_CARGA 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'UnicodeDecodeError|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
@@ -375,7 +375,7 @@ fi
 #PASO 9: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
 if [ "$ETAPA" = "9" ]; then
 echo "==== Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
-/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_1_4 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_SEG --tipo=$VAL_TIPO_CARGA &>> $VAL_LOG
+/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_1_4 --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_SEG --tipo=$VAL_TIPO_CARGA 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'UnicodeDecodeError|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
@@ -405,7 +405,7 @@ fi
 #PASO 10: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
 if [ "$ETAPA" = "10" ]; then
 echo "==== Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
-/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_MP --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_CST --tipo=$VAL_TIPO_CARGA &>> $VAL_LOG
+/usr/hdp/current/spark2-client/bin/spark-submit ${VAL_RUTA}/bin/read_excel_carga_hive.py --rutain=$VAL_RUTA_ARCHIVO_MP --tablaout=$VAL_BASE_DATOS.$VAL_TABLA_CST --tipo=$VAL_TIPO_CARGA 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'UnicodeDecodeError|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
@@ -576,7 +576,7 @@ echo "Puerto SFTP: $VAL_FTP_PUERTO_OUT" >> $VAL_LOG
 echo "Usuario SFTP: $VAL_FTP_USER_OUT" >> $VAL_LOG
 echo "Password SFTP: $VAL_FTP_PASS_OUT" >> $VAL_LOG
 echo "Ruta SFTP: $VAL_FTP_RUTA_OUT" >> $VAL_LOG
-exportar $VAL_NOM_ARCHIVO &>> $VAL_LOG
+exportar $VAL_NOM_ARCHIVO 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DE LA TRANSFERENCIA DEL ARCHIVO TXT A RUTA FTP
 echo "==== Valida transferencia del archivo TXT al servidor FTP ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
