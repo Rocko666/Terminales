@@ -6455,3 +6455,5 @@ UNION ALL
 	,  id_hash
     ,  aplica_comision
     FROM db_desarrollo2021.tmp_terminales_simcards_factura) a;
+
+
