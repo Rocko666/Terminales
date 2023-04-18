@@ -542,6 +542,19 @@ echo "Usuario Final:           $VAL_USUARIO_FINAL" >> $VAL_LOG
 echo "Tabla Destino:           $vTablaDestino" >> $VAL_LOG
 
 $VAL_RUTA_SPARK \
+--jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-*.jar \
+--conf spark.sql.extensions=com.hortonworks.spark.sql.rule.Extensions \
+--conf spark.security.credentials.hiveserver2.enabled=false \
+--conf spark.sql.hive.hwc.execution.mode=spark \
+--conf spark.datasource.hive.warehouse.read.via.llap=false \
+--conf spark.datasource.hive.warehouse.load.staging.dir=/tmp \
+--conf spark.datasource.hive.warehouse.read.jdbc.mode=cluster \
+--conf spark.ui.enabled=false \
+--conf spark.shuffle.service.enabled=false \
+--conf spark.dynamicAllocation.enabled=false \
+--conf spark.datasource.hive.warehouse.user.name="rgenerator" \
+--py-files /opt/cloudera/parcels/CDH/lib/hive_warehouse_connector/pyspark_hwc-1.0.0.7.1.7.1000-141.zip \
+--conf spark.sql.hive.hiveserver2.jdbc.url="jdbc:hive2://quisrvbigdata1.otecel.com.ec:2181,quisrvbigdata2.otecel.com.ec:2181,quisrvbigdata10.otecel.com.ec:2181,quisrvbigdata11.otecel.com.ec:2181/default;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" \
 --master $VAL_MASTER \
 --name $ENTIDAD \
 --driver-memory $VAL_DRIVER_MEMORY \
@@ -595,6 +608,17 @@ echo "Archivo Destino:          ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO_PREVIO" >> $
 #rm -r ${VAL_RUTA}/output/*
 
 $VAL_RUTA_SPARK \
+--jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-*.jar \
+--conf spark.sql.extensions=com.hortonworks.spark.sql.rule.Extensions \
+--conf spark.security.credentials.hiveserver2.enabled=false \
+--conf spark.sql.hive.hwc.execution.mode=spark \
+--conf spark.datasource.hive.warehouse.read.via.llap=false \
+--conf spark.datasource.hive.warehouse.load.staging.dir=/tmp \
+--conf spark.datasource.hive.warehouse.read.jdbc.mode=cluster \
+--conf spark.datasource.hive.warehouse.user.name="rgenerator" \
+--conf spark.port.maxRetries=100 \
+--py-files /opt/cloudera/parcels/CDH/lib/hive_warehouse_connector/pyspark_hwc-1.0.0.7.1.7.1000-141.zip \
+--conf spark.sql.hive.hiveserver2.jdbc.url="jdbc:hive2://quisrvbigdata1.otecel.com.ec:2181,quisrvbigdata2.otecel.com.ec:2181,quisrvbigdata10.otecel.com.ec:2181,quisrvbigdata11.otecel.com.ec:2181/default;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" \
 --master $VAL_MASTER \
 --name $ENTIDAD \
 --driver-memory $VAL_DRIVER_MEMORY \
@@ -603,9 +627,6 @@ $VAL_RUTA_SPARK \
 --executor-cores $VAL_EXECUTOR_CORES \
 $VAL_RUTA/python/genera_archivo.py \
 --ventidad=$ENTIDAD \
---vval_fecha_formato=$VAL_FECHA_FORMATO \
---vval_dia_uno=$VAL_DIA_UNO \
---vfecha_inicio=$VAL_FECHA_INI \
 --vArchivo=${VAL_RUTA}/output/$VAL_NOM_ARCHIVO 2>&1 &>> $VAL_LOG
 
 error_spark=`egrep 'Traceback|error: argument|invalid syntax|An error occurred|Caused by:|cannot resolve|Non-ASCII character|UnicodeEncodeError:|can not accept object|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client|ImportError|SyntaxError' $VAL_LOG | wc -l`
@@ -639,7 +660,6 @@ echo "==== OK - Se procesa la ETAPA 12 con EXITO ===="`date '+%H%M%S'` >> $VAL_L
 `mysql -N  <<<"update params_des set valor='13' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-exit
 
 #CREA FUNCION PARA LA EXPORTACION DEL ARCHIVO A RUTA FTP Y REALIZA LA TRANSFERENCIA
 if [ "$ETAPA" = "13" ]; then
@@ -681,7 +701,7 @@ VAL_ERROR_FTP=`egrep 'Connection timed out|Not connected|syntax is incorrect|can
 	fi
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
 echo "==== OK - Se procesa la ETAPA 13 con EXITO ===="`date '+%H%M%S'` >> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='1' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params_des set valor='12' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 	
 echo "==== Finaliza ejecucion del proceso BI CS Terminales Simcards ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG

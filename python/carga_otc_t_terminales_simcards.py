@@ -8,6 +8,7 @@ from datetime import datetime
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from pyspark.sql.functions import *
+from pyspark_llap import HiveWarehouseSession
 import argparse
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -67,12 +68,14 @@ vTablaDestino=parametros.vTablaDestino
 spark = SparkSession \
     .builder \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
+    .config("spark.rpc.askTimeout", "300s") \
     .appName(vEntidad) \
     .enableHiveSupport() \
     .getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
+hive_hwc = HiveWarehouseSession.session(spark).build()
 app_id = spark._sc.applicationId
 
 ##STEP 4:QUERYS
@@ -1201,6 +1204,47 @@ try:
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_otc_t_terminales_simcards",vle_duracion(ts_step_tbl,te_step_tbl))))
     
+##**************************************************************--
+##******  Cambio de alcance (2023-04-12) en Spark (Cristian Ortiz) ****--
+##**************************************************************--
+    vStp01="Paso 85"
+    print(lne_dvs())
+    print(etq_info("Paso [85]: Ejecucion de funcion [tmp_terminales_simcards_nc] - Tabla Temporal con terminales de notas de credito"))
+    print(lne_dvs())
+    df85=spark.sql(tmp_terminales_simcards_nc(vultimo_dia_act_frmt,vfecha_inicio,vfecha_fin)).cache()
+    df85.printSchema()
+    ts_step_tbl = datetime.now()
+    df85.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_terminales_simcards_nc')
+    print(etq_info(msg_t_total_registros_obtenidos("df85",str(df85.count())))) #BORRAR
+    te_step_tbl = datetime.now()
+    del df85
+    print(etq_info(msg_d_duracion_hive("df85",vle_duracion(ts_step_tbl,te_step_tbl))))
+
+    vStp01="Paso 86"
+    print(lne_dvs())
+    print(etq_info("Paso [86]: Ejecucion de funcion [tmp_terminales_simcards_factura] - Tabla Temporal de terminales con factura, es decir diferentes de notas de credito"))
+    print(lne_dvs())
+    df86=spark.sql(tmp_terminales_simcards_factura(vultimo_dia_act_frmt,vfecha_inicio,vfecha_fin)).cache()
+    df86.printSchema()
+    ts_step_tbl = datetime.now()
+    df86.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_terminales_simcards_factura')
+    print(etq_info(msg_t_total_registros_obtenidos("df86",str(df86.count())))) #BORRAR
+    te_step_tbl = datetime.now()
+    del df86
+    print(etq_info(msg_d_duracion_hive("df86",vle_duracion(ts_step_tbl,te_step_tbl))))
+
+    vStp01="Paso 87"
+    print(lne_dvs())
+    print(etq_info("Paso [87]: Ejecucion de funcion [tmp_terminales_simcards] - TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES"))
+    print(lne_dvs())
+    df87=spark.sql(tmp_terminales_simcards(vfecha_antes_ayer)).cache()
+    df87.printSchema()
+    ts_step_tbl = datetime.now()
+    df87.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_terminales_simcards')
+    print(etq_info(msg_t_total_registros_obtenidos("df87",str(df87.count())))) #BORRAR
+    te_step_tbl = datetime.now()
+    print(etq_info(msg_d_duracion_hive("df87",vle_duracion(ts_step_tbl,te_step_tbl))))
+    
 except Exception as e:
 	exit(etq_error(msg_e_ejecucion(vStp01,str(e))))
 
@@ -1210,8 +1254,7 @@ print(lne_dvs())
 
 try:
     ts_step = datetime.now()
-    spark.catalog.dropTempView("tmp_fact_exporta_nodupli_csts_prycldr")
-    del df_otc_t_terminales_simcards
+    del df87
     te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStpFin,vle_duracion(ts_step,te_step))))
 except Exception as e:

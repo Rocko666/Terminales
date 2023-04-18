@@ -6029,7 +6029,7 @@ FROM db_desarrollo2021.tmp_fact_exporta_nodupli_csts;
 
 CREATE TABLE db_desarrollo2021.tmp_terminales_simcards_nc AS
 SELECT
-		'${ultimo_dia_act_frmt}' AS fecha_proceso
+		'{val_fecha_formato}' AS fecha_proceso
 		,(CASE
 			WHEN fecha_factura IS NULL THEN '01/01/1990'
 			ELSE 
@@ -6138,23 +6138,23 @@ SELECT
 	FROM
         db_desarrollo2021.otc_t_terminales_simcards
 	WHERE
-		p_fecha_factura >= ${fecha_inicio}
-		AND p_fecha_factura < ${fecha_fin}
+		p_fecha_factura >= {val_fecha_ini}
+		AND p_fecha_factura < {val_dia_uno}
 		AND clasificacion IN ('ACCESORIOS', 'TERMINALES')
 		AND tipo_cargo = 'CARGO'
 		AND tipo_documento = 'NOTA DE CREDITO'
 		AND concat_ws('', SUBSTR(fecha_factura_relacionada, 1, 4)
 		, SUBSTR(fecha_factura_relacionada, 6, 2)
-		, SUBSTR(fecha_factura_relacionada, 9, 2))>= '${fecha_inicio}'
+		, SUBSTR(fecha_factura_relacionada, 9, 2))>= '{val_fecha_ini}'
 		AND concat_ws('', SUBSTR(fecha_factura_relacionada, 1, 4)
 		, SUBSTR(fecha_factura_relacionada, 6, 2)
-		, SUBSTR(fecha_factura_relacionada, 9, 2))<'${fecha_fin}';
+		, SUBSTR(fecha_factura_relacionada, 9, 2))<'{val_dia_uno}';
 
 -- Tabla Temporal de terminales con factura, es decir diferentes de notas de credito
 
 CREATE TABLE db_desarrollo2021.tmp_terminales_simcards_factura AS
 SELECT
-		'${ultimo_dia_act_frmt}' AS fecha_proceso
+		'{val_fecha_formato}' AS fecha_proceso
 		,(CASE
 			WHEN a.fecha_factura IS NULL THEN '01/01/1990'
 			ELSE 
@@ -6265,8 +6265,8 @@ END) AS tipo_doc_cliente
     LEFT JOIN db_desarrollo2021.tmp_terminales_simcards_nc b
     ON (a.num_factura = b.num_factura_relacionada)
 	WHERE
-		a.p_fecha_factura >= ${fecha_inicio}
-		AND a.p_fecha_factura<${fecha_fin}
+		a.p_fecha_factura >= {val_fecha_ini}
+		AND a.p_fecha_factura<{val_dia_uno}
 		AND a.clasificacion IN ('ACCESORIOS', 'TERMINALES')
 		AND a.tipo_cargo = 'CARGO'
 		AND a.tipo_documento <> 'NOTA DE CREDITO';
@@ -6328,7 +6328,7 @@ SELECT
 	, a.nuevo_subcanal AS nuevo_subcanal
 	, a.id_sub_canal AS id_sub_canal
 	, a.tipo_movimiento_mes AS tipo_movimiento_mes
-	, a.fecha_alta AS fecha_alta
+	, g.fecha_alta AS fecha_alta
 	, a.antiguedad_meses AS antiguedad_meses
 	, a.linea_negocio_homologado AS linea_negocio_homologado
 	, a.id_hash AS id_hash
@@ -6454,6 +6454,10 @@ UNION ALL
 	,  linea_negocio_homologado
 	,  id_hash
     ,  aplica_comision
-    FROM db_desarrollo2021.tmp_terminales_simcards_factura) a;
+    FROM db_desarrollo2021.tmp_terminales_simcards_factura) a
+	LEFT JOIN db_reportes.otc_t_360_general g 
+	WHERE fecha_proceso={fecha_antes_ayer}
+	ON(a.telefono=g.num_telefonico)
+	AND(a.account_num=g.account_num);
 
 
