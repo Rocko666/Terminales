@@ -6416,7 +6416,9 @@ END) AS tipo_doc_cliente
 	FROM
 		db_desarrollo2021.otc_t_terminales_simcards_prycldr a
     LEFT JOIN db_desarrollo2021.tmp_terminales_simcards_nc b
-    ON (a.num_factura = b.num_factura_relacionada)
+    ON (a.telefono = b.telefono)
+    AND (a.account_num = b.account_num)
+    AND (a.num_factura = b.num_factura_relacionada)
 	WHERE
 		a.p_fecha_factura >= {val_fecha_ini}
 		AND a.p_fecha_factura<{val_dia_uno}
@@ -6427,7 +6429,7 @@ END) AS tipo_doc_cliente
     print(qry)
     return qry  
 ##87
-## TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES
+## TABLA con la union de terminales NC y facturas
 def tmp_terminales_simcards(fecha_antes_ayer):
     qry="""
 SELECT
@@ -6484,7 +6486,10 @@ SELECT
 	, a.nuevo_subcanal AS nuevo_subcanal
 	, a.id_sub_canal AS id_sub_canal
 	, a.tipo_movimiento_mes AS tipo_movimiento_mes
-	, g.fecha_alta AS fecha_alta
+	, concat_ws('/'
+			, SUBSTR(date_format(g.fecha_alta, 'yyyy-MM-dd'), 9, 2)
+			, SUBSTR(date_format(g.fecha_alta, 'yyyy-MM-dd'), 6, 2)
+			, SUBSTR(date_format(g.fecha_alta, 'yyyy-MM-dd'), 1, 4)) AS fecha_alta
 	, a.antiguedad_meses AS antiguedad_meses
 	, a.linea_negocio_homologado AS linea_negocio_homologado
 	, a.id_hash AS id_hash
@@ -6620,8 +6625,8 @@ UNION ALL
     """.format(fecha_antes_ayer=fecha_antes_ayer)
     print(qry)
     return qry  
-
-def sql_file():
+#88 TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES
+def otc_t_ext_terminales_ajst():
     qry="""
 SELECT
 	t.fecha_proceso AS fecha_proceso
@@ -6655,8 +6660,8 @@ SELECT
 	,  t.plan_codigo
 	,  t.plan_nombre
 	,  t.tarifa_basica
-	,  ajt.usuario_final AS usuario_final
-	,  ajt.nombre_usuario_final AS nombre_usuario_final
+	,  nvl(ajt.usuario_final,t.usuario_final) AS usuario_final
+	,  nvl(ajt.nombre_usuario_final,t.nombre_usuario_final) AS nombre_usuario_final
 	,  t.tipo_venta
 	,  t.cuotas_financiadas
 	,  t.ejecutivo_perimetro
@@ -6665,17 +6670,17 @@ SELECT
 	,  t.nota_credito_masiva
 	,  t.forma_pago_factura
 	,  t.cuota_inicial
-	,  ajt.canal_comercial AS canal_comercial
-	,  ajt.id_canal AS id_canal
-	,  ajt.nom_distribuidor  AS nom_distribuidor
-	,  ajt.ruc_distribuidor AS ruc_distribuidor
+	,  nvl(ajt.canal_comercial,t.canal_comercial) AS canal_comercial
+	,  nvl(ajt.id_canal,t.id_canal) AS id_canal
+	,  nvl(ajt.nom_distribuidor,t.nom_distribuidor)  AS nom_distribuidor
+	,  nvl(ajt.ruc_distribuidor,t.ruc_distribuidor) AS ruc_distribuidor
 	,  t.codigo_plaza
 	,  t.nom_plaza
 	,  t.ciudad
 	,  t.provincia
 	,  t.region
-	,  ajt.nuevo_subcanal AS nuevo_subcanal
-	,  ajt.id_sub_canal AS id_sub_canal
+	,  nvl(ajt.nuevo_subcanal,t.nuevo_subcanal) AS nuevo_subcanal
+	,  nvl(ajt.id_sub_canal,t.id_sub_canal) AS id_sub_canal
 	,  t.tipo_movimiento_mes
 	,  t.fecha_alta
 	,  t.antiguedad_meses
@@ -6695,4 +6700,12 @@ AND
     """
     print(qry)
     return qry
+
+def sql_file():
+    qry="""
+SELECT * FROM db_desarrollo2021.otc_t_ext_terminales_ajst
+    """
+    print(qry)
+    return qry
+
 

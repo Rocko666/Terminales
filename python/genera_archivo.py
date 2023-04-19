@@ -1,7 +1,7 @@
-# -- coding: utf-8 --
+
 import sys
 reload(sys)
-sys.setdefaultencoding('utf-8')
+##sys.setdefaultencoding('utf-8')
 from pyspark.sql import SparkSession, DataFrame
 from datetime import datetime
 from pyspark.sql.window import Window
@@ -22,17 +22,17 @@ timestart = datetime.now()
 ## STEP 2: Captura de argumentos en la entrada
 parser = argparse.ArgumentParser()
 parser.add_argument('--ventidad', required=False, type=str,help='Parametro de la entidad')
-#parser.add_argument('--vval_fecha_formato', required=True, type=str,help='Parametro 1 de la query sql')
-#parser.add_argument('--vval_dia_uno', required=True, type=str,help='Parametro 2 de la query sql')
-#parser.add_argument('--vfecha_inicio', required=True, type=str,help='Parametro 3 de la query sql')
+parser.add_argument('--vval_fecha_formato', required=True, type=str,help='Parametro 1 de la query sql')
+parser.add_argument('--vval_dia_uno', required=True, type=str,help='Parametro 2 de la query sql')
+parser.add_argument('--vfecha_inicio', required=True, type=str,help='Parametro 3 de la query sql')
 parser.add_argument('--vArchivo', required=True, type=str, help='Nombre del archivo final')
 
 parametros = parser.parse_args()
 vEntidad=parametros.ventidad
 vArchivo=parametros.vArchivo
-#vval_fecha_formato=parametros.vval_fecha_formato
-#vval_dia_uno=parametros.vval_dia_uno
-#vfecha_inicio=parametros.vfecha_inicio
+vval_fecha_formato=parametros.vval_fecha_formato
+vval_dia_uno=parametros.vval_dia_uno
+vfecha_inicio=parametros.vfecha_inicio
 
 ## STEP 3: Inicio el SparkSession
 spark = SparkSession \
@@ -69,7 +69,7 @@ try:
     df_arch1.printSchema()
     print(etq_info(msg_t_total_registros_obtenidos("df_arch1",str(df_arch1.count())))) #BORRAR
     pandas_df1 = df_arch1.toPandas()
-    pandas_df1.to_csv(vArchivo, sep='|',index=False)   
+    pandas_df1.to_csv(vArchivo, sep='|',index=False, encoding='utf-8-sig')   
 except Exception as e:
 	exit(etq_error(msg_e_ejecucion(vStp01,str(e))))
 

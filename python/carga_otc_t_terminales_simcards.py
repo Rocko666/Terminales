@@ -1235,7 +1235,7 @@ try:
 
     vStp01="Paso 87"
     print(lne_dvs())
-    print(etq_info("Paso [87]: Ejecucion de funcion [tmp_terminales_simcards] - TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES"))
+    print(etq_info("Paso [87]: Ejecucion de funcion [tmp_terminales_simcards] - TABLA con la union de terminales NC y facturas"))
     print(lne_dvs())
     df87=spark.sql(tmp_terminales_simcards(vfecha_antes_ayer)).cache()
     df87.printSchema()
@@ -1243,7 +1243,20 @@ try:
     df87.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_terminales_simcards')
     print(etq_info(msg_t_total_registros_obtenidos("df87",str(df87.count())))) #BORRAR
     te_step_tbl = datetime.now()
+    del df87
     print(etq_info(msg_d_duracion_hive("df87",vle_duracion(ts_step_tbl,te_step_tbl))))
+    
+    vStp01="Paso 88"
+    print(lne_dvs())
+    print(etq_info("Paso [88]: Ejecucion de funcion [otc_t_ext_terminales_ajst] - TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES"))
+    print(lne_dvs())
+    df88=spark.sql(otc_t_ext_terminales_ajst()).cache()
+    df88.printSchema()
+    ts_step_tbl = datetime.now()
+    df88.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.otc_t_ext_terminales_ajst')
+    print(etq_info(msg_t_total_registros_obtenidos("df88",str(df88.count())))) #BORRAR
+    te_step_tbl = datetime.now()
+    print(etq_info(msg_d_duracion_hive("df88",vle_duracion(ts_step_tbl,te_step_tbl))))
     
 except Exception as e:
 	exit(etq_error(msg_e_ejecucion(vStp01,str(e))))
@@ -1254,7 +1267,7 @@ print(lne_dvs())
 
 try:
     ts_step = datetime.now()
-    del df87
+    del df88
     te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStpFin,vle_duracion(ts_step,te_step))))
 except Exception as e:
