@@ -111,7 +111,7 @@ VAL_NOM_ARCHIVO_PREVIO=EXT_TERMINALES.txt
 vTablaDestino="otc_t_terminales_simcards"
 
 #bba
-vTablaDestino="otc_t_terminales_simcards_prycldr"
+##vTablaDestino="otc_t_terminales_simcards_prycldr"
 VAL_TABLA_TC="otc_t_catalogo_tipo_canal_prycldr"
 VAL_TABLA_RDR="otc_t_catalogo_ruc_das_retail_prycldr"
 VAL_TABLA_T="otc_t_catalogo_terminales_prycldr"
@@ -527,11 +527,11 @@ fi
 #HACE EL LLAMADO AL HQL QUE REALIZA LOS CRUCES PARA GENERAR LA INFORMACION EN LA TABLA FINAL OTC_T_TERMINALES_SIMCARDS
 if [ "$ETAPA" = "11" ]; then
 echo "=======================================================================================================" >> $VAL_LOG
-echo "==== ETAPA 11: Ejecuta HQL carga_otc_t_terminales_simcards.sql ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
+echo "==== ETAPA 11: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards.py ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
 echo "=======================================================================================================" >> $VAL_LOG
 echo "Fecha inicio:            $VAL_FECHA_INI" >> $VAL_LOG
-echo "Fecha Fin:               $fecha_fin" >> $VAL_LOG
-echo "Fecha antes de ayer:     $fecha_antes_ayer" >> $VAL_LOG
+echo "Fecha Fin:               $VAL_DIA_UNO" >> $VAL_LOG
+echo "Fecha antes de ayer:     $VAL_FECHA_FORMATO_PRE" >> $VAL_LOG
 echo "Anio mes:                $VAL_MES" >> $VAL_LOG
 echo "Dia mes siguiente:       $VAL_DIA_UNO_MES_SIG_FRMT" >> $VAL_LOG
 echo "Primer dia:              $VAL_FECHA_FORMATO_INI" >> $VAL_LOG

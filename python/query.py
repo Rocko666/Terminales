@@ -1,14 +1,13 @@
 # -- coding: utf-8 --
 import sys
 reload(sys)
-sys.setdefaultencoding('utf8')
 from functools import wraps
 import time
 from datetime import datetime
 import os
 from pyspark.sql.functions import col, substring_index
 
-#db_desarrollo2021.otc_t_catalogo_terminales -> db_desarrollo2021.otc_t_catalogo_terminales_prycldr
+#db_desarrollo2021.otc_t_catalogo_terminales -> db_desarrollo2021.otc_t_catalogo_terminales_prycldr -- ojo preguntar a Bri sobre campos adicionales y sus nombres
 #db_desarrollo2021.otc_t_terminales_fact -> db_desarrollo2021.otc_t_terminales_fact_prycldr
 #db_desarrollo2021.otc_t_terminales_nc -> db_desarrollo2021.otc_t_terminales_nc_prycldr
 #db_rdb.otc_t_r_cbm_bill -> db_desarrollo2021.otc_t_r_cbm_bill_prycldr
@@ -92,8 +91,8 @@ def tmp_facturas_csts(fecha_inicio,fecha_fin):
     b.clasificacion_terminal,
     b.concepto_facturable,
     b.clasificacion
-    FROM db_desarrollo2021.otc_t_terminales_fact_prycldr a
-    INNER JOIN tmp_catalogo_terminales_csts_prycldr b
+    FROM db_desarrollo2021.otc_t_terminales_fact a
+    INNER JOIN tmp_catalogo_terminales_csts b
     ON a.revenue_code_id=b.concepto_facturable
     WHERE a.pt_fecha>={fecha_inicio} AND a.pt_fecha<{fecha_fin}
     """.format(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin)
@@ -130,8 +129,8 @@ def tmp_notas_credito_csts(fecha_inicio,fecha_fin):
     b.clasificacion_terminal,
     b.concepto_facturable,
     b.clasificacion
-    FROM db_desarrollo2021.otc_t_terminales_nc_prycldr a
-    INNER JOIN tmp_catalogo_terminales_csts_prycldr b
+    FROM db_desarrollo2021.otc_t_terminales_nc a
+    INNER JOIN tmp_catalogo_terminales_csts b
     ON a.revenue_code_id=b.concepto_facturable
     WHERE a.pt_fecha>={fecha_inicio} AND a.pt_fecha<{fecha_fin}
     """.format(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin)
@@ -166,7 +165,7 @@ def tmp_orden_venta_csts(fecha_meses_atras,fecha_fin):
     c.full_name AS nombre_propietario_orden_venta,
     (CASE WHEN b.submitted_by=110 THEN 'internal' ELSE d.name END) AS codigo_confirmador_orden_venta,
     d.full_name AS nombre_confirmador_orden_venta
-    FROM db_desarrollo2021.otc_t_r_cbm_bill_prycldr a 
+    FROM db_desarrollo2021.otc_t_r_cbm_bill a 
     INNER JOIN db_rdb.otc_t_r_boe_sales_ord b 
     ON (a.sales_order_id=b.object_id 
     AND b.type_id = 9062352550013045460)
@@ -189,7 +188,7 @@ def tmp_imei_articulo_csts():
     cpe_mod.name AS nombre_articulo,
     cpe.purchase_price,
     cpe.modified_when   
-    FROM db_desarrollo2021.otc_t_r_am_cpe_prycldr cpe 
+    FROM db_desarrollo2021.otc_t_r_am_cpe cpe 
     INNER JOIN db_rdb.otc_t_r_am_cpe_model cpe_mod 
     ON cpe_mod.object_id = cpe.stock_item_model
     """
@@ -226,8 +225,8 @@ def tmp_facturacion_usuario_csts():
     a.clasificacion_terminal,
     a.concepto_facturable,
     a.clasificacion
-    FROM tmp_facturas_csts_prycldr a
-    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios_prycldr b
+    FROM tmp_facturas_csts a
+    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios b
     ON a.usuario = b.object_id_user
     """
     print(qry)
@@ -264,8 +263,8 @@ def tmp_nota_credito_usuario_csts():
     a.clasificacion_terminal,
     a.concepto_facturable,
     a.clasificacion
-    FROM tmp_notas_credito_csts_prycldr a
-    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios_prycldr b
+    FROM tmp_notas_credito_csts a
+    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios b
     ON a.usuario = b.object_id_user
     """
     print(qry)
@@ -305,7 +304,7 @@ def tmp_une_fact_notascred_csts():
     clasificacion_terminal,
     concepto_facturable,
     clasificacion
-    FROM tmp_facturacion_usuario_csts_prycldr
+    FROM tmp_facturacion_usuario_csts
     UNION ALL
     SELECT bill_dtm AS fecha,
     NULL AS bill_status,
@@ -339,7 +338,7 @@ def tmp_une_fact_notascred_csts():
     clasificacion_terminal,
     concepto_facturable,
     clasificacion
-    FROM tmp_nota_credito_usuario_csts_prycldr
+    FROM tmp_nota_credito_usuario_csts
     """
     print(qry)
     return qry
@@ -373,7 +372,7 @@ def tmp_clientes_csts(fecha_antes_ayer):
     row_number() OVER (PARTITION BY account_num ORDER BY fecha_alta DESC) AS rn
     FROM db_reportes.otc_t_360_general
     WHERE fecha_proceso={fecha_antes_ayer}) a
-    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg_prycldr b
+    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg b
     ON UPPER(a.sub_segmento)=UPPER(b.subsegmento_up)
     WHERE a.rn=1
     """.format(fecha_antes_ayer=fecha_antes_ayer)
@@ -419,8 +418,8 @@ def tmp_clientes_categoria_csts():
     b.forma_pago_factura,
     b.tipo_movimiento_mes,
     b.fecha_alta
-    FROM tmp_une_fact_notascred_csts_prycldr a
-    LEFT JOIN tmp_clientes_csts_prycldr b
+    FROM tmp_une_fact_notascred_csts a
+    LEFT JOIN tmp_clientes_csts b
     ON a.account_num=b.account_num
     """
     print(qry)
@@ -434,8 +433,8 @@ def tmp_imei_cod_articulo_csts():
     b.codigo_articulo, 
     b.nombre_articulo, 
     b.created_when
-    FROM tmp_clientes_categoria_csts_prycldr a
-    INNER JOIN tmp_imei_articulo_csts_prycldr b
+    FROM tmp_clientes_categoria_csts a
+    INNER JOIN tmp_imei_articulo_csts b
     ON a.imei_imsi=b.imei
     """
     print(qry)
@@ -451,7 +450,7 @@ def tmp_agrupa_imei_codart_csts():
     revenue_code_desc, 
     codigo_articulo, 
     nombre_articulo
-    FROM tmp_imei_cod_articulo_csts_prycldr
+    FROM tmp_imei_cod_articulo_csts
     GROUP BY revenue_code_id, 
     revenue_code_desc, 
     codigo_articulo, 
@@ -503,12 +502,12 @@ def tmp_resto_segmento_csts():
     c.segmentacion AS sub_segmento,
     d.codigo_articulo,
     COALESCE(d.nombre_articulo,a.revenue_code_desc) AS nombre_articulo
-    FROM tmp_clientes_categoria_csts_prycldr a
+    FROM tmp_clientes_categoria_csts a
     LEFT JOIN db_rbm.otc_t_creditclass b
     ON a.cod_categoria=b.credit_class_id
     LEFT JOIN (SELECT DISTINCT segmento, UPPER(segmentacion) AS segmentacion FROM db_cs_altas.otc_t_homologacion_segmentos) c
     ON UPPER(b.credit_class_name)=c.segmentacion
-    LEFT JOIN tmp_agrupa_imei_codart_csts_prycldr d
+    LEFT JOIN tmp_agrupa_imei_codart_csts d
     ON a.revenue_code_id=d.revenue_code_id
     """
     print(qry)
@@ -579,11 +578,11 @@ def tmp_terminal_equipo_csts():
     WHEN  TRIM(COALESCE(b.descripcion_gama,c.descripcion_gama))='BASE FIJA' THEN 'TELEFONO'
     ELSE 'ND' END) AS clasificacion_terminal,
     '2G / 3G' AS tecnologia
-    FROM tmp_resto_segmento_csts_prycldr a
-    LEFT JOIN tmp_catalogo_terminales_csts_prycldr b
+    FROM tmp_resto_segmento_csts a
+    LEFT JOIN tmp_catalogo_terminales_csts b
     ON a.concepto_facturable=b.concepto_facturable
     AND b.fabricante=''
-    LEFT JOIN tmp_catalogo_terminales_csts_prycldr c
+    LEFT JOIN tmp_catalogo_terminales_csts c
     ON a.concepto_facturable=c.concepto_facturable
     """
     print(qry)
@@ -791,7 +790,7 @@ def tmp_trmnl_eqp_canal_usu_csts():
     AND (b.domain_login_sub IS NOT NULL AND b.domain_login_sub<>'internal') THEN b.domain_login_sub
     WHEN b.domain_login_ow='internal' AND b.domain_login_sub='internal' AND b.created_by<>'internal' THEN b.created_by
     ELSE a.domain_login END) AS usuario_b
-    FROM tmp_terminal_equipo_csts_prycldr a
+    FROM tmp_terminal_equipo_csts a
     LEFT JOIN (SELECT domain_login_ow,
     domain_name_ow,
     domain_login_sub,
@@ -808,9 +807,9 @@ def tmp_trmnl_eqp_canal_usu_csts():
     codigo_confirmador_orden_venta,
     nombre_confirmador_orden_venta,
     SUBSTR(name,1,INSTR(name,'.')-1) AS llave_cruce 
-    FROM tmp_orden_venta_csts_prycldr) b
+    FROM tmp_orden_venta_csts) b
     ON (CASE WHEN a.document_type_name='NOTA DE CREDITO' THEN a.origin_invoice_num ELSE a.num_fact_nc END)=b.llave_cruce) x
-    LEFT JOIN tmp_usuario_cm_csts_prycldr c
+    LEFT JOIN tmp_usuario_cm_csts c
     ON x.usuario_b=c.usuario
     AND c.usuario<>'internal'
     """
@@ -974,8 +973,8 @@ def tmp_trmneqp_fuente_canal_csts():
     WHEN (domain_login_ow IS NULL AND domain_login_sub IS NULL AND usuario IS NOT NULL AND canal IS NOT NULL) 
     THEN 'USUARIO_FACTURA' ELSE '' END) AS fuente_canal,
     COALESCE(usuario_cruzar,usuario) AS test
-    FROM tmp_trmnl_eqp_canal_usu_csts_prycldr) a
-    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios_prycldr b
+    FROM tmp_trmnl_eqp_canal_usu_csts) a
+    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios b
     ON a.test=b.usuario
     """
     print(qry)
@@ -1064,8 +1063,8 @@ def tmp_trmneqp_cruza_ruc_csts():
     a.ciudad,
     a.provincia,
     a.nuevo_subcanal
-    FROM tmp_trmneqp_fuente_canal_csts_prycldr a
-    LEFT JOIN db_desarrollo2021.otc_t_catalogo_ruc_das_retail_prycldr b
+    FROM tmp_trmneqp_fuente_canal_csts a
+    LEFT JOIN db_desarrollo2021.otc_t_catalogo_ruc_das_retail b
     ON a.customer_id_number=b.ruc
     AND a.usuario IN ('NA1008122','NA400899','NA002860','NA002569','xaherrera','NA400757','NA400415','NA184482','NA184482','NA400042')
     """
@@ -1160,7 +1159,7 @@ def tmp_trmneqp_update_canal_csts():
     ciudad,
     provincia,
     nuevo_subcanal
-    FROM tmp_trmneqp_cruza_ruc_csts_prycldr
+    FROM tmp_trmneqp_cruza_ruc_csts
     """
     print(qry)
     return qry
@@ -1248,7 +1247,7 @@ def tmp_trmneqp_full_name_csts():
     a.nuevo_subcanal,
     a.razon_social,
     b.full_name AS nombre_usuario_cruzar
-    FROM tmp_trmneqp_update_canal_csts_prycldr a
+    FROM tmp_trmneqp_update_canal_csts a
     LEFT JOIN db_rdb.otc_t_r_usr_users b
     ON UPPER(a.usuario_cruzar)=UPPER(b.name)
     """
@@ -1316,7 +1315,7 @@ def tmp_mov_parque_sin_dup_csts():
     fecha_alta,
     fecha_baja,
     ROW_NUMBER() over (PARTITION BY num_telefonico ORDER BY COALESCE(fecha_baja,current_timestamp()) DESC, fecha_alta DESC) rn
-    FROM tmp_mov_parque_completa_csts_prycldr) a 
+    FROM tmp_mov_parque_completa_csts) a 
     WHERE a.rn=1
     """
     print(qry)
@@ -1345,7 +1344,7 @@ def tmp_mov_parque_ant_sin_dup_csts():
     fecha_alta,
     fecha_baja,
     ROW_NUMBER() over (PARTITION BY num_telefonico ORDER BY COALESCE(fecha_baja,current_timestamp()) DESC, fecha_alta DESC) rn
-    FROM tmp_mov_parque_completa_ant_csts_prycldr) a 
+    FROM tmp_mov_parque_completa_ant_csts) a 
     WHERE a.rn=1
     """
     print(qry)
@@ -1368,7 +1367,7 @@ def tmp_movparque_sin_dup_csts():
     numero_abonado,
     tipo_doc_cliente,
     ROW_NUMBER() over (PARTITION BY account_num ORDER BY COALESCE(fecha_baja,current_timestamp()) DESC, fecha_alta DESC) rn
-    FROM tmp_mov_parque_completa_csts_prycldr) a
+    FROM tmp_mov_parque_completa_csts) a
     WHERE a.rn=1
     """
     print(qry)
@@ -1380,7 +1379,7 @@ def tmp_movparque_seg_csts():
     a.linea_negocio,
     b.segmento AS segmento,
     a.sub_segmento
-    FROM tmp_movparque_sin_dup_csts_prycldr a
+    FROM tmp_movparque_sin_dup_csts a
     LEFT JOIN (SELECT DISTINCT segmento, UPPER(segmentacion) AS segmentacion FROM db_cs_altas.otc_t_homologacion_segmentos) b
     ON a.sub_segmento=b.segmentacion
     """
@@ -1467,8 +1466,8 @@ def tmp_universo_ppal_mov_csts():
     a.razon_social,
     a.nombre_usuario_cruzar,
     b.linea_negocio
-    FROM tmp_trmneqp_full_name_csts_prycldr a
-    LEFT JOIN tmp_movparque_sin_dup_csts_prycldr b
+    FROM tmp_trmneqp_full_name_csts a
+    LEFT JOIN tmp_movparque_sin_dup_csts b
     ON a.account_num=b.account_num
     """
     print(qry)
@@ -1486,7 +1485,7 @@ def tmp_mov_parque_antiguo_csts(dia_uno_mes_act_frmt,dia_uno_mes_ant_frmt):
     PLAN_NOMBRE,
     fecha_alta,
     fecha_baja
-    FROM tmp_mov_parque_ant_sin_dup_csts_prycldr
+    FROM tmp_mov_parque_ant_sin_dup_csts
     WHERE fecha_alta<'{dia_uno_mes_act_frmt}'
     AND (fecha_baja>='{dia_uno_mes_ant_frmt}'
     OR fecha_baja IS NULL)
@@ -1506,8 +1505,8 @@ def tmp_mov_parque_nuevo_csts(dia_uno_mes_act_frmt):
     a.PLAN_NOMBRE,
     a.fecha_alta,
     a.fecha_baja
-    FROM tmp_mov_parque_sin_dup_csts_prycldr a
-    LEFT JOIN (SELECT num_telefonico FROM tmp_mov_parque_antiguo_csts_prycldr) b
+    FROM tmp_mov_parque_sin_dup_csts a
+    LEFT JOIN (SELECT num_telefonico FROM tmp_mov_parque_antiguo_csts) b
     ON a.num_telefonico=b.num_telefonico
     AND b.num_telefonico IS NULL
     WHERE fecha_alta>='{dia_uno_mes_act_frmt}'
@@ -1525,7 +1524,7 @@ def tmp_movimientos_bi_csts(fecha_fin):
     numero_abonado AS num_abonado,
     'ALTAS_BI' AS fuente_movimiento,
     segmento, 
-    (CASE WHEN sub_segmento='PEQUENAS' THEN 'PEQUEÃ‘AS' ELSE sub_segmento END) AS sub_segmento
+    (CASE WHEN sub_segmento LIKE 'PEQUE%' THEN 'PEQUEÃ‘AS' ELSE sub_segmento END) AS sub_segmento
     FROM db_cs_altas.otc_t_altas_bi t1
     WHERE p_fecha_proceso={fecha_fin}
     UNION ALL
@@ -1640,8 +1639,8 @@ def tmp_trmneqp_movimiento_csts():
     a.num_abonado,
     (CASE WHEN b.num_abonado IS NOT NULL OR b.linea_negocio IS NOT NULL 
     THEN 1 ELSE 0 END) AS bnd_ln
-    FROM tmp_universo_ppal_mov_csts_prycldr a
-    LEFT JOIN tmp_movimientos_bi_csts_prycldr b
+    FROM tmp_universo_ppal_mov_csts a
+    LEFT JOIN tmp_movimientos_bi_csts b
     ON a.num_abonado=b.num_abonado
     AND a.num_abonado IS NOT NULL
     """
@@ -1652,7 +1651,7 @@ def tmp_cuentas_un_min_csts():
     qry="""
     SELECT account_num, 
     COUNT(num_telefonico) AS CANTIDAD_MINES
-    FROM tmp_mov_parque_sin_dup_csts_prycldr
+    FROM tmp_mov_parque_sin_dup_csts
     GROUP BY account_num
     HAVING COUNT(num_telefonico)=1
     """
@@ -1667,8 +1666,8 @@ def tmp_mines1_cuenta_un_min_csts():
     a.account_num,
     a.num_telefonico, 
     a.numero_abonado
-    FROM tmp_movparque_sin_dup_csts_prycldr a  
-    INNER JOIN tmp_cuentas_un_min_csts_prycldr b
+    FROM tmp_movparque_sin_dup_csts a  
+    INNER JOIN tmp_cuentas_un_min_csts b
     ON a.account_num=b.account_num
     """
     print(qry)
@@ -1759,10 +1758,10 @@ def tmp_mov_mines_bi_csts():
     (CASE WHEN (b.account_num IS NOT NULL OR b.numero_abonado IS NOT NULL) 
     AND UPPER(COALESCE(b.linea_negocio,c.linea_negocio,a.linea_negocio)) IS NOT NULL 
     THEN 1 ELSE a.bnd_ln END) AS bnd_ln
-    FROM tmp_trmneqp_movimiento_csts_prycldr a
-    LEFT JOIN tmp_mines1_cuenta_un_min_csts_prycldr b
+    FROM tmp_trmneqp_movimiento_csts a
+    LEFT JOIN tmp_mines1_cuenta_un_min_csts b
     ON a.account_num=b.account_num
-    LEFT JOIN tmp_movimientos_bi_csts_prycldr c
+    LEFT JOIN tmp_movimientos_bi_csts c
     ON a.num_abonado=c.num_abonado
     AND a.num_abonado IS NOT NULL
     """
@@ -1858,11 +1857,11 @@ def tmp_fact_mov_pre_csts():
     COALESCE(a.telefono,b.num_telefonico,c.num_telefonico) AS telefono,
     (CASE WHEN (b.numero_abonado IS NOT NULL OR c.numero_abonado IS NULL)
     AND COALESCE(a.linea_negocio,b.linea_negocio,c.linea_negocio) IS NOT NULL THEN 1 ELSE a.bnd_ln END) AS bnd_ln
-    FROM tmp_mov_mines_bi_csts_prycldr a 
-    LEFT JOIN tmp_mov_parque_antiguo_csts_prycldr b
+    FROM tmp_mov_mines_bi_csts a 
+    LEFT JOIN tmp_mov_parque_antiguo_csts b
     ON (a.num_abonado=b.numero_abonado
     AND a.num_abonado IS NOT NULL)
-    LEFT JOIN tmp_mov_parque_nuevo_csts_prycldr c
+    LEFT JOIN tmp_mov_parque_nuevo_csts c
     ON (a.num_abonado=c.numero_abonado
     AND a.num_abonado IS NOT NULL)
     """
@@ -1872,14 +1871,14 @@ def tmp_fact_mov_pre_csts():
 def tmp_cuentas_sin_min_csts():
     qry="""
     SELECT DISTINCT x.account_num
-    FROM tmp_fact_mov_pre_csts_prycldr x
+    FROM tmp_fact_mov_pre_csts x
     LEFT JOIN (
     SELECT DISTINCT a.account_num,a.nulo,b.no_nulo
     FROM
-    (SELECT account_num,count(1) AS nulo FROM tmp_fact_mov_pre_csts_prycldr 
+    (SELECT account_num,count(1) AS nulo FROM tmp_fact_mov_pre_csts 
     WHERE telefono IS NULL
     GROUP BY account_num) a
-    LEFT JOIN (SELECT account_num,count(1) AS no_nulo FROM tmp_fact_mov_pre_csts_prycldr 
+    LEFT JOIN (SELECT account_num,count(1) AS no_nulo FROM tmp_fact_mov_pre_csts 
     WHERE telefono IS NOT NULL
     GROUP BY account_num) b
     ON a.account_num=b.account_num
@@ -1900,8 +1899,8 @@ def tmp_cuentas_completa_csts():
     a.account_num,
     a.num_telefonico, 
     a.numero_abonado
-    FROM tmp_movparque_sin_dup_csts_prycldr a  
-    INNER JOIN tmp_cuentas_sin_min_csts_prycldr b
+    FROM tmp_movparque_sin_dup_csts a  
+    INNER JOIN tmp_cuentas_sin_min_csts b
     ON a.account_num=b.account_num
     """
     print(qry)
@@ -1990,8 +1989,8 @@ def tmp_fact_ppal_completa_csts():
     UPPER(COALESCE(b.linea_negocio,a.linea_negocio)) AS linea_negocio,
     COALESCE(b.num_telefonico,a.telefono) AS telefono,
     COALESCE(b.numero_abonado,a.num_abonado) AS num_abonado
-    FROM tmp_fact_mov_pre_csts_prycldr a
-    LEFT JOIN tmp_cuentas_completa_csts_prycldr b
+    FROM tmp_fact_mov_pre_csts a
+    LEFT JOIN tmp_cuentas_completa_csts b
     ON a.account_num=b.account_num
     """
     print(qry)
@@ -2009,7 +2008,7 @@ def tmp_cuenta_segmento_csts():
     sub_segmento, 
     account_num,
     num_telefonico
-    FROM tmp_mov_parque_sin_dup_csts_prycldr
+    FROM tmp_mov_parque_sin_dup_csts
     WHERE UPPER(segmento) IN ('EMPRESA','NEGOCIOS') 
     AND linea_negocio IS NOT NULL) a
     GROUP BY a.linea_negocio,
@@ -2032,7 +2031,7 @@ def tmp_cuenta_seg_masivo_csts():
     sub_segmento, 
     account_num,
     num_telefonico
-    FROM tmp_mov_parque_sin_dup_csts_prycldr
+    FROM tmp_mov_parque_sin_dup_csts
     WHERE UPPER(segmento) NOT IN ('EMPRESA','NEGOCIOS') 
     AND linea_negocio IS NOT NULL) a
     GROUP BY a.linea_negocio,
@@ -2126,11 +2125,11 @@ def tmp_universo_fact_mov_csts():
     UPPER(COALESCE(TRIM(c.segmento),a.segmento)) AS segmento,
     UPPER(COALESCE(TRIM(b.sub_segmento),a.sub_segmento)) as sub_segmento,
     bnd_ln
-    FROM tmp_fact_ppal_completa_csts_prycldr a 
-    LEFT JOIN tmp_cuenta_segmento_csts_prycldr b
+    FROM tmp_fact_ppal_completa_csts a 
+    LEFT JOIN tmp_cuenta_segmento_csts b
     ON (a.account_num=b.account_num
     AND a.linea_negocio IS NULL)
-    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg_prycldr c
+    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg c
     ON UPPER(TRIM(des_categoria))=UPPER(TRIM(b.sub_segmento))
     """
     print(qry)
@@ -2220,11 +2219,11 @@ def tmp_universo_fact_mov2_csts():
     COALESCE(UPPER(TRIM(c.segmento)),UPPER( a.segmento)) AS segmento,
     COALESCE(UPPER(TRIM(b.sub_segmento)),UPPER(a.sub_segmento)) AS sub_segmento,
     bnd_ln
-    FROM tmp_universo_fact_mov_csts_prycldr a
-    LEFT JOIN tmp_cuenta_seg_masivo_csts_prycldr b
+    FROM tmp_universo_fact_mov_csts a
+    LEFT JOIN tmp_cuenta_seg_masivo_csts b
     ON (a.account_num=b.account_num
     AND a.linea_negocio IS NULL)
-    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg_prycldr c
+    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg c
     ON UPPER(TRIM(a.sub_segmento))=UPPER(TRIM(c.des_categoria))
     """
     print(qry)
@@ -2310,7 +2309,7 @@ def tmp_fact_mov_perimetro_csts():
     a.canl_nc,
     a.tienda,
     a.branch,
-    COALESCE(UPPER(b.canal),a.canal) AS canal,
+    COALESCE(a.canal,UPPER(b.canal)) AS canal,
     a.codigo_da,
     (CASE WHEN b.identificador IS NOT NULL THEN 'PERIMETRO B2B' ELSE a.fuente_canal END) AS fuente_canal,
     COALESCE(e.region,a.region) AS region,
@@ -2339,14 +2338,14 @@ def tmp_fact_mov_perimetro_csts():
     e.jefatura AS jefe_perimetro,
     e.ejecutivo_asignado AS ejecutivo_perimetro,
     e.gerente AS gerente_perimetro
-    FROM tmp_universo_fact_mov2_csts_prycldr a
-    LEFT JOIN tmp_perimetros_unicos_csts_prycldr b
+    FROM tmp_universo_fact_mov2_csts a
+    LEFT JOIN tmp_perimetros_unicos_csts b
     ON (a.identificacion_cliente=b.identificador
     AND a.bnd_ln=0)
-    LEFT JOIN (SELECT ruc FROM db_desarrollo2021.otc_t_catalogo_ruc_das_retail_prycldr) c
+    LEFT JOIN (SELECT ruc FROM db_desarrollo2021.otc_t_catalogo_ruc_das_retail) c
     ON (a.identificacion_cliente=c.ruc
     AND c.ruc IS NULL)
-    LEFT JOIN tmp_perimetros_unicos_csts_prycldr e
+    LEFT JOIN tmp_perimetros_unicos_csts e
     ON a.identificacion_cliente=e.identificador
     """
     print(qry)
@@ -2440,7 +2439,7 @@ def tmp_fact_mov_update_csts():
     jefe_perimetro,
     ejecutivo_perimetro,
     gerente_perimetro
-    FROM tmp_fact_mov_perimetro_csts_prycldr
+    FROM tmp_fact_mov_perimetro_csts
     """
     print(qry)
     return qry
@@ -2455,7 +2454,7 @@ def tmp_mines_planes_csts():
     plan_codigo,
     plan_nombre,
     (CASE WHEN SUBSTR(plan_codigo,1,2)='NC' THEN SUBSTR(TRIM(plan_codigo),3) ELSE plan_codigo END) AS llave_cruce
-    FROM tmp_mov_parque_sin_dup_csts_prycldr) a
+    FROM tmp_mov_parque_sin_dup_csts) a
     LEFT JOIN db_cs_altas.otc_t_ctl_planes_categoria_tarifa b
     ON a.llave_cruce=b.cod_plan_activo
     """
@@ -2559,8 +2558,8 @@ def tmp_fact_mov_final_csts():
     b.plan_codigo AS plan_codigo,
     b.plan_nombre AS plan_nombre,
     b.tarifa_basica AS tarifa_basica
-    FROM tmp_fact_mov_update_csts_prycldr a
-    LEFT JOIN tmp_mines_planes_csts_prycldr b
+    FROM tmp_fact_mov_update_csts a
+    LEFT JOIN tmp_mines_planes_csts b
     ON a.telefono=b.num_telefonico
     LEFT JOIN db_cs_altas.otc_t_ctl_planes_categoria_tarifa d 
     ON b.plan_codigo=d.cod_plan_activo
@@ -2758,7 +2757,7 @@ def tmp_fact_mov_final_upd1_csts():
     plan_codigo,
     plan_nombre,
     tarifa_basica
-    FROM tmp_fact_mov_final_upd_csts_prycldr
+    FROM tmp_fact_mov_final_upd_csts
     """
     print(qry)
     return qry
@@ -2857,8 +2856,8 @@ def tmp_fact_mov_final_costo_csts():
     (CASE WHEN a.codigo_tipo_documento=25 THEN COALESCE(CAST(b.purchase_price AS double),'0.0')*(-1) ELSE COALESCE(CAST(b.purchase_price AS double),'0.0') END) AS costo_unitario,
     COALESCE(CAST(b.purchase_price AS double),'0.0')*(-1) AS costo_total,
     (CASE WHEN b.imei IS NOT NULL THEN 'COSTOS_AM' END) AS fuente_costo
-    FROM tmp_fact_mov_final_upd1_csts_prycldr a
-    LEFT JOIN tmp_imei_articulo_csts_prycldr b
+    FROM tmp_fact_mov_final_upd1_csts a
+    LEFT JOIN tmp_imei_articulo_csts b
     ON a.imei=b.imei
     """
     print(qry)
@@ -2873,7 +2872,7 @@ def tmp_costo_x_modelo_csts():
     costo_unitario,
     fecha_factura,
     row_number() OVER (PARTITION BY modelo_terminal ORDER BY fecha_factura DESC) AS rn
-    FROM tmp_fact_mov_final_costo_csts_prycldr
+    FROM tmp_fact_mov_final_costo_csts
     WHERE codigo_tipo_documento<>25
     AND costo_unitario IS NOT NULL
     AND costo_unitario>0
@@ -2977,8 +2976,8 @@ def tmp_costo_sin_imei_csts():
     a.costo_total,
     COALESCE(b.costo_unitario,a.costo_unitario) AS costo_unitario,
     (CASE WHEN b.modelo_terminal IS NOT NULL THEN 'CALCULADO' ELSE a.fuente_costo END) AS fuente_costo             
-    FROM tmp_fact_mov_final_costo_csts_prycldr a
-    LEFT JOIN tmp_costo_x_modelo_csts_prycldr b
+    FROM tmp_fact_mov_final_costo_csts a
+    LEFT JOIN tmp_costo_x_modelo_csts b
     ON TRIM(a.modelo_terminal)=TRIM(b.modelo_terminal)
     AND a.costo_unitario IS NULL
     """
@@ -2994,7 +2993,7 @@ def tmp_costo_rep_anterior_csts(fecha_meses_atras1,fecha_inicio):
     row_number() OVER (PARTITION BY modelo_terminal ORDER BY fecha_factura DESC) AS rn
     FROM db_cs_terminales.otc_t_terminales_simcards
     WHERE p_fecha_factura>={fecha_meses_atras1} AND p_fecha_factura<{fecha_inicio}) a 
-    LEFT JOIN (SELECT modelo_terminal FROM tmp_costo_sin_imei_csts_prycldr
+    LEFT JOIN (SELECT modelo_terminal FROM tmp_costo_sin_imei_csts
     WHERE costo_unitario IS NULL
     AND UPPER(modelo_terminal)<>'EQUIPOS') b
     ON a.modelo_terminal=b.modelo_terminal
@@ -3106,8 +3105,8 @@ def tmp_costo_fac_final_csts(ultimo_dia_act_frmt):
     (CASE WHEN b.modelo_terminal IS NOT NULL THEN 'CALCULADO' ELSE a.modelo_terminal END) AS fuente_costo,
     (a.cantidad*(COALESCE(b.costo_unitario,a.costo_unitario))) AS costo_total,
     '{ultimo_dia_act_frmt}' AS fecha_proceso 
-    FROM tmp_costo_sin_imei_csts_prycldr a
-    LEFT JOIN tmp_costo_rep_anterior_csts_prycldr b
+    FROM tmp_costo_sin_imei_csts a
+    LEFT JOIN tmp_costo_rep_anterior_csts b
     ON (TRIM(a.modelo_terminal)=TRIM(b.modelo_terminal)
     AND a.costo_unitario IS NULL)
     WHERE UPPER(a.identificacion_cliente) NOT LIKE '%PRUEBA%'
@@ -3334,15 +3333,15 @@ def tmp_fact_final_csts(VtablaTmpCostFactFin):
     d.nom_distribuidor AS distribuidor,
     c.tipo_canal AS tipo_canal
     FROM {VtablaTmpCostFactFin} a 
-    LEFT JOIN tmp_billsummary_billseq_csts_prycldr x
+    LEFT JOIN tmp_billsummary_billseq_csts x
     ON (a.num_factura=x.invoice_num
     AND a.account_num=x.account_num)
-    LEFT JOIN tmp_cuotas_financiadas_csts_prycldr b
+    LEFT JOIN tmp_cuotas_financiadas_csts b
     ON (a.account_num=b.account_num
     AND x.bill_seq=b.bill_seq)
-    LEFT JOIN db_desarrollo2021.otc_t_catalogo_tipo_canal_prycldr c
+    LEFT JOIN db_desarrollo2021.otc_t_catalogo_tipo_canal c
     ON a.canal=c.canal
-    LEFT JOIN tmp_usuario_cm_csts_prycldr d
+    LEFT JOIN tmp_usuario_cm_csts d
     ON UPPER(a.usuario_cruzar)=UPPER(d.usuario)
     """.format(VtablaTmpCostFactFin=VtablaTmpCostFactFin)
     print(qry)
@@ -3449,7 +3448,7 @@ def tmp_fact_final_tipcanal_csts():
     WHEN canal='PDVM' AND linea_negocio='POSPAGO' THEN 'DIRECTO'
     ELSE tipo_canal END) AS tipo_canal,
     cuotas_financiadas
-    FROM tmp_fact_final_csts_prycldr
+    FROM tmp_fact_final_csts
     """
     print(qry)
     return qry
@@ -3535,7 +3534,7 @@ def tmp_campos_para_nc_csts(fecha_meses_atras2,fecha_fin):
     tipo_venta,
     usuario,
     usuario_cruzar
-    FROM tmp_fact_final_tipcanal_csts_prycldr
+    FROM tmp_fact_final_tipcanal_csts
     UNION ALL
     SELECT account_num,
     branch,
@@ -3561,13 +3560,13 @@ def tmp_campos_para_nc_csts(fecha_meses_atras2,fecha_fin):
     num_factura_relacionada,
     UPPER(oficina) AS oficina,
     UPPER(oficina_usuario) AS oficina_usuario,
-    ruc_distribuidor,
-    codigo_plaza,
-    nom_plaza,
-    ciudad,
-    provincia,
+    CAST('' AS string) AS ruc_distribuidor,
+    CAST('' AS string) AS codigo_plaza,
+    CAST('' AS string) AS nom_plaza,
+    CAST('' AS string) AS ciudad,
+    CAST('' AS string) AS provincia,
     region,
-    nuevo_subcanal,
+    CAST('' AS string) AS nuevo_subcanal,
     razon_social,
     (CASE WHEN segmento='Empresa' THEN 'EMPRESAS' ELSE UPPER(segmento) END) AS segmento,
     UPPER(sub_segmento) AS sub_segmento,
@@ -3576,9 +3575,9 @@ def tmp_campos_para_nc_csts(fecha_meses_atras2,fecha_fin):
     tipo_venta,
     usuario_factura AS usuario,
     usuario_final AS usuario_cruzar
-    FROM db_desarrollo2021.otc_t_terminales_simcards_prycldr
+    FROM db_cs_terminales.otc_t_terminales_simcards
     WHERE (p_fecha_factura>={fecha_meses_atras2} AND p_fecha_factura<{fecha_fin})) a 
-    INNER JOIN tmp_fact_final_tipcanal_csts_prycldr b 
+    INNER JOIN tmp_fact_final_tipcanal_csts b 
     ON a.num_factura=b.origin_invoice_num
     AND a.account_num=b.account_num
     AND b.tipo_documento='NOTA DE CREDITO'
@@ -3686,7 +3685,7 @@ def tmp_costos_fact_final_v2_csts():
     a.tipo_canal,
     a.cuotas_financiadas,
     b.nombre_usuario AS nombre_usuario
-    FROM db_desarrollo2021.tmp_fact_final_tipcanal_csts a
+    FROM tmp_fact_final_tipcanal_csts a
     LEFT JOIN (SELECT x.account_num,
     x.nota_credito,
     x.fecha_proceso,
@@ -3768,7 +3767,7 @@ def tmp_costos_fact_final_v2_csts():
     distribuidor,
     gerente_perimetro,
     row_number() OVER (PARTITION BY nota_credito ORDER BY nota_credito DESC) AS rn
-    FROM tmp_campos_para_nc_csts_prycldr) x
+    FROM tmp_campos_para_nc_csts) x
     WHERE x.rn=1)  b
     ON a.num_factura=b.nota_credito
     AND a.account_num=b.account_num
@@ -3876,7 +3875,7 @@ def tmp_fact_final_update1_csts(val_usuario4):
     a.tipo_canal,
     a.cuotas_financiadas,
     a.nombre_usuario
-    FROM tmp_costos_fact_final_v2_csts_prycldr a
+    FROM tmp_costos_fact_final_v2_csts a
     """.format(val_usuario4=val_usuario4)
     print(qry)
     return qry
@@ -3981,7 +3980,7 @@ def tmp_fact_final_update2_csts():
     a.tipo_canal,
     a.cuotas_financiadas,
     a.nombre_usuario
-    FROM tmp_fact_final_update1_csts_prycldr a
+    FROM tmp_fact_final_update1_csts a
     """
     print(qry)
     return qry
@@ -4086,7 +4085,7 @@ def tmp_fact_final_update3_csts():
     tipo_canal,
     cuotas_financiadas,
     nombre_usuario
-    FROM tmp_fact_final_update2_csts_prycldr
+    FROM tmp_fact_final_update2_csts
     """
     print(qry)
     return qry
@@ -4195,7 +4194,7 @@ def tmp_fact_final_update4_csts():
     tipo_canal,
     cuotas_financiadas,
     nombre_usuario
-    FROM tmp_fact_final_update3_csts_prycldr
+    FROM tmp_fact_final_update3_csts
     """
     print(qry)
     return qry
@@ -4302,7 +4301,7 @@ def tmp_fact_final_update5_csts():
     tipo_canal,
     cuotas_financiadas,
     nombre_usuario
-    FROM tmp_fact_final_update4_csts_prycldr
+    FROM tmp_fact_final_update4_csts
     """
     print(qry)
     return qry
@@ -4407,7 +4406,7 @@ def tmp_fact_final_update6_csts():
     tipo_canal,
     cuotas_financiadas,
     nombre_usuario
-    FROM tmp_fact_final_update5_csts_prycldr
+    FROM tmp_fact_final_update5_csts
     """
     print(qry)
     return qry
@@ -4521,9 +4520,9 @@ def tmp_costo_fact_final_v2_1_csts(val_usuario_final):
     WHEN a.canal='OTROS' AND a.canl_nc='Puntos de Venta' THEN 'DISTRIBUIDOR'
     WHEN a.canal='OTROS' AND a.canl_nc IN ('Retencion/Lealtad','Televentas') THEN 'CCC- CALL CENTER'
     ELSE a.canal END) llave_canal
-    FROM tmp_fact_final_update6_csts_prycldr a
+    FROM tmp_fact_final_update6_csts a
     LEFT JOIN (SELECT DISTINCT num_factura,account_num,nombre_cliente,usuario_cruzar
-    FROM tmp_fact_final_update6_csts_prycldr
+    FROM tmp_fact_final_update6_csts
     WHERE UPPER(nombre_cliente) LIKE '%PRUEBA%'
     OR nombre_cliente IN ('JNS//JANUS//PRUEBAS FUNCIONALES PRUEBAS FUNCIONALES MICROEMPRESAS',
     'PRUEBASCD3 PRODUCCION',
@@ -4715,9 +4714,9 @@ def tmp_costo_fact_final_v3_csts(vTablaCostFinV2):
     a.cuotas_financiadas,
     a.nombre_usuario
     FROM {vTablaCostFinV2} a
-    LEFT JOIN db_desarrollo2021.otc_t_catalogo_tipo_canal_prycldr b
+    LEFT JOIN db_desarrollo2021.otc_t_catalogo_tipo_canal b
     ON a.llave_canal=b.canal
-    LEFT JOIN tmp_concepto_articulo_csts_prycldr c
+    LEFT JOIN tmp_concepto_articulo_csts c
     ON a.concepto_facturable=c.concepto_facturable
     """.format(vTablaCostFinV2=vTablaCostFinV2)
     print(qry)
@@ -4840,7 +4839,7 @@ def tmp_costo_fact_final_v4_csts(val_usuario4):
     e.nrc_ov_created_by AS usuario_override,
     CAST(SUBSTR(e.nrc_ov_created_when,1,10) AS date) AS fecha_override,
     'NO' AS nota_credito_masiva
-    FROM tmp_costo_fact_final_v3_csts_prycldr a
+    FROM tmp_costo_fact_final_v3_csts a
     LEFT JOIN (SELECT x.nombre_oficina_venta, 
     x.tipo_canal_venta,
     x.canal_venta,
@@ -4850,12 +4849,12 @@ def tmp_costo_fact_final_v4_csts(val_usuario4):
     canal_venta,
     region,
     ROW_NUMBER() over (PARTITION BY nombre_oficina_venta ORDER BY nombre_oficina_venta DESC) rn
-    FROM db_desarrollo2021.otc_t_asigna_canal_ventas_prycldr) x
+    FROM db_desarrollo2021.otc_t_asigna_canal_ventas) x
     WHERE rn=1) b
     ON UPPER(a.nombre_cliente)=UPPER(b.nombre_oficina_venta)
-    LEFT JOIN tmp_usuario_cm_csts_prycldr c
+    LEFT JOIN tmp_usuario_cm_csts c
     ON UPPER(a.usuario_final)=UPPER(c.usuario)
-    LEFT JOIN tmp_concepto_articulo_csts_prycldr d
+    LEFT JOIN tmp_concepto_articulo_csts d
     ON a.concepto_facturable=d.concepto_facturable
     LEFT JOIN db_rdb.otc_t_overwrite_equipos e
     ON (a.orden_de_venta = e.orden_name 
@@ -4978,7 +4977,7 @@ def tmp_costo_fact_final_v4up_csts(val_usuario4):
     usuario_override,
     fecha_override,
     nota_credito_masiva
-    FROM tmp_costo_fact_final_v4_csts_prycldr
+    FROM tmp_costo_fact_final_v4_csts
     """.format(val_usuario4=val_usuario4)
     print(qry)
     return qry
@@ -5094,7 +5093,7 @@ def tmp_costo_fact_final_v5up_csts():
     usuario_override,
     fecha_override,
     nota_credito_masiva
-    FROM tmp_costo_fact_final_v4up_csts_prycldr
+    FROM tmp_costo_fact_final_v4up_csts
     """
     print(qry)
     return qry
@@ -5206,7 +5205,7 @@ def tmp_costo_fact_final_v5_csts():
     usuario_override,
     fecha_override,
     nota_credito_masiva
-    FROM tmp_costo_fact_final_v5up_csts_prycldr
+    FROM tmp_costo_fact_final_v5up_csts
     """
     print(qry)
     return qry
@@ -5245,7 +5244,7 @@ def tmp_tarjeta_banco1_csts():
     qry="""
     SELECT DISTINCT factura
     ,tarjeta_banco 
-    FROM tmp_tarjeta_banco_csts_prycldr
+    FROM tmp_tarjeta_banco_csts
     WHERE factura IS NOT NULL
     """
     print(qry)
@@ -5256,12 +5255,12 @@ def tmp_pivot_tarjeta_banco_csts():
     SELECT a.factura,a.tarjeta_banco AS columna1,b.tarjeta_banco AS columna2,c.tarjeta_banco AS columna3
     FROM(
     (SELECT DISTINCT factura,tarjeta_banco,row_number() over (partition by factura order by factura DESC) rn
-    FROM tmp_tarjeta_banco1_csts_prycldr) a
+    FROM tmp_tarjeta_banco1_csts) a
     LEFT JOIN (SELECT DISTINCT factura,tarjeta_banco,row_number() over (partition by factura order by factura DESC) rn
-    FROM tmp_tarjeta_banco1_csts_prycldr) b
+    FROM tmp_tarjeta_banco1_csts) b
     ON a.factura=b.factura AND a.rn=1 AND b.rn=2
     LEFT JOIN (SELECT DISTINCT factura,tarjeta_banco,row_number() over (partition by factura order by factura DESC) rn
-    FROM tmp_tarjeta_banco1_csts_prycldr) c
+    FROM tmp_tarjeta_banco1_csts) c
     ON a.factura=c.factura AND a.rn=1 AND c.rn=3)
     WHERE a.rn=1
     """
@@ -5381,12 +5380,12 @@ def tmp_costo_fact_final_v6_csts():
     c.columna2 as tarjeta_banco2, 
     c.columna3 as tarjeta_banco3,
     c.factura 
-    FROM tmp_costo_fact_final_v5_csts_prycldr a
-    LEFT JOIN tmp_cuota_monto_csts_prycldr b
+    FROM tmp_costo_fact_final_v5_csts a
+    LEFT JOIN tmp_cuota_monto_csts b
     ON (a.num_factura=b.invoice_num 
     AND a.account_num=b.account_num
     AND b.rn=1)
-    LEFT JOIN tmp_pivot_tarjeta_banco_csts_prycldr c
+    LEFT JOIN tmp_pivot_tarjeta_banco_csts c
     ON a.num_factura=c.factura
     """
     print(qry)
@@ -5518,14 +5517,14 @@ def tmp_costo_fact_final_v4_1_csts():
     a.tarjeta_banco3,
     e.num_cuotas as cuotas3,
     a.factura
-    FROM tmp_costo_fact_final_v6_csts_prycldr a
-    LEFT JOIN tmp_tarjeta_banco_csts_prycldr c
+    FROM tmp_costo_fact_final_v6_csts a
+    LEFT JOIN tmp_tarjeta_banco_csts c
     ON (a.num_factura=c.factura
     AND a.tarjeta_banco=c.tarjeta_banco)
-    LEFT JOIN tmp_tarjeta_banco_csts_prycldr d
+    LEFT JOIN tmp_tarjeta_banco_csts d
     ON (a.num_factura=d.factura
     AND a.tarjeta_banco2=d.tarjeta_banco)
-    LEFT JOIN tmp_tarjeta_banco_csts_prycldr e
+    LEFT JOIN tmp_tarjeta_banco_csts e
     ON (a.num_factura=e.factura
     AND a.tarjeta_banco3=e.tarjeta_banco)
     WHERE a.codigo_tipo_documento<>2
@@ -5662,14 +5661,14 @@ def tmp_costo_fact_exporta_csts(fecha_inicio,fecha_fin):
     WHEN (CASE WHEN c.segmento IS NULL THEN a.segmento ELSE c.segmento END) IS NULL THEN pu.segmento 
     ELSE (CASE WHEN c.segmento IS NULL THEN a.segmento ELSE c.segmento END) END) AS segmento_final,
     (DATEDIFF(fecha_factura,(CASE WHEN a.fecha_alta IS NULL THEN CAST('2005-01-01 00:00:00' AS TIMESTAMP) ELSE a.fecha_alta END))/30) AS antiguedad_meses
-    FROM tmp_costo_fact_final_v4_1_csts_prycldr a
+    FROM tmp_costo_fact_final_v4_1_csts a
     LEFT JOIN db_rbm.otc_t_casca_fac_relacionada b
     ON a.num_factura=b.nota_credito 
     AND a.account_num=b.account_num_nc
     AND b.fechafactura>={fecha_inicio} AND b.fechafactura<{fecha_fin}
-    LEFT JOIN db_desarrollo2021.otc_t_ctl_seg_terminal_prycldr c
+    LEFT JOIN db_desarrollo2021.otc_t_ctl_seg_terminal c
     ON a.identificacion_cliente=c.ruc
-    LEFT JOIN tmp_perimetros_unicos_csts_prycldr pu
+    LEFT JOIN tmp_perimetros_unicos_csts pu
     ON a.identificacion_cliente=pu.identificador
     """.format(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin)
     print(qry)
@@ -5792,7 +5791,7 @@ def tmp_costo_fact_exporta_otra_csts():
     a.provincia,
     a.nuevo_subcanal,
     CAST(from_unixtime(unix_timestamp(a.fecha_factura,'yyyy-MM-dd'),'yyyyMMdd') AS INT) AS p_fecha_factura
-    FROM tmp_costo_fact_exporta_csts_prycldr a
+    FROM tmp_costo_fact_exporta_csts a
     """
     print(qry)
     return qry    
@@ -5905,7 +5904,7 @@ def tmp_costo_fact_exporta_otra1_csts():
     WHEN LENGTH(a.identificacion_cliente)=13 THEN 'RUC' ELSE '' END)
     ELSE a.tipo_doc_cliente END) AS tipo_doc_cliente,
     a.p_fecha_factura
-    FROM tmp_costo_fact_exporta_otra_csts_prycldr a
+    FROM tmp_costo_fact_exporta_otra_csts a
     LEFT JOIN db_reportes.otc_t_catalogo_consolidado_id d
     ON (UPPER(a.canal_comercial)=UPPER(d.tipo_movimiento)
     AND d.extractor='Todos'
@@ -6040,7 +6039,7 @@ def tmp_fact_exporta_nodupli_csts(fecha_antes_ayer):
     a.tipo_doc_cliente,
     a.p_fecha_factura,
     b.linea_negocio_homologado
-    FROM tmp_costo_fact_exporta_otra1_csts_prycldr a
+    FROM tmp_costo_fact_exporta_otra1_csts a
     LEFT JOIN (SELECT num_telefonico,tipo_movimiento_mes,linea_negocio_homologado
     FROM db_reportes.otc_t_360_general
     WHERE fecha_proceso={fecha_antes_ayer}
@@ -6166,7 +6165,7 @@ def otc_t_terminales_simcards(anio_mes):
     tipo_doc_cliente,
     linea_negocio_homologado,
     p_fecha_factura
-    FROM tmp_fact_exporta_nodupli_csts_prycldr
+    FROM tmp_fact_exporta_nodupli_csts
     """.format(anio_mes=anio_mes)
     print(qry)
     return qry  
@@ -6286,7 +6285,7 @@ SELECT
 		, (CASE WHEN tipo_documento = 'NOTA DE CREDITO'
             THEN 'NO' END) AS aplica_comision
 	FROM
-        db_desarrollo2021.otc_t_terminales_simcards_prycldr
+        db_desarrollo2021.otc_t_terminales_simcards
 	WHERE
 		p_fecha_factura >= {val_fecha_ini}
 		AND p_fecha_factura < {val_dia_uno}
@@ -6414,7 +6413,7 @@ END) AS tipo_doc_cliente
         , (CASE WHEN a.num_factura = b.num_factura_relacionada
         THEN 'NO' ELSE 'SI' END) AS aplica_comision
 	FROM
-		db_desarrollo2021.otc_t_terminales_simcards_prycldr a
+		db_desarrollo2021.otc_t_terminales_simcards a
     LEFT JOIN db_desarrollo2021.tmp_terminales_simcards_nc b
     ON (a.telefono = b.telefono)
     AND (a.account_num = b.account_num)
@@ -6437,7 +6436,8 @@ SELECT
 	, a.fecha_factura AS fecha_factura
 	, a.linea_negocio AS linea_negocio
 	, a.segmento AS segmento
-	, a.sub_segmento AS sub_segmento
+    , (CASE WHEN A.sub_segmento LIKE 'PEQUE%' THEN 'PEQUEÃ‘AS' ELSE A.sub_segmento END) AS sub_segmento
+	--, a.sub_segmento AS sub_segmento
 	, a.segmento_final AS segmento_final
 	, a.telefono AS telefono
 	, a.clasificacion AS clasificacion

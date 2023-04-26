@@ -1,7 +1,7 @@
-
+# -- coding: utf-8 --
 import sys
 reload(sys)
-##sys.setdefaultencoding('utf-8')
+sys.setdefaultencoding('utf-8')
 from pyspark.sql import SparkSession, DataFrame
 from datetime import datetime
 from pyspark.sql.window import Window
@@ -69,7 +69,7 @@ try:
     df_arch1.printSchema()
     print(etq_info(msg_t_total_registros_obtenidos("df_arch1",str(df_arch1.count())))) #BORRAR
     pandas_df1 = df_arch1.toPandas()
-    pandas_df1.to_csv(vArchivo, sep='|',index=False, encoding='utf-8-sig')   
+    pandas_df1.to_csv(vArchivo, sep='|',index=False)   
 except Exception as e:
 	exit(etq_error(msg_e_ejecucion(vStp01,str(e))))
 

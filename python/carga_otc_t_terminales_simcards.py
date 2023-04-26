@@ -1,7 +1,6 @@
 # -- coding: utf-8 --
 import sys
 reload(sys)
-sys.setdefaultencoding('utf8')
 from query import *
 from pyspark.sql import SparkSession, DataFrame
 from datetime import datetime
@@ -92,7 +91,7 @@ try:
     df_tmp_catalogo_terminales_csts=spark.sql(tmp_catalogo_terminales_csts()).cache()
     df_tmp_catalogo_terminales_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_catalogo_terminales_csts.createOrReplaceTempView("tmp_catalogo_terminales_csts_prycldr")
+    df_tmp_catalogo_terminales_csts.createOrReplaceTempView("tmp_catalogo_terminales_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_catalogo_terminales_csts",str(df_tmp_catalogo_terminales_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_catalogo_terminales_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -104,7 +103,7 @@ try:
     df_tmp_facturas_csts=spark.sql(tmp_facturas_csts(vfecha_inicio,vfecha_fin)).cache()
     df_tmp_facturas_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_facturas_csts.createOrReplaceTempView("tmp_facturas_csts_prycldr")
+    df_tmp_facturas_csts.createOrReplaceTempView("tmp_facturas_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_facturas_csts",str(df_tmp_facturas_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_facturas_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -116,7 +115,7 @@ try:
     df_tmp_notas_credito_csts=spark.sql(tmp_notas_credito_csts(vfecha_inicio,vfecha_fin)).cache()
     df_tmp_notas_credito_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_notas_credito_csts.createOrReplaceTempView("tmp_notas_credito_csts_prycldr")
+    df_tmp_notas_credito_csts.createOrReplaceTempView("tmp_notas_credito_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_notas_credito_csts",str(df_tmp_notas_credito_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_notas_credito_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -128,7 +127,7 @@ try:
     df_tmp_orden_venta_csts=spark.sql(tmp_orden_venta_csts(vfecha_meses_atras,vfecha_fin)).cache()
     df_tmp_orden_venta_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_orden_venta_csts.createOrReplaceTempView("tmp_orden_venta_csts_prycldr")
+    df_tmp_orden_venta_csts.createOrReplaceTempView("tmp_orden_venta_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_orden_venta_csts",str(df_tmp_orden_venta_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_orden_venta_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -140,7 +139,7 @@ try:
     df_tmp_imei_articulo_csts=spark.sql(tmp_imei_articulo_csts()).cache()
     df_tmp_imei_articulo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_imei_articulo_csts.createOrReplaceTempView("tmp_imei_articulo_csts_prycldr")
+    df_tmp_imei_articulo_csts.createOrReplaceTempView("tmp_imei_articulo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_imei_articulo_csts",str(df_tmp_imei_articulo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_imei_articulo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -152,11 +151,11 @@ try:
     df_tmp_facturacion_usuario_csts=spark.sql(tmp_facturacion_usuario_csts()).cache()
     df_tmp_facturacion_usuario_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_facturacion_usuario_csts.createOrReplaceTempView("tmp_facturacion_usuario_csts_prycldr")
+    df_tmp_facturacion_usuario_csts.createOrReplaceTempView("tmp_facturacion_usuario_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_facturacion_usuario_csts",str(df_tmp_facturacion_usuario_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_facturacion_usuario_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_facturas_csts_prycldr") 
+    spark.catalog.dropTempView("tmp_facturas_csts") 
     
     vStp01="Paso 7"
     print(lne_dvs())
@@ -165,11 +164,11 @@ try:
     df_tmp_nota_credito_usuario_csts=spark.sql(tmp_nota_credito_usuario_csts()).cache()
     df_tmp_nota_credito_usuario_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_nota_credito_usuario_csts.createOrReplaceTempView("tmp_nota_credito_usuario_csts_prycldr")
+    df_tmp_nota_credito_usuario_csts.createOrReplaceTempView("tmp_nota_credito_usuario_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_nota_credito_usuario_csts",str(df_tmp_nota_credito_usuario_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_nota_credito_usuario_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_notas_credito_csts_prycldr")
+    spark.catalog.dropTempView("tmp_notas_credito_csts")
     
     vStp01="Paso 8"
     print(lne_dvs())
@@ -178,12 +177,12 @@ try:
     df_tmp_une_fact_notascred_csts=spark.sql(tmp_une_fact_notascred_csts()).cache()
     df_tmp_une_fact_notascred_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_une_fact_notascred_csts.createOrReplaceTempView("tmp_une_fact_notascred_csts_prycldr")
+    df_tmp_une_fact_notascred_csts.createOrReplaceTempView("tmp_une_fact_notascred_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_une_fact_notascred_csts",str(df_tmp_une_fact_notascred_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_une_fact_notascred_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_facturacion_usuario_csts_prycldr")
-    spark.catalog.dropTempView("tmp_nota_credito_usuario_csts_prycldr")
+    spark.catalog.dropTempView("tmp_facturacion_usuario_csts")
+    spark.catalog.dropTempView("tmp_nota_credito_usuario_csts")
     
     vStp01="Paso 9"
     print(lne_dvs())
@@ -192,7 +191,7 @@ try:
     df_tmp_clientes_csts=spark.sql(tmp_clientes_csts(vfecha_antes_ayer)).cache()
     df_tmp_clientes_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_clientes_csts.createOrReplaceTempView("tmp_clientes_csts_prycldr")
+    df_tmp_clientes_csts.createOrReplaceTempView("tmp_clientes_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_clientes_csts",str(df_tmp_clientes_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_clientes_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -204,12 +203,12 @@ try:
     df_tmp_clientes_categoria_csts=spark.sql(tmp_clientes_categoria_csts()).cache()
     df_tmp_clientes_categoria_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_clientes_categoria_csts.createOrReplaceTempView("tmp_clientes_categoria_csts_prycldr")
+    df_tmp_clientes_categoria_csts.createOrReplaceTempView("tmp_clientes_categoria_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_clientes_categoria_csts",str(df_tmp_clientes_categoria_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_clientes_categoria_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_une_fact_notascred_csts_prycldr")
-    spark.catalog.dropTempView("tmp_clientes_csts_prycldr")
+    spark.catalog.dropTempView("tmp_une_fact_notascred_csts")
+    spark.catalog.dropTempView("tmp_clientes_csts")
     
     vStp01="Paso 11"
     print(lne_dvs())
@@ -218,7 +217,7 @@ try:
     df_tmp_imei_cod_articulo_csts=spark.sql(tmp_imei_cod_articulo_csts()).cache()
     df_tmp_imei_cod_articulo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_imei_cod_articulo_csts.createOrReplaceTempView("tmp_imei_cod_articulo_csts_prycldr")
+    df_tmp_imei_cod_articulo_csts.createOrReplaceTempView("tmp_imei_cod_articulo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_imei_cod_articulo_csts",str(df_tmp_imei_cod_articulo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_imei_cod_articulo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -230,11 +229,11 @@ try:
     df_tmp_agrupa_imei_codart_csts=spark.sql(tmp_agrupa_imei_codart_csts()).cache()
     df_tmp_agrupa_imei_codart_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_agrupa_imei_codart_csts.createOrReplaceTempView("tmp_agrupa_imei_codart_csts_prycldr")
+    df_tmp_agrupa_imei_codart_csts.createOrReplaceTempView("tmp_agrupa_imei_codart_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_agrupa_imei_codart_csts",str(df_tmp_agrupa_imei_codart_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_agrupa_imei_codart_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_imei_cod_articulo_csts_prycldr")
+    spark.catalog.dropTempView("tmp_imei_cod_articulo_csts")
     
     vStp01="Paso 13"
     print(lne_dvs())
@@ -243,12 +242,12 @@ try:
     df_tmp_resto_segmento_csts=spark.sql(tmp_resto_segmento_csts()).cache()
     df_tmp_resto_segmento_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_resto_segmento_csts.createOrReplaceTempView("tmp_resto_segmento_csts_prycldr")
+    df_tmp_resto_segmento_csts.createOrReplaceTempView("tmp_resto_segmento_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_resto_segmento_csts",str(df_tmp_resto_segmento_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_resto_segmento_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_clientes_categoria_csts_prycldr")
-    spark.catalog.dropTempView("tmp_agrupa_imei_codart_csts_prycldr")
+    spark.catalog.dropTempView("tmp_clientes_categoria_csts")
+    spark.catalog.dropTempView("tmp_agrupa_imei_codart_csts")
     
     vStp01="Paso 14"
     print(lne_dvs())
@@ -257,12 +256,12 @@ try:
     df_tmp_terminal_equipo_csts=spark.sql(tmp_terminal_equipo_csts()).cache()
     df_tmp_terminal_equipo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_terminal_equipo_csts.createOrReplaceTempView("tmp_terminal_equipo_csts_prycldr")
+    df_tmp_terminal_equipo_csts.createOrReplaceTempView("tmp_terminal_equipo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_terminal_equipo_csts",str(df_tmp_terminal_equipo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_terminal_equipo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_catalogo_terminales_csts_prycldr")
-    spark.catalog.dropTempView("tmp_resto_segmento_csts_prycldr")
+    spark.catalog.dropTempView("tmp_catalogo_terminales_csts")
+    spark.catalog.dropTempView("tmp_resto_segmento_csts")
     
     
     vStp01="Paso 15"
@@ -272,7 +271,7 @@ try:
     df_tmp_usuario_cm_csts=spark.sql(tmp_usuario_cm_csts(vdia_uno_mes_sig_frmt)).cache()
     df_tmp_usuario_cm_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_usuario_cm_csts.createOrReplaceTempView("tmp_usuario_cm_csts_prycldr")
+    df_tmp_usuario_cm_csts.createOrReplaceTempView("tmp_usuario_cm_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_usuario_cm_csts",str(df_tmp_usuario_cm_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_usuario_cm_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -285,12 +284,12 @@ try:
     df_tmp_trmnl_eqp_canal_usu_csts=spark.sql(tmp_trmnl_eqp_canal_usu_csts()).cache()
     df_tmp_trmnl_eqp_canal_usu_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_trmnl_eqp_canal_usu_csts.createOrReplaceTempView("tmp_trmnl_eqp_canal_usu_csts_prycldr")
+    df_tmp_trmnl_eqp_canal_usu_csts.createOrReplaceTempView("tmp_trmnl_eqp_canal_usu_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_trmnl_eqp_canal_usu_csts",str(df_tmp_trmnl_eqp_canal_usu_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_trmnl_eqp_canal_usu_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_orden_venta_csts_prycldr")
-    spark.catalog.dropTempView("tmp_terminal_equipo_csts_prycldr")
+    spark.catalog.dropTempView("tmp_orden_venta_csts")
+    spark.catalog.dropTempView("tmp_terminal_equipo_csts")
     
     vStp01="Paso 17"
     print(lne_dvs())
@@ -299,11 +298,11 @@ try:
     df_tmp_trmneqp_fuente_canal_csts=spark.sql(tmp_trmneqp_fuente_canal_csts()).cache()
     df_tmp_trmneqp_fuente_canal_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_trmneqp_fuente_canal_csts.createOrReplaceTempView("tmp_trmneqp_fuente_canal_csts_prycldr")
+    df_tmp_trmneqp_fuente_canal_csts.createOrReplaceTempView("tmp_trmneqp_fuente_canal_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_trmneqp_fuente_canal_csts",str(df_tmp_trmneqp_fuente_canal_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_trmneqp_fuente_canal_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_trmnl_eqp_canal_usu_csts_prycldr")
+    spark.catalog.dropTempView("tmp_trmnl_eqp_canal_usu_csts")
     
     vStp01="Paso 18"
     print(lne_dvs())
@@ -312,11 +311,11 @@ try:
     df_tmp_trmneqp_cruza_ruc_csts=spark.sql(tmp_trmneqp_cruza_ruc_csts()).cache()
     df_tmp_trmneqp_cruza_ruc_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_trmneqp_cruza_ruc_csts.createOrReplaceTempView("tmp_trmneqp_cruza_ruc_csts_prycldr")
+    df_tmp_trmneqp_cruza_ruc_csts.createOrReplaceTempView("tmp_trmneqp_cruza_ruc_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_trmneqp_cruza_ruc_csts",str(df_tmp_trmneqp_cruza_ruc_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_trmneqp_cruza_ruc_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_trmneqp_fuente_canal_csts_prycldr")
+    spark.catalog.dropTempView("tmp_trmneqp_fuente_canal_csts")
     
     vStp01="Paso 19"
     print(lne_dvs())
@@ -325,11 +324,11 @@ try:
     df_tmp_trmneqp_update_canal_csts=spark.sql(tmp_trmneqp_update_canal_csts()).cache()
     df_tmp_trmneqp_update_canal_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_trmneqp_update_canal_csts.createOrReplaceTempView("tmp_trmneqp_update_canal_csts_prycldr")
+    df_tmp_trmneqp_update_canal_csts.createOrReplaceTempView("tmp_trmneqp_update_canal_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_trmneqp_update_canal_csts",str(df_tmp_trmneqp_update_canal_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_trmneqp_update_canal_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_trmneqp_cruza_ruc_csts_prycldr")
+    spark.catalog.dropTempView("tmp_trmneqp_cruza_ruc_csts")
     
     vStp01="Paso 20"
     print(lne_dvs())
@@ -338,11 +337,11 @@ try:
     df_tmp_trmneqp_full_name_csts=spark.sql(tmp_trmneqp_full_name_csts()).cache()
     df_tmp_trmneqp_full_name_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_trmneqp_full_name_csts.createOrReplaceTempView("tmp_trmneqp_full_name_csts_prycldr")
+    df_tmp_trmneqp_full_name_csts.createOrReplaceTempView("tmp_trmneqp_full_name_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_trmneqp_full_name_csts",str(df_tmp_trmneqp_full_name_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_trmneqp_full_name_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_trmneqp_update_canal_csts_prycldr")
+    spark.catalog.dropTempView("tmp_trmneqp_update_canal_csts")
     
     vStp01="Paso 21"
     print(lne_dvs())
@@ -351,7 +350,7 @@ try:
     df_tmp_mov_parque_completa_csts=spark.sql(tmp_mov_parque_completa_csts(vfecha_fin)).cache()
     df_tmp_mov_parque_completa_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mov_parque_completa_csts.createOrReplaceTempView("tmp_mov_parque_completa_csts_prycldr")
+    df_tmp_mov_parque_completa_csts.createOrReplaceTempView("tmp_mov_parque_completa_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mov_parque_completa_csts",str(df_tmp_mov_parque_completa_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mov_parque_completa_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -363,7 +362,7 @@ try:
     df_tmp_mov_parque_completa_ant_csts=spark.sql(tmp_mov_parque_completa_ant_csts(vfecha_inicio)).cache()
     df_tmp_mov_parque_completa_ant_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mov_parque_completa_ant_csts.createOrReplaceTempView("tmp_mov_parque_completa_ant_csts_prycldr")
+    df_tmp_mov_parque_completa_ant_csts.createOrReplaceTempView("tmp_mov_parque_completa_ant_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mov_parque_completa_ant_csts",str(df_tmp_mov_parque_completa_ant_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mov_parque_completa_ant_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -375,7 +374,7 @@ try:
     df_tmp_mov_parque_sin_dup_csts=spark.sql(tmp_mov_parque_sin_dup_csts()).cache()
     df_tmp_mov_parque_sin_dup_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mov_parque_sin_dup_csts.createOrReplaceTempView("tmp_mov_parque_sin_dup_csts_prycldr")
+    df_tmp_mov_parque_sin_dup_csts.createOrReplaceTempView("tmp_mov_parque_sin_dup_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mov_parque_sin_dup_csts",str(df_tmp_mov_parque_sin_dup_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mov_parque_sin_dup_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -387,11 +386,11 @@ try:
     df_tmp_mov_parque_ant_sin_dup_csts=spark.sql(tmp_mov_parque_ant_sin_dup_csts()).cache()
     df_tmp_mov_parque_ant_sin_dup_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mov_parque_ant_sin_dup_csts.createOrReplaceTempView("tmp_mov_parque_ant_sin_dup_csts_prycldr")
+    df_tmp_mov_parque_ant_sin_dup_csts.createOrReplaceTempView("tmp_mov_parque_ant_sin_dup_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mov_parque_ant_sin_dup_csts",str(df_tmp_mov_parque_ant_sin_dup_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mov_parque_ant_sin_dup_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_mov_parque_completa_ant_csts_prycldr")
+    spark.catalog.dropTempView("tmp_mov_parque_completa_ant_csts")
     
     vStp01="Paso 25"
     print(lne_dvs())
@@ -400,11 +399,11 @@ try:
     df_tmp_movparque_sin_dup_csts=spark.sql(tmp_movparque_sin_dup_csts()).cache()
     df_tmp_movparque_sin_dup_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_movparque_sin_dup_csts.createOrReplaceTempView("tmp_movparque_sin_dup_csts_prycldr")
+    df_tmp_movparque_sin_dup_csts.createOrReplaceTempView("tmp_movparque_sin_dup_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_movparque_sin_dup_csts",str(df_tmp_movparque_sin_dup_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_movparque_sin_dup_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_mov_parque_completa_csts_prycldr")
+    spark.catalog.dropTempView("tmp_mov_parque_completa_csts")
     
     #aqui lo crea pero no lo usa
     vStp01="Paso 26"
@@ -414,7 +413,7 @@ try:
     df_tmp_movparque_seg_csts=spark.sql(tmp_movparque_seg_csts()).cache()
     df_tmp_movparque_seg_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_movparque_seg_csts.createOrReplaceTempView("tmp_movparque_seg_csts_prycldr")
+    df_tmp_movparque_seg_csts.createOrReplaceTempView("tmp_movparque_seg_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_movparque_seg_csts",str(df_tmp_movparque_seg_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_movparque_seg_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -426,11 +425,11 @@ try:
     df_tmp_universo_ppal_mov_csts=spark.sql(tmp_universo_ppal_mov_csts()).cache()
     df_tmp_universo_ppal_mov_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_universo_ppal_mov_csts.createOrReplaceTempView("tmp_universo_ppal_mov_csts_prycldr")
+    df_tmp_universo_ppal_mov_csts.createOrReplaceTempView("tmp_universo_ppal_mov_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_universo_ppal_mov_csts",str(df_tmp_universo_ppal_mov_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_universo_ppal_mov_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_trmneqp_full_name_csts_prycldr")
+    spark.catalog.dropTempView("tmp_trmneqp_full_name_csts")
     
     vStp01="Paso 28"
     print(lne_dvs())
@@ -439,11 +438,11 @@ try:
     df_tmp_mov_parque_antiguo_csts=spark.sql(tmp_mov_parque_antiguo_csts(vdia_uno_mes_act_frmt,vdia_uno_mes_ant_frmt)).cache()
     df_tmp_mov_parque_antiguo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mov_parque_antiguo_csts.createOrReplaceTempView("tmp_mov_parque_antiguo_csts_prycldr")
+    df_tmp_mov_parque_antiguo_csts.createOrReplaceTempView("tmp_mov_parque_antiguo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mov_parque_antiguo_csts",str(df_tmp_mov_parque_antiguo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mov_parque_antiguo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_mov_parque_ant_sin_dup_csts_prycldr")
+    spark.catalog.dropTempView("tmp_mov_parque_ant_sin_dup_csts")
     
     vStp01="Paso 29"
     print(lne_dvs())
@@ -452,7 +451,7 @@ try:
     df_tmp_mov_parque_nuevo_csts=spark.sql(tmp_mov_parque_nuevo_csts(vdia_uno_mes_act_frmt)).cache()
     df_tmp_mov_parque_nuevo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mov_parque_nuevo_csts.createOrReplaceTempView("tmp_mov_parque_nuevo_csts_prycldr")
+    df_tmp_mov_parque_nuevo_csts.createOrReplaceTempView("tmp_mov_parque_nuevo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mov_parque_nuevo_csts",str(df_tmp_mov_parque_nuevo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mov_parque_nuevo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -464,7 +463,7 @@ try:
     df_tmp_movimientos_bi_csts=spark.sql(tmp_movimientos_bi_csts(vfecha_fin)).cache()
     df_tmp_movimientos_bi_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_movimientos_bi_csts.createOrReplaceTempView("tmp_movimientos_bi_csts_prycldr")
+    df_tmp_movimientos_bi_csts.createOrReplaceTempView("tmp_movimientos_bi_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_movimientos_bi_csts",str(df_tmp_movimientos_bi_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_movimientos_bi_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -476,11 +475,11 @@ try:
     df_tmp_trmneqp_movimiento_csts=spark.sql(tmp_trmneqp_movimiento_csts()).cache()
     df_tmp_trmneqp_movimiento_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_trmneqp_movimiento_csts.createOrReplaceTempView("tmp_trmneqp_movimiento_csts_prycldr")
+    df_tmp_trmneqp_movimiento_csts.createOrReplaceTempView("tmp_trmneqp_movimiento_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_trmneqp_movimiento_csts",str(df_tmp_trmneqp_movimiento_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_trmneqp_movimiento_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_universo_ppal_mov_csts_prycldr")
+    spark.catalog.dropTempView("tmp_universo_ppal_mov_csts")
     
     
     vStp01="Paso 32"
@@ -490,7 +489,7 @@ try:
     df_tmp_cuentas_un_min_csts=spark.sql(tmp_cuentas_un_min_csts()).cache()
     df_tmp_cuentas_un_min_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_cuentas_un_min_csts.createOrReplaceTempView("tmp_cuentas_un_min_csts_prycldr")
+    df_tmp_cuentas_un_min_csts.createOrReplaceTempView("tmp_cuentas_un_min_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_cuentas_un_min_csts",str(df_tmp_cuentas_un_min_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_cuentas_un_min_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -502,11 +501,11 @@ try:
     df_tmp_mines1_cuenta_un_min_csts=spark.sql(tmp_mines1_cuenta_un_min_csts()).cache()
     df_tmp_mines1_cuenta_un_min_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mines1_cuenta_un_min_csts.createOrReplaceTempView("tmp_mines1_cuenta_un_min_csts_prycldr")
+    df_tmp_mines1_cuenta_un_min_csts.createOrReplaceTempView("tmp_mines1_cuenta_un_min_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mines1_cuenta_un_min_csts",str(df_tmp_mines1_cuenta_un_min_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mines1_cuenta_un_min_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_cuentas_un_min_csts_prycldr")
+    spark.catalog.dropTempView("tmp_cuentas_un_min_csts")
     
     vStp01="Paso 34"
     print(lne_dvs())
@@ -515,13 +514,13 @@ try:
     df_tmp_mov_mines_bi_csts=spark.sql(tmp_mov_mines_bi_csts()).cache()
     df_tmp_mov_mines_bi_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mov_mines_bi_csts.createOrReplaceTempView("tmp_mov_mines_bi_csts_prycldr")
+    df_tmp_mov_mines_bi_csts.createOrReplaceTempView("tmp_mov_mines_bi_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mov_mines_bi_csts",str(df_tmp_mov_mines_bi_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mov_mines_bi_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_trmneqp_movimiento_csts_prycldr")
-    spark.catalog.dropTempView("tmp_mines1_cuenta_un_min_csts_prycldr")
-    spark.catalog.dropTempView("tmp_movimientos_bi_csts_prycldr")
+    spark.catalog.dropTempView("tmp_trmneqp_movimiento_csts")
+    spark.catalog.dropTempView("tmp_mines1_cuenta_un_min_csts")
+    spark.catalog.dropTempView("tmp_movimientos_bi_csts")
     
     vStp01="Paso 35"
     print(lne_dvs())
@@ -530,12 +529,12 @@ try:
     df_tmp_fact_mov_pre_csts=spark.sql(tmp_fact_mov_pre_csts()).cache()
     df_tmp_fact_mov_pre_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_mov_pre_csts.createOrReplaceTempView("tmp_fact_mov_pre_csts_prycldr")
+    df_tmp_fact_mov_pre_csts.createOrReplaceTempView("tmp_fact_mov_pre_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_mov_pre_csts",str(df_tmp_fact_mov_pre_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_mov_pre_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_mov_mines_bi_csts_prycldr")
-    spark.catalog.dropTempView("tmp_mov_parque_nuevo_csts_prycldr")
+    spark.catalog.dropTempView("tmp_mov_mines_bi_csts")
+    spark.catalog.dropTempView("tmp_mov_parque_nuevo_csts")
     
     vStp01="Paso 36"
     print(lne_dvs())
@@ -544,7 +543,7 @@ try:
     df_tmp_cuentas_sin_min_csts=spark.sql(tmp_cuentas_sin_min_csts()).cache()
     df_tmp_cuentas_sin_min_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_cuentas_sin_min_csts.createOrReplaceTempView("tmp_cuentas_sin_min_csts_prycldr")
+    df_tmp_cuentas_sin_min_csts.createOrReplaceTempView("tmp_cuentas_sin_min_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_cuentas_sin_min_csts",str(df_tmp_cuentas_sin_min_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_cuentas_sin_min_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -556,12 +555,12 @@ try:
     df_tmp_cuentas_completa_csts=spark.sql(tmp_cuentas_completa_csts()).cache()
     df_tmp_cuentas_completa_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_cuentas_completa_csts.createOrReplaceTempView("tmp_cuentas_completa_csts_prycldr")
+    df_tmp_cuentas_completa_csts.createOrReplaceTempView("tmp_cuentas_completa_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_cuentas_completa_csts",str(df_tmp_cuentas_completa_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_cuentas_completa_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_cuentas_sin_min_csts_prycldr")
-    spark.catalog.dropTempView("tmp_movparque_sin_dup_csts_prycldr")
+    spark.catalog.dropTempView("tmp_cuentas_sin_min_csts")
+    spark.catalog.dropTempView("tmp_movparque_sin_dup_csts")
     
     vStp01="Paso 38"
     print(lne_dvs())
@@ -570,12 +569,12 @@ try:
     df_tmp_fact_ppal_completa_csts=spark.sql(tmp_fact_ppal_completa_csts()).cache()
     df_tmp_fact_ppal_completa_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_ppal_completa_csts.createOrReplaceTempView("tmp_fact_ppal_completa_csts_prycldr")
+    df_tmp_fact_ppal_completa_csts.createOrReplaceTempView("tmp_fact_ppal_completa_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_ppal_completa_csts",str(df_tmp_fact_ppal_completa_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_ppal_completa_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_mov_pre_csts_prycldr")
-    spark.catalog.dropTempView("tmp_cuentas_completa_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_mov_pre_csts")
+    spark.catalog.dropTempView("tmp_cuentas_completa_csts")
     
     vStp01="Paso 39"
     print(lne_dvs())
@@ -584,7 +583,7 @@ try:
     df_tmp_cuenta_segmento_csts=spark.sql(tmp_cuenta_segmento_csts()).cache()
     df_tmp_cuenta_segmento_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_cuenta_segmento_csts.createOrReplaceTempView("tmp_cuenta_segmento_csts_prycldr")
+    df_tmp_cuenta_segmento_csts.createOrReplaceTempView("tmp_cuenta_segmento_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_cuenta_segmento_csts",str(df_tmp_cuenta_segmento_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_cuenta_segmento_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -596,7 +595,7 @@ try:
     df_tmp_cuenta_seg_masivo_csts=spark.sql(tmp_cuenta_seg_masivo_csts()).cache()
     df_tmp_cuenta_seg_masivo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_cuenta_seg_masivo_csts.createOrReplaceTempView("tmp_cuenta_seg_masivo_csts_prycldr")
+    df_tmp_cuenta_seg_masivo_csts.createOrReplaceTempView("tmp_cuenta_seg_masivo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_cuenta_seg_masivo_csts",str(df_tmp_cuenta_seg_masivo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_cuenta_seg_masivo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -608,12 +607,12 @@ try:
     df_tmp_universo_fact_mov_csts=spark.sql(tmp_universo_fact_mov_csts()).cache()
     df_tmp_universo_fact_mov_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_universo_fact_mov_csts.createOrReplaceTempView("tmp_universo_fact_mov_csts_prycldr")
+    df_tmp_universo_fact_mov_csts.createOrReplaceTempView("tmp_universo_fact_mov_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_universo_fact_mov_csts",str(df_tmp_universo_fact_mov_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_universo_fact_mov_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_ppal_completa_csts_prycldr")
-    spark.catalog.dropTempView("tmp_cuenta_segmento_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_ppal_completa_csts")
+    spark.catalog.dropTempView("tmp_cuenta_segmento_csts")
     
     vStp01="Paso 42"
     print(lne_dvs())
@@ -622,12 +621,12 @@ try:
     df_tmp_universo_fact_mov2_csts=spark.sql(tmp_universo_fact_mov2_csts()).cache()
     df_tmp_universo_fact_mov2_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_universo_fact_mov2_csts.createOrReplaceTempView("tmp_universo_fact_mov2_csts_prycldr")
+    df_tmp_universo_fact_mov2_csts.createOrReplaceTempView("tmp_universo_fact_mov2_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_universo_fact_mov2_csts",str(df_tmp_universo_fact_mov2_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_universo_fact_mov2_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_universo_fact_mov_csts_prycldr")
-    spark.catalog.dropTempView("tmp_cuenta_seg_masivo_csts_prycldr")
+    spark.catalog.dropTempView("tmp_universo_fact_mov_csts")
+    spark.catalog.dropTempView("tmp_cuenta_seg_masivo_csts")
     
     vStp01="Paso 43"
     print(lne_dvs())
@@ -636,7 +635,7 @@ try:
     df_tmp_perimetros_unicos_csts=spark.sql(tmp_perimetros_unicos_csts(vsolo_anio,vsolo_mes)).cache()
     df_tmp_perimetros_unicos_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_perimetros_unicos_csts.createOrReplaceTempView("tmp_perimetros_unicos_csts_prycldr")
+    df_tmp_perimetros_unicos_csts.createOrReplaceTempView("tmp_perimetros_unicos_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_perimetros_unicos_csts",str(df_tmp_perimetros_unicos_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_perimetros_unicos_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -648,11 +647,11 @@ try:
     df_tmp_fact_mov_perimetro_csts=spark.sql(tmp_fact_mov_perimetro_csts()).cache()
     df_tmp_fact_mov_perimetro_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_mov_perimetro_csts.createOrReplaceTempView("tmp_fact_mov_perimetro_csts_prycldr")
+    df_tmp_fact_mov_perimetro_csts.createOrReplaceTempView("tmp_fact_mov_perimetro_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_mov_perimetro_csts",str(df_tmp_fact_mov_perimetro_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_mov_perimetro_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_universo_fact_mov2_csts_prycldr")
+    spark.catalog.dropTempView("tmp_universo_fact_mov2_csts")
     
     
     vStp01="Paso 45"
@@ -662,11 +661,11 @@ try:
     df_tmp_fact_mov_update_csts=spark.sql(tmp_fact_mov_update_csts()).cache()
     df_tmp_fact_mov_update_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_mov_update_csts.createOrReplaceTempView("tmp_fact_mov_update_csts_prycldr")
+    df_tmp_fact_mov_update_csts.createOrReplaceTempView("tmp_fact_mov_update_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_mov_update_csts",str(df_tmp_fact_mov_update_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_mov_update_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_mov_perimetro_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_mov_perimetro_csts")
     
     vStp01="Paso 46"
     print(lne_dvs())
@@ -675,13 +674,13 @@ try:
     df_tmp_mines_planes_csts=spark.sql(tmp_mines_planes_csts()).cache()
     df_tmp_mines_planes_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_mines_planes_csts.createOrReplaceTempView("tmp_mines_planes_csts_prycldr")
+    df_tmp_mines_planes_csts.createOrReplaceTempView("tmp_mines_planes_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_mines_planes_csts",str(df_tmp_mines_planes_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_mines_planes_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_mov_parque_sin_dup_csts_prycldr")
+    spark.catalog.dropTempView("tmp_mov_parque_sin_dup_csts")
     
-    VtablaTmpFactMov="db_desarrollo2021.tmp_fact_mov_final_csts_prycldr"
+    VtablaTmpFactMov="db_desarrollo2021.tmp_fact_mov_final_csts"
     vStp01="Paso 47"
     print(lne_dvs())
     print(etq_info("Paso [47]: Ejecucion de funcion [tmp_fact_mov_final_csts] - INFORMACION DEL UNIVERSO PRINCIPAL CON EL MOVIMIENTO FINAL Y ACTUALIZA ALGUNOS CAMPOS"))
@@ -694,9 +693,9 @@ try:
     print(etq_info(msg_t_total_registros_hive("df_tmp_fact_mov_final_csts",str(df_tmp_fact_mov_final_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_mov_final_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_mov_update_csts_prycldr")
-    spark.catalog.dropTempView("tmp_mines_planes_csts_prycldr")
-    spark.catalog.dropTempView("tmp_mov_parque_antiguo_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_mov_update_csts")
+    spark.catalog.dropTempView("tmp_mines_planes_csts")
+    spark.catalog.dropTempView("tmp_mov_parque_antiguo_csts")
     
     vStp01="Paso 48"
     print(lne_dvs())
@@ -705,11 +704,11 @@ try:
     df_tmp_fact_mov_final_upd_csts=spark.sql(tmp_fact_mov_final_upd_csts(VtablaTmpFactMov)).cache()
     df_tmp_fact_mov_final_upd_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_mov_final_upd_csts.createOrReplaceTempView("tmp_fact_mov_final_upd_csts_prycldr")
+    df_tmp_fact_mov_final_upd_csts.createOrReplaceTempView("tmp_fact_mov_final_upd_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_mov_final_upd_csts",str(df_tmp_fact_mov_final_upd_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_mov_final_upd_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_mov_final_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_mov_final_csts")
     
     vStp01="Paso 49"
     print(lne_dvs())
@@ -718,11 +717,11 @@ try:
     df_tmp_fact_mov_final_upd1_csts=spark.sql(tmp_fact_mov_final_upd1_csts()).cache()
     df_tmp_fact_mov_final_upd1_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_mov_final_upd1_csts.createOrReplaceTempView("tmp_fact_mov_final_upd1_csts_prycldr")
+    df_tmp_fact_mov_final_upd1_csts.createOrReplaceTempView("tmp_fact_mov_final_upd1_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_mov_final_upd1_csts",str(df_tmp_fact_mov_final_upd1_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_mov_final_upd1_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_mov_final_upd_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_mov_final_upd_csts")
     
     vStp01="Paso 50"
     print(lne_dvs())
@@ -731,12 +730,12 @@ try:
     df_tmp_fact_mov_final_costo_csts=spark.sql(tmp_fact_mov_final_costo_csts()).cache()
     df_tmp_fact_mov_final_costo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_mov_final_costo_csts.createOrReplaceTempView("tmp_fact_mov_final_costo_csts_prycldr")
+    df_tmp_fact_mov_final_costo_csts.createOrReplaceTempView("tmp_fact_mov_final_costo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_mov_final_costo_csts",str(df_tmp_fact_mov_final_costo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_mov_final_costo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_imei_articulo_csts_prycldr")
-    spark.catalog.dropTempView("tmp_fact_mov_final_upd1_csts_prycldr")
+    spark.catalog.dropTempView("tmp_imei_articulo_csts")
+    spark.catalog.dropTempView("tmp_fact_mov_final_upd1_csts")
     
     vStp01="Paso 51"
     print(lne_dvs())
@@ -745,7 +744,7 @@ try:
     df_tmp_costo_x_modelo_csts=spark.sql(tmp_costo_x_modelo_csts()).cache()
     df_tmp_costo_x_modelo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_x_modelo_csts.createOrReplaceTempView("tmp_costo_x_modelo_csts_prycldr")
+    df_tmp_costo_x_modelo_csts.createOrReplaceTempView("tmp_costo_x_modelo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_x_modelo_csts",str(df_tmp_costo_x_modelo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_x_modelo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -757,12 +756,12 @@ try:
     df_tmp_costo_sin_imei_csts=spark.sql(tmp_costo_sin_imei_csts()).cache()
     df_tmp_costo_sin_imei_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_sin_imei_csts.createOrReplaceTempView("tmp_costo_sin_imei_csts_prycldr")
+    df_tmp_costo_sin_imei_csts.createOrReplaceTempView("tmp_costo_sin_imei_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_sin_imei_csts",str(df_tmp_costo_sin_imei_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_sin_imei_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_mov_final_costo_csts_prycldr")
-    spark.catalog.dropTempView("tmp_costo_x_modelo_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_mov_final_costo_csts")
+    spark.catalog.dropTempView("tmp_costo_x_modelo_csts")
     
     vStp01="Paso 53"
     print(lne_dvs())
@@ -771,12 +770,12 @@ try:
     df_tmp_costo_rep_anterior_csts=spark.sql(tmp_costo_rep_anterior_csts(vfecha_meses_atras1,vfecha_inicio)).cache()
     df_tmp_costo_rep_anterior_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_rep_anterior_csts.createOrReplaceTempView("tmp_costo_rep_anterior_csts_prycldr")
+    df_tmp_costo_rep_anterior_csts.createOrReplaceTempView("tmp_costo_rep_anterior_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_rep_anterior_csts",str(df_tmp_costo_rep_anterior_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_rep_anterior_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
     
-    VtablaTmpCostFactFin="db_desarrollo2021.tmp_costo_fac_final_csts_prycldr"
+    VtablaTmpCostFactFin="db_desarrollo2021.tmp_costo_fac_final_csts"
     vStp01="Paso 54"
     print(lne_dvs())
     print(etq_info("Paso [54]: Ejecucion de funcion [tmp_costo_fac_final_csts] - INFORMACION DE COSTO FINAL"))
@@ -789,7 +788,7 @@ try:
     print(etq_info(msg_t_total_registros_hive("df_tmp_costo_fac_final_csts",str(df_tmp_costo_fac_final_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fac_final_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_sin_imei_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_sin_imei_csts")
     
     vStp01="Paso 55"
     print(lne_dvs())
@@ -798,7 +797,7 @@ try:
     df_tmp_cuota_monto_csts=spark.sql(tmp_cuota_monto_csts(vfecha_inicio,vfecha_fin)).cache()
     df_tmp_cuota_monto_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_cuota_monto_csts.createOrReplaceTempView("tmp_cuota_monto_csts_prycldr")
+    df_tmp_cuota_monto_csts.createOrReplaceTempView("tmp_cuota_monto_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_cuota_monto_csts",str(df_tmp_cuota_monto_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_cuota_monto_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -810,7 +809,7 @@ try:
     df_tmp_cuotas_financiadas_csts=spark.sql(tmp_cuotas_financiadas_csts()).cache()
     df_tmp_cuotas_financiadas_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_cuotas_financiadas_csts.createOrReplaceTempView("tmp_cuotas_financiadas_csts_prycldr")
+    df_tmp_cuotas_financiadas_csts.createOrReplaceTempView("tmp_cuotas_financiadas_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_cuotas_financiadas_csts",str(df_tmp_cuotas_financiadas_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_cuotas_financiadas_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -822,7 +821,7 @@ try:
     df_tmp_concepto_articulo_csts=spark.sql(tmp_concepto_articulo_csts(VtablaTmpCostFactFin)).cache()
     df_tmp_concepto_articulo_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_concepto_articulo_csts.createOrReplaceTempView("tmp_concepto_articulo_csts_prycldr")
+    df_tmp_concepto_articulo_csts.createOrReplaceTempView("tmp_concepto_articulo_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_concepto_articulo_csts",str(df_tmp_concepto_articulo_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_concepto_articulo_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -834,7 +833,7 @@ try:
     df_tmp_billsummary_billseq_csts=spark.sql(tmp_billsummary_billseq_csts(vfecha_inicio,vfecha_fin)).cache()
     df_tmp_billsummary_billseq_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_billsummary_billseq_csts.createOrReplaceTempView("tmp_billsummary_billseq_csts_prycldr")
+    df_tmp_billsummary_billseq_csts.createOrReplaceTempView("tmp_billsummary_billseq_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_billsummary_billseq_csts",str(df_tmp_billsummary_billseq_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_billsummary_billseq_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -846,14 +845,14 @@ try:
     df_tmp_fact_final_csts=spark.sql(tmp_fact_final_csts(VtablaTmpCostFactFin)).cache()
     df_tmp_fact_final_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_final_csts.createOrReplaceTempView("tmp_fact_final_csts_prycldr")
+    df_tmp_fact_final_csts.createOrReplaceTempView("tmp_fact_final_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_final_csts",str(df_tmp_fact_final_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_billsummary_billseq_csts_prycldr")
-    spark.catalog.dropTempView("tmp_cuotas_financiadas_csts_prycldr")
-    spark.catalog.dropTempView("tmp_costo_rep_anterior_csts_prycldr")
-    spark.catalog.dropTempView("tmp_costo_sin_imei_csts_prycldr")
+    spark.catalog.dropTempView("tmp_billsummary_billseq_csts")
+    spark.catalog.dropTempView("tmp_cuotas_financiadas_csts")
+    spark.catalog.dropTempView("tmp_costo_rep_anterior_csts")
+    spark.catalog.dropTempView("tmp_costo_sin_imei_csts")
     
     vStp01="Paso 60"
     print(lne_dvs())
@@ -862,11 +861,11 @@ try:
     df_tmp_fact_final_tipcanal_csts=spark.sql(tmp_fact_final_tipcanal_csts()).cache()
     df_tmp_fact_final_tipcanal_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_final_tipcanal_csts.createOrReplaceTempView("tmp_fact_final_tipcanal_csts_prycldr")
+    df_tmp_fact_final_tipcanal_csts.createOrReplaceTempView("tmp_fact_final_tipcanal_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_final_tipcanal_csts",str(df_tmp_fact_final_tipcanal_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_tipcanal_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_final_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_final_csts")
     
     vStp01="Paso 61"
     print(lne_dvs())
@@ -875,11 +874,11 @@ try:
     df_tmp_campos_para_nc_csts=spark.sql(tmp_campos_para_nc_csts(vfecha_meses_atras2,vfecha_fin)).cache()
     df_tmp_campos_para_nc_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_campos_para_nc_csts.createOrReplaceTempView("tmp_campos_para_nc_csts_prycldr")
+    df_tmp_campos_para_nc_csts.createOrReplaceTempView("tmp_campos_para_nc_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_campos_para_nc_csts",str(df_tmp_campos_para_nc_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_campos_para_nc_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_final_tipcanal_csts_prycldr")
+    #
     
     vStp01="Paso 62"
     print(lne_dvs())
@@ -888,11 +887,12 @@ try:
     df_tmp_costos_fact_final_v2_csts=spark.sql(tmp_costos_fact_final_v2_csts()).cache()
     df_tmp_costos_fact_final_v2_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costos_fact_final_v2_csts.createOrReplaceTempView("tmp_costos_fact_final_v2_csts_prycldr")
+    df_tmp_costos_fact_final_v2_csts.createOrReplaceTempView("tmp_costos_fact_final_v2_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costos_fact_final_v2_csts",str(df_tmp_costos_fact_final_v2_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costos_fact_final_v2_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_campos_para_nc_csts_prycldr")
+    spark.catalog.dropTempView("tmp_campos_para_nc_csts")
+    spark.catalog.dropTempView("tmp_fact_final_tipcanal_csts")
     
     vStp01="Paso 63"
     print(lne_dvs())
@@ -901,11 +901,11 @@ try:
     df_tmp_fact_final_update1_csts=spark.sql(tmp_fact_final_update1_csts(vval_usuario4)).cache()
     df_tmp_fact_final_update1_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_final_update1_csts.createOrReplaceTempView("tmp_fact_final_update1_csts_prycldr")
+    df_tmp_fact_final_update1_csts.createOrReplaceTempView("tmp_fact_final_update1_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_final_update1_csts",str(df_tmp_fact_final_update1_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_update1_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costos_fact_final_v2_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costos_fact_final_v2_csts")
     
     vStp01="Paso 64"
     print(lne_dvs())
@@ -914,11 +914,11 @@ try:
     df_tmp_fact_final_update2_csts=spark.sql(tmp_fact_final_update2_csts()).cache()
     df_tmp_fact_final_update2_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_final_update2_csts.createOrReplaceTempView("tmp_fact_final_update2_csts_prycldr")
+    df_tmp_fact_final_update2_csts.createOrReplaceTempView("tmp_fact_final_update2_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_final_update2_csts",str(df_tmp_fact_final_update2_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_update2_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_final_update1_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_final_update1_csts")
     
     vStp01="Paso 65"
     print(lne_dvs())
@@ -927,11 +927,11 @@ try:
     df_tmp_fact_final_update3_csts=spark.sql(tmp_fact_final_update3_csts()).cache()
     df_tmp_fact_final_update3_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_final_update3_csts.createOrReplaceTempView("tmp_fact_final_update3_csts_prycldr")
+    df_tmp_fact_final_update3_csts.createOrReplaceTempView("tmp_fact_final_update3_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_final_update3_csts",str(df_tmp_fact_final_update3_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_update3_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_final_update2_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_final_update2_csts")
     
     vStp01="Paso 66"
     print(lne_dvs())
@@ -940,11 +940,11 @@ try:
     df_tmp_fact_final_update4_csts=spark.sql(tmp_fact_final_update4_csts()).cache()
     df_tmp_fact_final_update4_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_final_update4_csts.createOrReplaceTempView("tmp_fact_final_update4_csts_prycldr")
+    df_tmp_fact_final_update4_csts.createOrReplaceTempView("tmp_fact_final_update4_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_final_update4_csts",str(df_tmp_fact_final_update4_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_update4_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_final_update3_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_final_update3_csts")
     
     vStp01="Paso 67"
     print(lne_dvs())
@@ -953,11 +953,11 @@ try:
     df_tmp_fact_final_update5_csts=spark.sql(tmp_fact_final_update5_csts()).cache()
     df_tmp_fact_final_update5_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_final_update5_csts.createOrReplaceTempView("tmp_fact_final_update5_csts_prycldr")
+    df_tmp_fact_final_update5_csts.createOrReplaceTempView("tmp_fact_final_update5_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_final_update5_csts",str(df_tmp_fact_final_update5_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_update5_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_final_update4_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_final_update4_csts")
     
     vStp01="Paso 68"
     print(lne_dvs())
@@ -966,13 +966,13 @@ try:
     df_tmp_fact_final_update6_csts=spark.sql(tmp_fact_final_update6_csts()).cache()
     df_tmp_fact_final_update6_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_final_update6_csts.createOrReplaceTempView("tmp_fact_final_update6_csts_prycldr")
+    df_tmp_fact_final_update6_csts.createOrReplaceTempView("tmp_fact_final_update6_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_final_update6_csts",str(df_tmp_fact_final_update6_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_update6_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_final_update5_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_final_update5_csts")
     
-    vTablaCostFinV2="db_desarrollo2021.tmp_costo_fact_final_v2_1_csts_prycldr"
+    vTablaCostFinV2="db_desarrollo2021.tmp_costo_fact_final_v2_1_csts"
     vStp01="Paso 69"
     print(lne_dvs())
     print(etq_info("Paso [69]: Ejecucion de funcion [tmp_costo_fact_final_v2_1_csts] - UNIVERSO PRINCIPAL DESCARTANDO ALGUNOS REGISTROS"))
@@ -980,13 +980,13 @@ try:
     df_tmp_costo_fact_final_v2_1_csts=spark.sql(tmp_costo_fact_final_v2_1_csts(vval_usuario_final)).cache()
     df_tmp_costo_fact_final_v2_1_csts.printSchema()
     ts_step_tbl = datetime.now()
-    #df_tmp_costo_fact_final_v2_1_csts.createOrReplaceTempView("tmp_costo_fact_final_v2_1_csts_prycldr")
+    #df_tmp_costo_fact_final_v2_1_csts.createOrReplaceTempView("tmp_costo_fact_final_v2_1_csts")
     df_tmp_costo_fact_final_v2_1_csts.write.mode("overwrite").format("orc").saveAsTable(vTablaCostFinV2)
     print(etq_info("Insercion Ok de la tabla temporal: "+str(vTablaCostFinV2))) 
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_final_v2_1_csts",str(df_tmp_costo_fact_final_v2_1_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_final_v2_1_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_fact_final_update6_csts_prycldr")
+    spark.catalog.dropTempView("tmp_fact_final_update6_csts")
     
     vStp01="Paso 70"
     print(lne_dvs())
@@ -995,11 +995,11 @@ try:
     df_tmp_costo_fact_final_v3_csts=spark.sql(tmp_costo_fact_final_v3_csts(vTablaCostFinV2)).cache()
     df_tmp_costo_fact_final_v3_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_final_v3_csts.createOrReplaceTempView("tmp_costo_fact_final_v3_csts_prycldr")
+    df_tmp_costo_fact_final_v3_csts.createOrReplaceTempView("tmp_costo_fact_final_v3_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_final_v3_csts",str(df_tmp_costo_fact_final_v3_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_final_v3_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_final_v2_1_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_final_v2_1_csts")
     
     vStp01="Paso [71]"
     print(lne_dvs())
@@ -1008,13 +1008,13 @@ try:
     df_tmp_costo_fact_final_v4_csts=spark.sql(tmp_costo_fact_final_v4_csts(vval_usuario4)).cache()
     df_tmp_costo_fact_final_v4_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_final_v4_csts.createOrReplaceTempView("tmp_costo_fact_final_v4_csts_prycldr")
+    df_tmp_costo_fact_final_v4_csts.createOrReplaceTempView("tmp_costo_fact_final_v4_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_final_v4_csts",str(df_tmp_costo_fact_final_v4_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_final_v4_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_usuario_cm_csts_prycldr")
-    spark.catalog.dropTempView("tmp_costo_fact_final_v3_csts_prycldr")
-    spark.catalog.dropTempView("tmp_concepto_articulo_csts_prycldr")
+    spark.catalog.dropTempView("tmp_usuario_cm_csts")
+    spark.catalog.dropTempView("tmp_costo_fact_final_v3_csts")
+    spark.catalog.dropTempView("tmp_concepto_articulo_csts")
     
     vStp01="Paso [72]"
     print(lne_dvs())
@@ -1023,11 +1023,11 @@ try:
     df_tmp_costo_fact_final_v4up_csts=spark.sql(tmp_costo_fact_final_v4up_csts(vval_usuario4)).cache()
     df_tmp_costo_fact_final_v4up_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_final_v4up_csts.createOrReplaceTempView("tmp_costo_fact_final_v4up_csts_prycldr")
+    df_tmp_costo_fact_final_v4up_csts.createOrReplaceTempView("tmp_costo_fact_final_v4up_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_final_v4up_csts",str(df_tmp_costo_fact_final_v4up_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_final_v4up_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_final_v4_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_final_v4_csts")
     
     vStp01="Paso [73]"
     print(lne_dvs())
@@ -1036,11 +1036,11 @@ try:
     df_tmp_costo_fact_final_v5up_csts=spark.sql(tmp_costo_fact_final_v5up_csts()).cache()
     df_tmp_costo_fact_final_v5up_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_final_v5up_csts.createOrReplaceTempView("tmp_costo_fact_final_v5up_csts_prycldr")
+    df_tmp_costo_fact_final_v5up_csts.createOrReplaceTempView("tmp_costo_fact_final_v5up_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_final_v5up_csts",str(df_tmp_costo_fact_final_v5up_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_final_v5up_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_final_v4up_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_final_v4up_csts")
     
     vStp01="Paso [74]"
     print(lne_dvs())
@@ -1049,11 +1049,11 @@ try:
     df_tmp_costo_fact_final_v5_csts=spark.sql(tmp_costo_fact_final_v5_csts()).cache()
     df_tmp_costo_fact_final_v5_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_final_v5_csts.createOrReplaceTempView("tmp_costo_fact_final_v5_csts_prycldr")
+    df_tmp_costo_fact_final_v5_csts.createOrReplaceTempView("tmp_costo_fact_final_v5_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_final_v5_csts",str(df_tmp_costo_fact_final_v5_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_final_v5_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_final_v5up_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_final_v5up_csts")
     
     vStp01="Paso [75]"
     print(lne_dvs())
@@ -1062,7 +1062,7 @@ try:
     df_tmp_tarjeta_banco_csts=spark.sql(tmp_tarjeta_banco_csts(vfecha_inicio,vfecha_fin)).cache()
     df_tmp_tarjeta_banco_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_tarjeta_banco_csts.createOrReplaceTempView("tmp_tarjeta_banco_csts_prycldr")
+    df_tmp_tarjeta_banco_csts.createOrReplaceTempView("tmp_tarjeta_banco_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_tarjeta_banco_csts",str(df_tmp_tarjeta_banco_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_tarjeta_banco_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -1075,7 +1075,7 @@ try:
     df_tmp_tarjeta_banco1_csts=spark.sql(tmp_tarjeta_banco1_csts()).cache()
     df_tmp_tarjeta_banco1_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_tarjeta_banco1_csts.createOrReplaceTempView("tmp_tarjeta_banco1_csts_prycldr")
+    df_tmp_tarjeta_banco1_csts.createOrReplaceTempView("tmp_tarjeta_banco1_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_tarjeta_banco1_csts",str(df_tmp_tarjeta_banco1_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_tarjeta_banco1_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -1087,11 +1087,11 @@ try:
     df_tmp_pivot_tarjeta_banco_csts=spark.sql(tmp_pivot_tarjeta_banco_csts()).cache()
     df_tmp_pivot_tarjeta_banco_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_pivot_tarjeta_banco_csts.createOrReplaceTempView("tmp_pivot_tarjeta_banco_csts_prycldr")
+    df_tmp_pivot_tarjeta_banco_csts.createOrReplaceTempView("tmp_pivot_tarjeta_banco_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_pivot_tarjeta_banco_csts",str(df_tmp_pivot_tarjeta_banco_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_pivot_tarjeta_banco_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_tarjeta_banco1_csts_prycldr")
+    spark.catalog.dropTempView("tmp_tarjeta_banco1_csts")
     
     vStp01="Paso 78"
     print(lne_dvs())
@@ -1100,13 +1100,13 @@ try:
     df_tmp_costo_fact_final_v6_csts=spark.sql(tmp_costo_fact_final_v6_csts()).cache()
     df_tmp_costo_fact_final_v6_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_final_v6_csts.createOrReplaceTempView("tmp_costo_fact_final_v6_csts_prycldr")
+    df_tmp_costo_fact_final_v6_csts.createOrReplaceTempView("tmp_costo_fact_final_v6_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_final_v6_csts",str(df_tmp_costo_fact_final_v6_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_final_v6_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_final_v5_csts_prycldr")
-    spark.catalog.dropTempView("tmp_pivot_tarjeta_banco_csts_prycldr")
-    spark.catalog.dropTempView("tmp_cuota_monto_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_final_v5_csts")
+    spark.catalog.dropTempView("tmp_pivot_tarjeta_banco_csts")
+    spark.catalog.dropTempView("tmp_cuota_monto_csts")
     
     vStp01="Paso 79"
     print(lne_dvs())
@@ -1115,12 +1115,12 @@ try:
     df_tmp_costo_fact_final_v4_1_csts=spark.sql(tmp_costo_fact_final_v4_1_csts()).cache()
     df_tmp_costo_fact_final_v4_1_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_final_v4_1_csts.createOrReplaceTempView("tmp_costo_fact_final_v4_1_csts_prycldr")
+    df_tmp_costo_fact_final_v4_1_csts.createOrReplaceTempView("tmp_costo_fact_final_v4_1_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_final_v4_1_csts",str(df_tmp_costo_fact_final_v4_1_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_final_v4_1_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_final_v6_csts_prycldr")
-    spark.catalog.dropTempView("tmp_tarjeta_banco_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_final_v6_csts")
+    spark.catalog.dropTempView("tmp_tarjeta_banco_csts")
     
     vStp01="Paso 80"
     print(lne_dvs())
@@ -1129,12 +1129,12 @@ try:
     df_tmp_costo_fact_exporta_csts=spark.sql(tmp_costo_fact_exporta_csts(vfecha_inicio,vfecha_fin)).cache()
     df_tmp_costo_fact_exporta_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_exporta_csts.createOrReplaceTempView("tmp_costo_fact_exporta_csts_prycldr")
+    df_tmp_costo_fact_exporta_csts.createOrReplaceTempView("tmp_costo_fact_exporta_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_csts",str(df_tmp_costo_fact_exporta_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_exporta_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_final_v4_1_csts_prycldr")
-    spark.catalog.dropTempView("tmp_perimetros_unicos_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_final_v4_1_csts")
+    spark.catalog.dropTempView("tmp_perimetros_unicos_csts")
     
     vStp01="Paso 81"
     print(lne_dvs())
@@ -1143,11 +1143,11 @@ try:
     df_tmp_costo_fact_exporta_otra_csts=spark.sql(tmp_costo_fact_exporta_otra_csts()).cache()
     df_tmp_costo_fact_exporta_otra_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_exporta_otra_csts.createOrReplaceTempView("tmp_costo_fact_exporta_otra_csts_prycldr")
+    df_tmp_costo_fact_exporta_otra_csts.createOrReplaceTempView("tmp_costo_fact_exporta_otra_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_otra_csts",str(df_tmp_costo_fact_exporta_otra_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_exporta_otra_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_exporta_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_exporta_csts")
     
     vStp01="Paso 82"
     print(lne_dvs())
@@ -1156,11 +1156,11 @@ try:
     df_tmp_costo_fact_exporta_otra1_csts=spark.sql(tmp_costo_fact_exporta_otra1_csts()).cache()
     df_tmp_costo_fact_exporta_otra1_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_exporta_otra1_csts.createOrReplaceTempView("tmp_costo_fact_exporta_otra1_csts_prycldr")
+    df_tmp_costo_fact_exporta_otra1_csts.createOrReplaceTempView("tmp_costo_fact_exporta_otra1_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_otra1_csts",str(df_tmp_costo_fact_exporta_otra1_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_fact_exporta_otra1_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_exporta_otra_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_exporta_otra_csts")
     
     vStp01="Paso 83"
     print(lne_dvs())
@@ -1169,11 +1169,11 @@ try:
     df_tmp_fact_exporta_nodupli_csts=spark.sql(tmp_fact_exporta_nodupli_csts(vfecha_antes_ayer)).cache()
     df_tmp_fact_exporta_nodupli_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_exporta_nodupli_csts.createOrReplaceTempView("tmp_fact_exporta_nodupli_csts_prycldr")
+    df_tmp_fact_exporta_nodupli_csts.createOrReplaceTempView("tmp_fact_exporta_nodupli_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_exporta_nodupli_csts",str(df_tmp_fact_exporta_nodupli_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_exporta_nodupli_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    spark.catalog.dropTempView("tmp_costo_fact_exporta_otra1_csts_prycldr")
+    spark.catalog.dropTempView("tmp_costo_fact_exporta_otra1_csts")
     
     vStp01="Paso 84"
     print(lne_dvs())
