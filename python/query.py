@@ -5532,7 +5532,7 @@ def tmp_costo_fact_final_v4_1_csts():
     print(qry)
     return qry
 
-def tmp_costo_fact_exporta_csts(fecha_inicio,fecha_fin):
+def tmp_costo_fact_exporta_csts(fecha_inicio,fecha_fin,fecha_antes_ayer):
     qry="""
     SELECT a.fecha_factura,
     a.bill_status,
@@ -5563,7 +5563,7 @@ def tmp_costo_fact_exporta_csts(fecha_inicio,fecha_fin):
     a.cod_categoria,
     a.forma_pago_factura,
     a.tipo_movimiento_mes,
-    a.fecha_alta,
+    g.fecha_alta,
     a.num_telefonico,
     a.codigo_articulo,
     a.nombre_articulo,
@@ -5660,7 +5660,7 @@ def tmp_costo_fact_exporta_csts(fecha_inicio,fecha_fin):
     WHEN identificacion_cliente IN('0990633436001','0990017514001') THEN 'RETAIL'
     WHEN (CASE WHEN c.segmento IS NULL THEN a.segmento ELSE c.segmento END) IS NULL THEN pu.segmento 
     ELSE (CASE WHEN c.segmento IS NULL THEN a.segmento ELSE c.segmento END) END) AS segmento_final,
-    (DATEDIFF(fecha_factura,(CASE WHEN a.fecha_alta IS NULL THEN CAST('2005-01-01 00:00:00' AS TIMESTAMP) ELSE a.fecha_alta END))/30) AS antiguedad_meses
+    (DATEDIFF(fecha_factura,(CASE WHEN g.fecha_alta IS NULL THEN CAST('2005-01-01 00:00:00' AS TIMESTAMP) ELSE g.fecha_alta END))/30) AS antiguedad_meses
     FROM tmp_costo_fact_final_v4_1_csts a
     LEFT JOIN db_rbm.otc_t_casca_fac_relacionada b
     ON a.num_factura=b.nota_credito 
@@ -5670,7 +5670,13 @@ def tmp_costo_fact_exporta_csts(fecha_inicio,fecha_fin):
     ON a.identificacion_cliente=c.ruc
     LEFT JOIN tmp_perimetros_unicos_csts pu
     ON a.identificacion_cliente=pu.identificador
-    """.format(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin)
+    LEFT JOIN db_reportes.otc_t_360_general g 
+	ON
+        (a.telefono=g.num_telefonico)
+	AND
+        (a.account_num=g.account_num)
+    AND g.fecha_proceso={fecha_antes_ayer}
+    """.format(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin,fecha_antes_ayer=fecha_antes_ayer)
     print(qry)
     return qry
 

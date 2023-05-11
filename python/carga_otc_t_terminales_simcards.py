@@ -20,6 +20,9 @@ from create import *
 ## STEP 1: Definir variables o constantes
 vLogInfo='INFO:'
 vLogError='ERROR:'
+vTablaCostFinV2="db_desarrollo2021.tmp_costo_fact_final_v2_1_csts"
+VtablaTmpCostFactFin="db_desarrollo2021.tmp_costo_fac_final_csts"
+VtablaTmpFactMov="db_desarrollo2021.tmp_fact_mov_final_csts"
 
 timestart = datetime.now()
 ## STEP 2: Captura de argumentos en la entrada
@@ -680,7 +683,7 @@ try:
     print(etq_info(msg_d_duracion_hive("df_tmp_mines_planes_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
     spark.catalog.dropTempView("tmp_mov_parque_sin_dup_csts")
     
-    VtablaTmpFactMov="db_desarrollo2021.tmp_fact_mov_final_csts"
+    #VtablaTmpFactMov="db_desarrollo2021.tmp_fact_mov_final_csts"
     vStp01="Paso 47"
     print(lne_dvs())
     print(etq_info("Paso [47]: Ejecucion de funcion [tmp_fact_mov_final_csts] - INFORMACION DEL UNIVERSO PRINCIPAL CON EL MOVIMIENTO FINAL Y ACTUALIZA ALGUNOS CAMPOS"))
@@ -775,7 +778,7 @@ try:
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_costo_rep_anterior_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
     
-    VtablaTmpCostFactFin="db_desarrollo2021.tmp_costo_fac_final_csts"
+    #VtablaTmpCostFactFin="db_desarrollo2021.tmp_costo_fac_final_csts"
     vStp01="Paso 54"
     print(lne_dvs())
     print(etq_info("Paso [54]: Ejecucion de funcion [tmp_costo_fac_final_csts] - INFORMACION DE COSTO FINAL"))
@@ -972,7 +975,7 @@ try:
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_final_update6_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
     spark.catalog.dropTempView("tmp_fact_final_update5_csts")
     
-    vTablaCostFinV2="db_desarrollo2021.tmp_costo_fact_final_v2_1_csts"
+    #vTablaCostFinV2="db_desarrollo2021.tmp_costo_fact_final_v2_1_csts"
     vStp01="Paso 69"
     print(lne_dvs())
     print(etq_info("Paso [69]: Ejecucion de funcion [tmp_costo_fact_final_v2_1_csts] - UNIVERSO PRINCIPAL DESCARTANDO ALGUNOS REGISTROS"))
@@ -1126,9 +1129,10 @@ try:
     print(lne_dvs())
     print(etq_info("Paso [80]: Ejecucion de funcion [tmp_costo_fact_exporta_csts] - UNIVERSO PRINCIPAL CON ACTUALIZACION EN ALGUNOS CAMPOS"))
     print(lne_dvs())
-    df_tmp_costo_fact_exporta_csts=spark.sql(tmp_costo_fact_exporta_csts(vfecha_inicio,vfecha_fin)).cache()
+    df_tmp_costo_fact_exporta_csts=spark.sql(tmp_costo_fact_exporta_csts(vfecha_inicio,vfecha_fin,vfecha_antes_ayer)).cache()
     df_tmp_costo_fact_exporta_csts.printSchema()
     ts_step_tbl = datetime.now()
+    df_tmp_costo_fact_exporta_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_80')
     df_tmp_costo_fact_exporta_csts.createOrReplaceTempView("tmp_costo_fact_exporta_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_csts",str(df_tmp_costo_fact_exporta_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
@@ -1143,6 +1147,7 @@ try:
     df_tmp_costo_fact_exporta_otra_csts=spark.sql(tmp_costo_fact_exporta_otra_csts()).cache()
     df_tmp_costo_fact_exporta_otra_csts.printSchema()
     ts_step_tbl = datetime.now()
+    df_tmp_costo_fact_exporta_otra_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_81')
     df_tmp_costo_fact_exporta_otra_csts.createOrReplaceTempView("tmp_costo_fact_exporta_otra_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_otra_csts",str(df_tmp_costo_fact_exporta_otra_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
@@ -1156,6 +1161,7 @@ try:
     df_tmp_costo_fact_exporta_otra1_csts=spark.sql(tmp_costo_fact_exporta_otra1_csts()).cache()
     df_tmp_costo_fact_exporta_otra1_csts.printSchema()
     ts_step_tbl = datetime.now()
+    df_tmp_costo_fact_exporta_otra1_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_82')
     df_tmp_costo_fact_exporta_otra1_csts.createOrReplaceTempView("tmp_costo_fact_exporta_otra1_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_otra1_csts",str(df_tmp_costo_fact_exporta_otra1_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
@@ -1169,6 +1175,7 @@ try:
     df_tmp_fact_exporta_nodupli_csts=spark.sql(tmp_fact_exporta_nodupli_csts(vfecha_antes_ayer)).cache()
     df_tmp_fact_exporta_nodupli_csts.printSchema()
     ts_step_tbl = datetime.now()
+    df_tmp_fact_exporta_nodupli_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_83')
     df_tmp_fact_exporta_nodupli_csts.createOrReplaceTempView("tmp_fact_exporta_nodupli_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_exporta_nodupli_csts",str(df_tmp_fact_exporta_nodupli_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
