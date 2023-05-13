@@ -1132,7 +1132,7 @@ try:
     df_tmp_costo_fact_exporta_csts=spark.sql(tmp_costo_fact_exporta_csts(vfecha_inicio,vfecha_fin,vfecha_antes_ayer)).cache()
     df_tmp_costo_fact_exporta_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_exporta_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_80')
+    df_tmp_costo_fact_exporta_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_800')
     df_tmp_costo_fact_exporta_csts.createOrReplaceTempView("tmp_costo_fact_exporta_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_csts",str(df_tmp_costo_fact_exporta_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
@@ -1147,7 +1147,7 @@ try:
     df_tmp_costo_fact_exporta_otra_csts=spark.sql(tmp_costo_fact_exporta_otra_csts()).cache()
     df_tmp_costo_fact_exporta_otra_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_exporta_otra_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_81')
+    df_tmp_costo_fact_exporta_otra_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_810')
     df_tmp_costo_fact_exporta_otra_csts.createOrReplaceTempView("tmp_costo_fact_exporta_otra_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_otra_csts",str(df_tmp_costo_fact_exporta_otra_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
@@ -1161,7 +1161,7 @@ try:
     df_tmp_costo_fact_exporta_otra1_csts=spark.sql(tmp_costo_fact_exporta_otra1_csts()).cache()
     df_tmp_costo_fact_exporta_otra1_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_costo_fact_exporta_otra1_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_82')
+    df_tmp_costo_fact_exporta_otra1_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_820')
     df_tmp_costo_fact_exporta_otra1_csts.createOrReplaceTempView("tmp_costo_fact_exporta_otra1_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_costo_fact_exporta_otra1_csts",str(df_tmp_costo_fact_exporta_otra1_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
@@ -1175,7 +1175,7 @@ try:
     df_tmp_fact_exporta_nodupli_csts=spark.sql(tmp_fact_exporta_nodupli_csts(vfecha_antes_ayer)).cache()
     df_tmp_fact_exporta_nodupli_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_exporta_nodupli_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_83')
+    df_tmp_fact_exporta_nodupli_csts.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_termi_830')
     df_tmp_fact_exporta_nodupli_csts.createOrReplaceTempView("tmp_fact_exporta_nodupli_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_exporta_nodupli_csts",str(df_tmp_fact_exporta_nodupli_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()

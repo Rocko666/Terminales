@@ -5656,8 +5656,8 @@ def tmp_costo_fact_exporta_csts(fecha_inicio,fecha_fin,fecha_antes_ayer):
     a.canl_nc AS canal_netcracker,
     COALESCE(a.origin_invoice_num,b.num_factura_relacionada) AS num_factura_relacionada, 
     b.fechafacturarelacionada AS fecha_factura_relacionada,
-    (CASE WHEN identificacion_cliente IN('0391007160001','0190495825001') THEN 'ZONIFICADOS'
-    WHEN identificacion_cliente IN('0990633436001','0990017514001') THEN 'RETAIL'
+    (CASE WHEN a.identificacion_cliente IN('0391007160001','0190495825001') THEN 'ZONIFICADOS'
+    WHEN a.identificacion_cliente IN('0990633436001','0990017514001') THEN 'RETAIL'
     WHEN (CASE WHEN c.segmento IS NULL THEN a.segmento ELSE c.segmento END) IS NULL THEN pu.segmento 
     ELSE (CASE WHEN c.segmento IS NULL THEN a.segmento ELSE c.segmento END) END) AS segmento_final,
     (DATEDIFF(fecha_factura,(CASE WHEN g.fecha_alta IS NULL THEN CAST('2005-01-01 00:00:00' AS TIMESTAMP) ELSE g.fecha_alta END))/30) AS antiguedad_meses
