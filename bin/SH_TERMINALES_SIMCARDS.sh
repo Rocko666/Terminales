@@ -112,13 +112,6 @@ vTablaDestino="otc_t_terminales_simcards"
 
 #bba
 ##vTablaDestino="otc_t_terminales_simcards_prycldr"
-VAL_TABLA_TC="otc_t_catalogo_tipo_canal_prycldr"
-VAL_TABLA_RDR="otc_t_catalogo_ruc_das_retail_prycldr"
-VAL_TABLA_T="otc_t_catalogo_terminales_prycldr"
-VAL_TABLA_UO="otc_t_catalogo_canal_online_prycldr"
-VAL_TABLA_CANAL="otc_t_asigna_canal_ventas_prycldr"
-VAL_TABLA_SEG="otc_t_ctl_cat_seg_sub_seg_prycldr"
-VAL_TABLA_CST="otc_t_ctl_seg_terminal_prycldr"
 #ETAPA=1
 
 
@@ -133,11 +126,11 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_FTP_HOSTNAME" ] || 
     [ -z "$VAL_FTP_PASS" ] || 
     [ -z "$VAL_FTP_RUTA" ] || 
-    #[ -z "$VAL_NOM_ARCHIVO1_0" ] || 
-    #[ -z "$VAL_NOM_ARCHIVO1_2" ] || 
-    #[ -z "$VAL_NOM_ARCHIVO1_3" ] || 
-    #[ -z "$VAL_NOM_ARCHIVO1_4" ] || 
-    #[ -z "$VAL_NOM_ARCHIVO_MP" ] || 
+    [ -z "$VAL_NOM_ARCHIVO1_0" ] || 
+    [ -z "$VAL_NOM_ARCHIVO1_2" ] || 
+    [ -z "$VAL_NOM_ARCHIVO1_3" ] || 
+    [ -z "$VAL_NOM_ARCHIVO1_4" ] || 
+    [ -z "$VAL_NOM_ARCHIVO_MP" ] || 
     #[ -z "$VAL_NOM_ARCHIVO2_0" ] || 
     #[ -z "$VAL_NOM_ARCHIVO2_1" ] || 
     [ -z "$HIVEDB" ] || 
@@ -216,8 +209,11 @@ cd $VAL_RUTA/input
 ls -altrh *.xlsx
 ix=0
 for file in *.xlsx; do
-	mv "$file" "${file// /_}"
-    ix=$((${ix}+1))
+    new_file="${file// /_}"
+    if [ "$file" != "$new_file" ]; then
+        mv "$file" "$new_file"
+        ix=$(($ix + 1))
+    fi
 done
 ETAPA=2
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
@@ -244,6 +240,7 @@ mget ${VAL_NOM_ARCHIVO2_0}
 mget ${VAL_NOM_ARCHIVO2_1}
 bye
 EOF
+
 
 #VALIDA LA TRANSFERENCIA DEL ARCHIVO DESDE EL SERVIDOR FTP A BIGDATA
 echo "==== Valida la transferencia de los archivos desde el servidor FTP a BigData ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
@@ -664,7 +661,7 @@ echo "==== OK - Se procesa la ETAPA 12 con EXITO ===="`date '+%H%M%S'` >> $VAL_L
 `mysql -N  <<<"update params_des set valor='13' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-
+vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_Marzo23.txt'
 #CREA FUNCION PARA LA EXPORTACION DEL ARCHIVO A RUTA FTP Y REALIZA LA TRANSFERENCIA
 if [ "$ETAPA" = "13" ]; then
 echo "==== Crea funcion para la exportacion del archivo a ruta FTP ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
@@ -678,12 +675,15 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA_OUT}\n"
 		expect "sftp>"
-		send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
+		send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 		expect "sftp>"
 		send "exit\n"
 		interact
 EOF
 }
+
+# send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
+# send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 
 #REALIZA LA TRANSFERENCIA DEL ARCHIVO TXT A RUTA FTP
 echo  "==== Inicia exportacion del archivo txt al servidor SFTP ====" >> $VAL_LOG
@@ -705,7 +705,8 @@ VAL_ERROR_FTP=`egrep 'Connection timed out|Not connected|syntax is incorrect|can
 	fi
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
 echo "==== OK - Se procesa la ETAPA 13 con EXITO ===="`date '+%H%M%S'` >> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='11' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params_des set valor='1' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 	
 echo "==== Finaliza ejecucion del proceso BI CS Terminales Simcards ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
+

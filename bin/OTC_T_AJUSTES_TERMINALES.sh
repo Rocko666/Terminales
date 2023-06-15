@@ -138,4 +138,4 @@ else
 fi		
 fi
 
-### sh -x /home/nae108834/Movimientos/Bin/OTC_T_AJUSTES_TERMINALES.sh
+### sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_AJUSTES_TERMINALES.sh

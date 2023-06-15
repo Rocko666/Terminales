@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 from pyspark.sql.functions import col, substring_index
 
-#db_desarrollo2021.otc_t_catalogo_terminales -> db_desarrollo2021.otc_t_catalogo_terminales_prycldr -- ojo preguntar a Bri sobre campos adicionales y sus nombres
+#db_desarrollo2021.otc_t_catalogo_terminales -> db_desarrollo2021.otc_t_catalogo_terminales_prycldr 
 #db_desarrollo2021.otc_t_terminales_fact -> db_desarrollo2021.otc_t_terminales_fact_prycldr
 #db_desarrollo2021.otc_t_terminales_nc -> db_desarrollo2021.otc_t_terminales_nc_prycldr
 #db_rdb.otc_t_r_cbm_bill -> db_desarrollo2021.otc_t_r_cbm_bill_prycldr
@@ -56,7 +56,7 @@ def tmp_catalogo_terminales_csts():
      CONCEPTO_FACTURABLE,
      clasificacion,
     row_number() OVER (PARTITION BY concepto_facturable ORDER BY modelo_scl DESC) AS rn
-    FROM db_desarrollo2021.otc_t_catalogo_terminales_prycldr)a 
+    FROM db_desarrollo2021.otc_t_catalogo_terminales)a 
     WHERE a.rn=1
     """
     print(qry)
@@ -231,6 +231,7 @@ def tmp_facturacion_usuario_csts():
     """
     print(qry)
     return qry
+
 
 def tmp_nota_credito_usuario_csts():
     qry="""
