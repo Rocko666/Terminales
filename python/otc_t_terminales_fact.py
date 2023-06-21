@@ -26,8 +26,6 @@ parser.add_argument('--vcampoparte', required=False, type=str, help='Campo de pa
 parser.add_argument('--vfechai', required=False, type=str,help='Parametro 1 de la query sql')
 parser.add_argument('--vfechaf', required=False, type=str,help='Parametro 1 de la query sql')
 
-vTTemp="db_desarrollo2021.tmp_otc_t_terminales_fact"
-
 parametros = parser.parse_args()
 vClass=parametros.vclass
 vUrlJdbc=parametros.vjdbcurl
@@ -40,7 +38,8 @@ vCampoParte=parametros.vcampoparte
 vfechai=parametros.vfechai
 vfechaf=parametros.vfechaf
 
-vSQL_ORA="""
+
+vSQL="""
 SELECT 
 fecha_factura, 
 bill_status, 
@@ -66,69 +65,12 @@ WHERE fecha_factura >= to_date('{vfechai}','yyyyMMdd') AND fecha_factura < to_da
 """.format(vfechai=vfechai, vfechaf=vfechaf)
 print(vSQL)
 
-
-vSql_Hive="""
-SELECT a.fecha_factura, 
-a.bill_status, 
-a.sri_authorization_date, 
-a.document_type_id, 
-a.document_type_name, 
-a.invoice_num, 
-a.office_code, 
-a.office_name, 
-a.usuario, 
-a.account_num, 
-a.num_abonado, 
-a.nombre_cliente, 
-a.customer_id_number, 
-a.revenue_code_id, 
-a.revenue_code_desc, 
-a.imei_imsi, 
-a.product_quantity, 
-a.monto,
-a.pt_fecha
-FROM {nme_table} a
-LEFT OUTER JOIN (SELECT b.fecha_factura FROM {nme_table} b WHERE fecha_factura>='{fecha_ini}' AND fecha_factura<'{fecha_fin}') b
-ON a.fecha_factura = b.fecha_factura
-WHERE b.created_when IS NULL
-""".format(nme_table=nme_table,fecha_ini=fecha_ini,fecha_fin=fecha_fin)
-
-
-vSql_HiveTmp="""
-SELECT a.actual_property,
-a.associated_iccid,
-a.consignation_date,
-a.created_by,
-a.created_when,
-a.customer_account,
-a.description,
-a.equipment_condition,
-a.for_temporary_replacement,
-a.imei,
-a.is_kitted,
-a.logical_status,
-a.modified_by,
-a.modified_when,
-a.name,
-a.number_of_repairs,
-a.object_id,
-a.parent_id,
-a.physical_status,
-a.project_id,
-a.purchase_price,
-a.source_system,
-a.stock_item_model,
-a.tfn_warranty_date,
-a.ticket_number,
-a.type_id,
-a.vendor_warranty_date
-FROM {vTTemp} a
-""".format(vTTemp=vTTemp)
 ## 2.- Inicio el SparkSession
 spark = SparkSession. \
     builder. \
     enableHiveSupport(). \
     config("hive.exec.dynamic.partition", "true"). \
+    config("spark.yarn.queue", "reportes"). \
     config("hive.exec.dynamic.partition.mode", "nonstrict"). \
     getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
@@ -181,7 +123,6 @@ try:
     else:
         df1 = df0.withColumn("fechacarga",F.lit(datetime.now())).withColumn("pt_fecha", F.col('pt_fecha').cast("int"))
         df1 = df1.select([F.col(x).alias(x.lower()) for x in df1.columns])
-        df1.write.format('parquet').mode("overwrite").saveAsTable(vTTemp)
         df1.printSchema()
     te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStp01,vle_duracion(ts_step,te_step))))
