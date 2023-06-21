@@ -40,7 +40,6 @@ vCampoParte=parametros.vcampoparte
 vfechai=parametros.vfechai
 vfechaf=parametros.vfechaf
 
-
 vSQL_ORA="""
 SELECT 
 fecha_factura, 
@@ -89,8 +88,8 @@ a.product_quantity,
 a.monto,
 a.pt_fecha
 FROM {nme_table} a
-LEFT OUTER JOIN (SELECT b.created_when FROM {nme_table} b WHERE created_when>='{fecha_ini}' AND created_when<'{fecha_fin}') b
-ON a.created_when = b.created_when
+LEFT OUTER JOIN (SELECT b.fecha_factura FROM {nme_table} b WHERE fecha_factura>='{fecha_ini}' AND fecha_factura<'{fecha_fin}') b
+ON a.fecha_factura = b.fecha_factura
 WHERE b.created_when IS NULL
 """.format(nme_table=nme_table,fecha_ini=fecha_ini,fecha_fin=fecha_fin)
 

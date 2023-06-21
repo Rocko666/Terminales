@@ -38,7 +38,7 @@ vTablaHive=parametros.vtablahive
 vTipoCarga=parametros.vtipocarga
 vfechai=parametros.vfechai
 vfechaf=parametros.vfechaf
-nme_table=vBaseHive+'.'+vTablaHive
+nme_table=vBaseHive+'.'+vTablaHive  ##db_desarrollo2021.otc_t_r_am_cpe
 fecha_ini=datetime.strptime(vfechai, '%Y%m%d').date()
 fecha_fin=datetime.strptime(vfechaf, '%Y%m%d').date()
 

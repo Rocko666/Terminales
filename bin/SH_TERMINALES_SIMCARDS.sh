@@ -675,7 +675,7 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA_OUT}\n"
 		expect "sftp>"
-		send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
+		send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
 		expect "sftp>"
 		send "exit\n"
 		interact

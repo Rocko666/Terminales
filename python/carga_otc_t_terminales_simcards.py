@@ -70,6 +70,7 @@ vTablaDestino=parametros.vTablaDestino
 spark = SparkSession \
     .builder \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
+    .config("spark.yarn.queue", "reportes") \
     .config("spark.rpc.askTimeout", "300s") \
     .appName(vEntidad) \
     .enableHiveSupport() \
@@ -1285,3 +1286,4 @@ timeend = datetime.now()
 print(etq_info(msg_d_duracion_ejecucion(vEntidad,vle_duracion(timestart,timeend))))
 print(lne_dvs())
 
+#GRAPH 
