@@ -19,57 +19,57 @@ set -e
 ##############
 # VARIABLES #
 ##############
-ENTIDAD=D_SHTRMNLSMCRDS0010
+ENTIDAD=SHTRMNLSMCRDS0010
 VAL_KINIT=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_KINIT';"`
 $VAL_KINIT
 
-#PARAMETROS DEFINIDOS EN LA TABLA params_des
+#PARAMETROS DEFINIDOS EN LA TABLA params
 VAL_FECHA_EJEC=$1
 #VAL_RUTA=$2
-VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
-ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
-VAL_FTP_PUERTO1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO1';"`
-VAL_FTP_PUERTO2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO2';"`
-VAL_FTP_USER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER';"`
-VAL_FTP_HOSTNAME=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME';"`
-VAL_FTP_PASS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS';"`
-VAL_FTP_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA';"`
-VAL_NOM_ARCHIVO1_0=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_0';"`
-VAL_NOM_ARCHIVO1_1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_1';"`
-VAL_NOM_ARCHIVO1_2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_2';"`
-VAL_NOM_ARCHIVO1_3=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_3';"`
-VAL_NOM_ARCHIVO1_4=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_4';"`
-VAL_NOM_ARCHIVO_MP=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO_MP';"`
-VAL_NOM_ARCHIVO2_0=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO2_0';"`
-VAL_NOM_ARCHIVO2_1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO2_1';"`
-HIVEDB=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_BASE_DATOS';"`
-VAL_TABLA_TC=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_TC';"`
-VAL_TABLA_RDR=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_RDR';"`
-VAL_TABLA_T=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_T';"`
-VAL_TABLA_UO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_UO';"`
-VAL_TABLA_CANAL=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_CANAL';"`
-VAL_TABLA_SEG=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_SEG';"`
-VAL_TABLA_CST=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_CST';"`
-VAL_USUARIO4=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_USUARIO4';"`
-VAL_USUARIO_FINAL=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_USUARIO_FINAL';"`
-VAL_MESES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES';"`
-VAL_MESES1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES1';"`
-VAL_MESES2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES2';"`
-VAL_FTP_PUERTO_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO_OUT';"`
-VAL_FTP_USER_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER_OUT';"`
-VAL_FTP_HOSTNAME_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME_OUT';"`
-VAL_FTP_PASS_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS_OUT';"`
-VAL_FTP_RUTA_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA_OUT';"`
-VAL_NOM_ARCHIVO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO';"`
-VAL_TIPO_CARGA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TIPO_CARGA';"`
-VAL_MASTER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MASTER';"`
-VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_DRIVER_MEMORY';"`
-VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
-VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS';"`
-VAL_EXECUTOR_CORES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_CORES';"`
+VAL_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
+ETAPA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
+VAL_FTP_PUERTO1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO1';"`
+VAL_FTP_PUERTO2=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO2';"`
+VAL_FTP_USER=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER';"`
+VAL_FTP_HOSTNAME=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME';"`
+VAL_FTP_PASS=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS';"`
+VAL_FTP_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA';"`
+VAL_NOM_ARCHIVO1_0=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_0';"`
+VAL_NOM_ARCHIVO1_1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_1';"`
+VAL_NOM_ARCHIVO1_2=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_2';"`
+VAL_NOM_ARCHIVO1_3=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_3';"`
+VAL_NOM_ARCHIVO1_4=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_4';"`
+VAL_NOM_ARCHIVO_MP=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO_MP';"`
+VAL_NOM_ARCHIVO2_0=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO2_0';"`
+VAL_NOM_ARCHIVO2_1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO2_1';"`
+HIVEDB=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_BASE_DATOS';"`
+VAL_TABLA_TC=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_TC';"`
+VAL_TABLA_RDR=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_RDR';"`
+VAL_TABLA_T=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_T';"`
+VAL_TABLA_UO=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_UO';"`
+VAL_TABLA_CANAL=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_CANAL';"`
+VAL_TABLA_SEG=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_SEG';"`
+VAL_TABLA_CST=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_CST';"`
+VAL_USUARIO4=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_USUARIO4';"`
+VAL_USUARIO_FINAL=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_USUARIO_FINAL';"`
+VAL_MESES=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES';"`
+VAL_MESES1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES1';"`
+VAL_MESES2=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES2';"`
+VAL_FTP_PUERTO_OUT=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO_OUT';"`
+VAL_FTP_USER_OUT=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER_OUT';"`
+VAL_FTP_HOSTNAME_OUT=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME_OUT';"`
+VAL_FTP_PASS_OUT=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS_OUT';"`
+VAL_FTP_RUTA_OUT=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA_OUT';"`
+VAL_NOM_ARCHIVO=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO';"`
+VAL_TIPO_CARGA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TIPO_CARGA';"`
+VAL_MASTER=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MASTER';"`
+VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_DRIVER_MEMORY';"`
+VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
+VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS';"`
+VAL_EXECUTOR_CORES=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_CORES';"`
 
 #PARAMETROS GENERICOS
-VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
+VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'D_SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
 VAL_FEC_AYER=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m%d"`
@@ -107,7 +107,6 @@ VAL_RUTA_ARCHIVO_1_4=$VAL_RUTA/input/$VAL_NOM_ARCHIVO1_4
 VAL_RUTA_ARCHIVO_MP=$VAL_RUTA/input/$VAL_NOM_ARCHIVO_MP
 VAL_NOM_ARCHIVO_PREVIO=EXT_TERMINALES.txt
 vTablaDestino="otc_t_terminales_simcards"
-
 
 #VALIDACION DE PARAMETROS INICIALES
 if  [ -z "$ENTIDAD" ] || 
@@ -197,7 +196,7 @@ if [ $error_trnsf -eq 0 ];then
     exit 1
 fi
 
-#REALIZA COPIA DE LOS ARCHIVOS 100 Nueva Categoria Y ASIGNACION CANAL DE VENTAS v3 PARA ELIMINAR ESPACIOS EN EL NOMBRE DE ACUERDO A LAS VARIABLES CONFIGURADAS EN params_des
+#REALIZA COPIA DE LOS ARCHIVOS 100 Nueva Categoria Y ASIGNACION CANAL DE VENTAS v3 PARA ELIMINAR ESPACIOS EN EL NOMBRE DE ACUERDO A LAS VARIABLES CONFIGURADAS EN params
 echo "==== Realiza copia de los archivos 100 Nueva Categoria y Asignacion canal de ventas para eliminar espacios en el nombre ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 cd $VAL_RUTA/input
 ls -altrh *.xlsx
@@ -210,9 +209,9 @@ for file in *.xlsx; do
     fi
 done
 ETAPA=2
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 1 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='2' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='2' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 2: REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
@@ -246,9 +245,9 @@ if [ $error_trnsf -eq 0 ];then
     exit 1
 fi
 ETAPA=3
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 2 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='3' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='3' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 3: REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
@@ -279,9 +278,9 @@ if [ $error_trnsf -eq 0 ];then
     exit 1
 fi
 ETAPA=4
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 3 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='4' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='4' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 4: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
@@ -312,9 +311,9 @@ fi
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_T"
 
 ETAPA=5
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 4 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='5' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='5' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 5: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
@@ -345,9 +344,9 @@ fi
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_RDR"
 
 ETAPA=6
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 5 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='6' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='6' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 6: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
@@ -378,9 +377,9 @@ fi
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_TC"
 
 ETAPA=7
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 6 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='7' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='7' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 7: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
@@ -411,9 +410,9 @@ fi
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_UO"
 
 ETAPA=8
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 7 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='8' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='8' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 8: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
@@ -444,9 +443,9 @@ fi
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_CANAL"
 
 ETAPA=9
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 8 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='9' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='9' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 9: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
@@ -477,9 +476,9 @@ fi
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_SEG"
 
 ETAPA=10
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 9 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='10' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='10' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #PASO 10: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
@@ -510,9 +509,9 @@ fi
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_CST"
 
 ETAPA=11
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 10 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='11' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='11' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #HACE EL LLAMADO AL HQL QUE REALIZA LOS CRUCES PARA GENERAR LA INFORMACION EN LA TABLA FINAL OTC_T_TERMINALES_SIMCARDS
@@ -582,9 +581,9 @@ exit 1
 fi
 
 ETAPA=12
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 11 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='12' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='12' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #LEE TABLA TERMINALES SIMCARDS Y GENERA ARCHIVO TXT EN RUTA OUTPUT
@@ -650,12 +649,11 @@ cant_reg=`expr $cant_reg + 0`
 			exit 1
 	fi
 ETAPA=13
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 12 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='13' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='13' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_MayTest.txt'
 #CREA FUNCION PARA LA EXPORTACION DEL ARCHIVO A RUTA FTP Y REALIZA LA TRANSFERENCIA
 if [ "$ETAPA" = "13" ]; then
 echo "==== Crea funcion para la exportacion del archivo a ruta FTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
@@ -669,15 +667,13 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA_OUT}\n"
 		expect "sftp>"
-		send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
+		send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
 		expect "sftp>"
 		send "exit\n"
 		interact
 EOF
 }
 
-# send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
-# send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 
 #REALIZA LA TRANSFERENCIA DEL ARCHIVO TXT A RUTA FTP
 echo  "==== Inicia exportacion del archivo txt al servidor SFTP ====" 2>&1 &>> $VAL_LOG
@@ -697,9 +693,9 @@ VAL_ERROR_FTP=`egrep 'Connection timed out|Not connected|syntax is incorrect|can
 		else
 		echo "==== OK - La transferencia del archivo TXT al servidor FTP es EXITOSA ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 	fi
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params
 echo "==== OK - Se procesa la ETAPA 13 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='1' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+`mysql -N  <<<"update params set valor='1' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 	
 echo "==== Finaliza ejecucion del proceso BI CS Terminales Simcards ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG

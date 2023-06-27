@@ -15,6 +15,8 @@ set -e
 #########################################################################################################
 
 ENTIDAD=D_URMRCBMBILL3100
+VAL_KINIT=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_KINIT';"`
+$VAL_KINIT
 
 #PARAMETROS GENERICOS PARA IMPORTACIONES CON SPARK OBTENIDOS DE LA TABLA params_des
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
@@ -37,7 +39,7 @@ VAL_MASTER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDA
 VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_DRIVER_MEMORY';"`
 VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
 VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS';"`
-
+VAL_NUM_EXECUTORS_CORES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS_CORES';"`
 
 #PARAMETROS DE OPERACION Y AUTOGENERADOS
 VAL_DIA=`date '+%Y%m%d'` 
@@ -54,6 +56,11 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$TDHOST_RDB2" ] || 
     [ -z "$TDPASS_RDB" ] || 
     [ -z "$TDPORT_RDB" ] || 
+    [ -z "$VAL_MASTER" ] || 
+    [ -z "$VAL_DRIVER_MEMORY" ] || 
+    [ -z "$VAL_EXECUTOR_MEMORY" ] || 
+    [ -z "$VAL_NUM_EXECUTORS" ] || 
+    [ -z "$VAL_NUM_EXECUTORS_CORES" ] || 
     [ -z "$TDSERVICE_RDB" ] || 
     [ -z "$TDUSER_RDB" ] || 
     [ -z "$VAL_RUTA" ] || 
@@ -85,6 +92,7 @@ $VAL_RUTA_SPARK \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
 --num-executors $VAL_NUM_EXECUTORS \
+--executor-cores $VAL_NUM_EXECUTORS_CORES \
 --jars $VAL_RUTA_LIB/$VAL_NOM_JAR_ORC_11 \
 $VAL_RUTA/python/otc_t_r_cbm_bill.py \
 --vclass=oracle.jdbc.driver.OracleDriver \

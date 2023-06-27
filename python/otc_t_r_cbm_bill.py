@@ -24,7 +24,6 @@ parser.add_argument('--vhivebd', required=True, type=str, help='Nombre de la bas
 parser.add_argument('--vtablahive', required=True, type=str, help='Nombre de la tabla en hive bd.tabla')
 parser.add_argument('--vtipocarga', required=True, type=str, help='Tipo de carga overwrite/append - carga completa/incremental')
 
-
 parametros = parser.parse_args()
 vClass=parametros.vclass
 vUrlJdbc=parametros.vjdbcurl
@@ -53,7 +52,6 @@ SALES_ORDER_ID,
 SOURCE_SYSTEM 
 FROM rdb_reportes.r_cbm_bill
 """
-
 
 ## 2.- Inicio el SparkSession
 spark = SparkSession. \
@@ -128,4 +126,3 @@ spark.stop()
 timeend = datetime.now()
 print(etq_info(msg_d_duracion_ejecucion('otc_t_r_cbm_bill.py',vle_duracion(timestart,timeend))))
 print(lne_dvs())
-

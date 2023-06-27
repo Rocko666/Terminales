@@ -24,7 +24,6 @@ parser.add_argument('--vhivebd', required=True, type=str, help='Nombre de la bas
 parser.add_argument('--vtablahive', required=True, type=str, help='Nombre de la tabla en hive bd.tabla')
 parser.add_argument('--vtipocarga', required=True, type=str, help='Tipo de carga overwrite/append - carga completa/incremental')
 
-
 parametros = parser.parse_args()
 vClass=parametros.vclass
 vUrlJdbc=parametros.vjdbcurl
@@ -43,7 +42,6 @@ BRANCH,
 USUARIO 
 FROM rdb_reportes.otc_v_usuarios
 """
-
 
 ## 2.- Inicio el SparkSession
 spark = SparkSession. \

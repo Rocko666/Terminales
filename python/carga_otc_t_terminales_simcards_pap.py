@@ -20,9 +20,9 @@ from create import *
 ## STEP 1: Definir variables o constantes
 vLogInfo='INFO:'
 vLogError='ERROR:'
-vTablaCostFinV2="db_desarrollo2021.tmp_costo_fact_final_v2_1_csts"
-VtablaTmpCostFactFin="db_desarrollo2021.tmp_costo_fac_final_csts"
-VtablaTmpFactMov="db_desarrollo2021.tmp_fact_mov_final_csts"
+vTablaCostFinV2="db_temporales.tmp_costo_fact_final_v2_1_csts"
+VtablaTmpCostFactFin="db_temporales.tmp_costo_fac_final_csts"
+VtablaTmpFactMov="db_temporales.tmp_fact_mov_final_csts"
 
 timestart = datetime.now()
 ## STEP 2: Captura de argumentos en la entrada
@@ -279,6 +279,7 @@ try:
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_usuario_cm_csts",str(df_tmp_usuario_cm_csts.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_usuario_cm_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
+       
     
     vStp01="Paso 16"
     print(lne_dvs())
@@ -1214,7 +1215,7 @@ try:
     df85=spark.sql(tmp_terminales_simcards_nc(vultimo_dia_act_frmt,vfecha_inicio,vfecha_fin)).cache()
     df85.printSchema()
     ts_step_tbl = datetime.now()
-    df85.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_terminales_simcards_nc')
+    df85.write.mode('overwrite').format('parquet').saveAsTable('db_temporales.tmp_terminales_simcards_nc')
     print(etq_info(msg_t_total_registros_obtenidos("df85",str(df85.count())))) #BORRAR
     te_step_tbl = datetime.now()
     del df85
@@ -1227,7 +1228,7 @@ try:
     df86=spark.sql(tmp_terminales_simcards_factura(vultimo_dia_act_frmt,vfecha_inicio,vfecha_fin)).cache()
     df86.printSchema()
     ts_step_tbl = datetime.now()
-    df86.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_terminales_simcards_factura')
+    df86.write.mode('overwrite').format('parquet').saveAsTable('db_temporales.tmp_terminales_simcards_factura')
     print(etq_info(msg_t_total_registros_obtenidos("df86",str(df86.count())))) #BORRAR
     te_step_tbl = datetime.now()
     del df86
@@ -1240,7 +1241,7 @@ try:
     df87=spark.sql(tmp_terminales_simcards(vfecha_antes_ayer)).cache()
     df87.printSchema()
     ts_step_tbl = datetime.now()
-    df87.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.tmp_terminales_simcards')
+    df87.write.mode('overwrite').format('parquet').saveAsTable('db_temporales.tmp_terminales_simcards')
     print(etq_info(msg_t_total_registros_obtenidos("df87",str(df87.count())))) #BORRAR
     te_step_tbl = datetime.now()
     del df87
@@ -1253,7 +1254,7 @@ try:
     df88=spark.sql(otc_t_ext_terminales_ajst()).cache()
     df88.printSchema()
     ts_step_tbl = datetime.now()
-    df88.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.otc_t_ext_terminales_ajst')
+    df88.write.mode('overwrite').format('parquet').saveAsTable('db_temporales.otc_t_ext_terminales_ajst')
     print(etq_info(msg_t_total_registros_obtenidos("df88",str(df88.count())))) #BORRAR
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df88",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -1277,3 +1278,4 @@ spark.stop()
 timeend = datetime.now()
 print(etq_info(msg_d_duracion_ejecucion(vEntidad,vle_duracion(timestart,timeend))))
 print(lne_dvs())
+

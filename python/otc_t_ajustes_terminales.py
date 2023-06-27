@@ -1,13 +1,8 @@
-
 # -*- coding: latin1 -*-
-# INSTRUCCIONES
-# Ejecute el script utilizando spark-submit readexcel.py --rutain=<ruta del archivo excel> --tablaout=<esquema.tabla donde va a escribir> --tipo=overwrite/append
-# Ejem:  /usr/hdp/current/spark2-client/bin/pyspark readexcel.py --rutain=/carpeta/excel.xls --tablaout=esquema.tabla --tipo=overwrite/append
 import sys
 reload(sys)
 sys.setdefaultencoding('latin1')
 #sys.setdefaultencoding('windows-1252')
-#sys.setdefaultencoding('latin1')
 from pyspark.sql import SparkSession
 import pandas as pd
 from datetime import datetime
@@ -31,7 +26,6 @@ vTipo=parametros.tipo
 timestart = datetime.now()
 vRegExpUnnamed=r"unnamed*"
 vApp="ReadExcel"
-
 
 def getColumnName(vColumn=str):
     a=vColumn.lower()
