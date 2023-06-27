@@ -661,7 +661,7 @@ echo "==== OK - Se procesa la ETAPA 12 con EXITO ===="`date '+%H%M%S'` >> $VAL_L
 `mysql -N  <<<"update params_des set valor='13' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_Marzo23.txt'
+vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_May23.txt'
 #CREA FUNCION PARA LA EXPORTACION DEL ARCHIVO A RUTA FTP Y REALIZA LA TRANSFERENCIA
 if [ "$ETAPA" = "13" ]; then
 echo "==== Crea funcion para la exportacion del archivo a ruta FTP ===="`date '+%Y%m%d%H%M%S'` >> $VAL_LOG
@@ -675,7 +675,7 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA_OUT}\n"
 		expect "sftp>"
-		send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
+		send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 		expect "sftp>"
 		send "exit\n"
 		interact

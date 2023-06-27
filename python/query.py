@@ -6636,6 +6636,68 @@ UNION ALL
 def otc_t_ext_terminales_ajst():
     qry="""
 SELECT
+	tsim.fecha_proceso AS fecha_proceso
+	,  tsim.fecha_factura
+	,  tsim.linea_negocio
+	,  tsim.segmento
+	,  tsim.sub_segmento
+	,  tsim.segmento_final
+	,  tsim.telefono
+	,  tsim.clasificacion
+	,  tsim.tipo_documento
+	,  tsim.num_factura
+	,  tsim.num_factura_relacionada
+	,  tsim.fecha_factura_relacionada
+	,  tsim.oficina
+	,  tsim.account_num
+	,  tsim.nombre_cliente
+	,  tsim.tipo_doc_cliente
+	,  tsim.identificacion_cliente
+	,  tsim.modelo_terminal
+	,  tsim.imei
+	,  tsim.tipo_cargo
+	,  tsim.modelo_guia_comercial
+	,  tsim.clasificacion_terminal
+	,  tsim.cantidad
+	,  tsim.monto
+	,  tsim.num_abonado
+	,  tsim.movimiento
+	,  tsim.id_tipo_movimiento
+	,  tsim.id_producto
+	,  tsim.plan_codigo
+	,  tsim.plan_nombre
+	,  tsim.tarifa_basica
+	,  tsim.usuario_final AS usuario_final
+	,  tsim.nombre_usuario_final AS nombre_usuario_final
+	,  tsim.tipo_venta
+	,  tsim.cuotas_financiadas
+	,  tsim.ejecutivo_perimetro
+	,  tsim.jefe_perimetro
+	,  tsim.gerente_perimetro
+	,  tsim.nota_credito_masiva
+	,  tsim.forma_pago_factura
+	,  tsim.cuota_inicial
+	,  tsim.canal_comercial AS canal_comercial
+	,  tsim.id_canal AS id_canal
+	,  tsim.nom_distribuidor  AS nom_distribuidor
+	,  tsim.ruc_distribuidor AS ruc_distribuidor
+	,  tsim.codigo_plaza
+	,  tsim.nom_plaza
+	,  tsim.ciudad
+	,  tsim.provincia
+	,  tsim.region
+	,  tsim.nuevo_subcanal AS nuevo_subcanal
+	,  tsim.id_sub_canal AS id_sub_canal
+	,  tsim.tipo_movimiento_mes
+	,  tsim.fecha_alta
+	,  tsim.antiguedad_meses
+	,  tsim.linea_negocio_homologado
+	,  tsim.id_hash
+    ,  tsim.aplica_comision 
+FROM
+	db_desarrollo2021.tmp_terminales_simcards tsim
+UNION ALL
+SELECT
 	t.fecha_proceso AS fecha_proceso
 	,  t.fecha_factura
 	,  t.linea_negocio
@@ -6692,11 +6754,11 @@ SELECT
 	,  t.fecha_alta
 	,  t.antiguedad_meses
 	,  t.linea_negocio_homologado
-	,  t.id_hash
+	,  UPPER(MD5(concat_ws('',t.id_hash,ajt.ruc_distribuidor))) as id_hash
     ,  t.aplica_comision 
 FROM
 	db_desarrollo2021.tmp_terminales_simcards t
-LEFT JOIN 
+INNER JOIN 
     db_desarrollo2021.tmp_ajsts_terminales ajt
 ON  
     (ajt.fecha_proceso=t.fecha_proceso)
