@@ -27,6 +27,8 @@ $VAL_KINIT
 VAL_FECHA_EJEC=$1
 #VAL_RUTA=$2
 VAL_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
+sh -x $VAL_RUTA/bin/OTC_T_AJUSTES_TERMINALES.sh
+
 ETAPA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
 VAL_FTP_PUERTO1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO1';"`
 VAL_FTP_PUERTO2=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO2';"`

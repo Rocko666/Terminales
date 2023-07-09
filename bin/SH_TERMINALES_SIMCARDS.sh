@@ -27,6 +27,8 @@ $VAL_KINIT
 VAL_FECHA_EJEC=$1
 #VAL_RUTA=$2
 VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
+sh -x $VAL_RUTA/bin/OTC_T_AJUSTES_TERMINALES.sh
+
 ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
 VAL_FTP_PUERTO1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO1';"`
 VAL_FTP_PUERTO2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO2';"`
@@ -107,7 +109,6 @@ VAL_RUTA_ARCHIVO_1_4=$VAL_RUTA/input/$VAL_NOM_ARCHIVO1_4
 VAL_RUTA_ARCHIVO_MP=$VAL_RUTA/input/$VAL_NOM_ARCHIVO_MP
 VAL_NOM_ARCHIVO_PREVIO=EXT_TERMINALES.txt
 vTablaDestino="otc_t_terminales_simcards"
-
 
 #VALIDACION DE PARAMETROS INICIALES
 if  [ -z "$ENTIDAD" ] || 
@@ -669,7 +670,7 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA_OUT}\n"
 		expect "sftp>"
-		send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
+		send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
 		expect "sftp>"
 		send "exit\n"
 		interact

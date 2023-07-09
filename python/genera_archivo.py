@@ -56,7 +56,6 @@ print(lne_dvs())
 print(etq_info("INFO: Mostrar application_id => {}".format(str(app_id))))
 timestart_b = datetime.now()
 
-
 try:
     vStp01="GENERACION DE ARCHIVO"
     print(lne_dvs())
