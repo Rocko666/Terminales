@@ -7,15 +7,15 @@ from datetime import datetime
 import os
 from pyspark.sql.functions import col, substring_index
 
-#db_cs_terminales.otc_t_catalogo_terminales -> db_cs_terminales.otc_t_catalogo_terminales 
-#db_rbm.otc_t_terminales_fact -> db_rbm.otc_t_terminales_fact
-#db_rbm.otc_t_terminales_nc -> db_rbm.otc_t_terminales_nc
-#db_rdb.otc_t_r_cbm_bill -> db_rdb.otc_t_r_cbm_bill
-#db_rdb.otc_t_r_am_cpe -> db_rdb.otc_t_r_am_cpe
-#db_rdb.otc_t_v_usuarios -> db_rdb.otc_t_v_usuarios
-#db_cs_terminales.otc_t_catalogo_ruc_das_retail -> db_cs_terminales.otc_t_catalogo_ruc_das_retail
-#db_cs_terminales.otc_t_catalogo_tipo_canal ->  db_cs_terminales.otc_t_catalogo_tipo_canal
-#db_cs_terminales.otc_t_catalogo_canal_online ->  db_desarrollo2021.otc_t_catalogo_canal_online
+#db_cs_terminales.otc_t_catalogo_terminales -> db_cs_terminales.otc_t_catalogo_terminales ---> SI
+#db_rbm.otc_t_terminales_fact -> db_rbm.otc_t_terminales_fact ---> NO  
+#db_rbm.otc_t_terminales_nc -> db_rbm.otc_t_terminales_nc ---> NO
+#db_rdb.otc_t_r_cbm_bill -> db_rdb.otc_t_r_cbm_bill ---> SI
+#db_rdb.otc_t_r_am_cpe -> db_rdb.otc_t_r_am_cpe ---> SI
+#db_rdb.otc_t_v_usuarios -> db_rdb.otc_t_v_usuarios ---> SI
+#db_cs_terminales.otc_t_catalogo_ruc_das_retail -> db_cs_terminales.otc_t_catalogo_ruc_das_retail  -->SI
+#db_cs_terminales.otc_t_catalogo_tipo_canal ->  db_cs_terminales.otc_t_catalogo_tipo_canal-->SI
+#db_cs_terminales.otc_t_catalogo_canal_online ->  db_desarrollo2021.otc_t_catalogo_canal_online -->SI
 #db_cs_terminales.otc_t_asigna_canal_ventas -> db_cs_terminales.otc_t_asigna_canal_ventas
 #db_cs_terminales.otc_t_ctl_cat_seg_sub_seg -> db_cs_terminales.otc_t_ctl_cat_seg_sub_seg
 #db_cs_terminales.otc_t_ctl_seg_terminal -> db_cs_terminales.otc_t_ctl_seg_terminal
