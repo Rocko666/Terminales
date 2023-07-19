@@ -19,6 +19,95 @@ from pyspark.sql.functions import col, substring_index
 #db_cs_terminales.otc_t_asigna_canal_ventas -> db_desarrollo2021.otc_t_asigna_canal_ventas_prycldr
 #db_cs_terminales.otc_t_ctl_cat_seg_sub_seg -> db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg_prycldr
 #db_cs_terminales.otc_t_ctl_seg_terminal -> db_desarrollo2021.otc_t_ctl_seg_terminal_prycldr
+#db_temporales.tmp_otc_t_terminales_simcards --->db_desarrollo2021.tmp_otc_t_terminales_simcards
+def tmp_otc_t_terminales_simcards(fecha_meses_atras2,fecha_fin):
+    qry="""
+    SELECT 
+        linea_negocio
+        , segmento
+        , sub_segmento
+        , movimiento
+        , fuente_movimiento
+        , telefono
+        , clasificacion
+        , num_factura
+        , num_factura_relacionada
+        , fecha_factura_relacionada
+        , fecha_factura
+        , usuario_factura
+        , nombre_usuario_factura
+        , usuario_final
+        , nombre_usuario_final
+        , oficina_usuario
+        , distribuidor_usuario
+        , codigo_tipo_documento
+        , tipo_documento
+        , oficina
+        , account_num
+        , nombre_cliente
+        , identificacion_cliente
+        , concepto_facturable
+        , modelo_terminal
+        , codigo_articulo
+        , descripcion_articulo
+        , imei
+        , tipo_cargo
+        , segmentacion_smarts
+        , fabricante
+        , modelo_guia_comercial
+        , gama_equipo
+        , clasificacion_terminal
+        , tecnologia
+        , codigo_da
+        , despacho
+        , razon_social
+        , canal_comercial
+        , tipo_canal
+        , fuente_canal
+        , region
+        , cantidad
+        , monto
+        , monto_unitario
+        , num_abonado
+        , plan_codigo
+        , plan_nombre
+        , tarifa_basica
+        , costo_unitario
+        , costo_total
+        , pvp_prepago
+        , subsidio_unitario
+        , fuente_costo
+        , fecha_proceso
+        , tienda
+        , branch
+        , canal_netcracker
+        , cuotas_financiadas
+        , tipo_venta
+        , ejecutivo_perimetro
+        , jefe_perimetro
+        , gerente_perimetro
+        , orden_venta
+        , fecha_creacion_orden_venta
+        , codigo_creador_orden_venta
+        , nombre_creador_orden_venta
+        , codigo_propietario_orden_venta
+        , nombre_propietario_orden_venta
+        , codigo_confirmador_orden_venta
+        , nombre_confirmador_orden_venta
+        , nota_credito_masiva
+        , precio_base
+        , precio_con_override
+        , usuario_override
+        , fecha_override
+        , cuota_inicial
+        , monto_financiado
+        , financiado_sin_iva
+        , p_fecha_factura
+    FROM db_cs_terminales.otc_t_terminales_simcards
+    WHERE (p_fecha_factura>={fecha_meses_atras2} AND p_fecha_factura<{fecha_fin})
+    """.format(fecha_meses_atras2=fecha_meses_atras2,fecha_fin=fecha_fin)
+    print(qry)
+    return qry
 
 def tmp_catalogo_terminales_csts():
     qry="""
@@ -2992,7 +3081,7 @@ def tmp_costo_rep_anterior_csts(fecha_meses_atras1,fecha_inicio):
     a.fecha_factura
     FROM (SELECT modelo_terminal,costo_unitario,fecha_factura,
     row_number() OVER (PARTITION BY modelo_terminal ORDER BY fecha_factura DESC) AS rn
-    FROM db_cs_terminales.otc_t_terminales_simcards
+    FROM db_desarrollo2021.tmp_otc_t_terminales_simcards
     WHERE p_fecha_factura>={fecha_meses_atras1} AND p_fecha_factura<{fecha_inicio}) a 
     LEFT JOIN (SELECT modelo_terminal FROM tmp_costo_sin_imei_csts
     WHERE costo_unitario IS NULL
@@ -3454,7 +3543,7 @@ def tmp_fact_final_tipcanal_csts():
     print(qry)
     return qry
 
-def tmp_campos_para_nc_csts(fecha_meses_atras2,fecha_fin):
+def tmp_campos_para_nc_csts():
     qry="""
     SELECT DISTINCT a.account_num,
     b.num_factura as nota_credito,
@@ -3576,13 +3665,12 @@ def tmp_campos_para_nc_csts(fecha_meses_atras2,fecha_fin):
     tipo_venta,
     usuario_factura AS usuario,
     usuario_final AS usuario_cruzar
-    FROM db_cs_terminales.otc_t_terminales_simcards
-    WHERE (p_fecha_factura>={fecha_meses_atras2} AND p_fecha_factura<{fecha_fin})) a 
+    FROM db_desarrollo2021.tmp_otc_t_terminales_simcards) a 
     INNER JOIN tmp_fact_final_tipcanal_csts b 
     ON a.num_factura=b.origin_invoice_num
     AND a.account_num=b.account_num
     AND b.tipo_documento='NOTA DE CREDITO'
-    """.format(fecha_meses_atras2=fecha_meses_atras2,fecha_fin=fecha_fin)
+    """
     print(qry)
     return qry
 

@@ -7,7 +7,6 @@ from datetime import datetime
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from pyspark.sql.functions import *
-from pyspark_llap import HiveWarehouseSession
 import argparse
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -64,19 +63,19 @@ vval_usuario_final=parametros.vval_usuario_final
 vTablaDestino=parametros.vTablaDestino
 
 ## STEP 3: Inicio el SparkSession
-spark = SparkSession \
-    .builder \
-    .config("hive.exec.dynamic.partition.mode", "nonstrict") \
-    .config("spark.yarn.queue", "reportes") \
-    .config("spark.rpc.askTimeout", "300s") \
-    .appName(vEntidad) \
+spark = SparkSession\
+    .builder\
     .enableHiveSupport() \
+    .config("spark.sql.broadcastTimeout", "36000") \
+    .config("hive.exec.dynamic.partition", "true") \
+    .config("hive.exec.dynamic.partition.mode", "nonstrict") \
+    .config("hive.enforce.bucketing", "false")\
+    .config("hive.enforce.sorting", "false")\
     .getOrCreate()
-spark.sparkContext.setLogLevel("ERROR")
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
-hive_hwc = HiveWarehouseSession.session(spark).build()
 app_id = spark._sc.applicationId
+print(etq_info("INFO: Mostrar application_id => {}".format(str(app_id))))
 
 ##STEP 4:QUERYS
 print(lne_dvs())
@@ -867,15 +866,14 @@ try:
     print(lne_dvs())
     print(etq_info("Paso [61]: Ejecucion de funcion [tmp_campos_para_nc_csts] - INFORMACION DE CAMPOS PARA NOTAS DE CREDITO"))
     print(lne_dvs())
-    df_tmp_campos_para_nc_csts=spark.sql(tmp_campos_para_nc_csts(vfecha_meses_atras2,vfecha_fin)).cache()
+    df_tmp_campos_para_nc_csts=spark.sql(tmp_campos_para_nc_csts()).cache()
     df_tmp_campos_para_nc_csts.printSchema()
     ts_step_tbl = datetime.now()
     df_tmp_campos_para_nc_csts.createOrReplaceTempView("tmp_campos_para_nc_csts")
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_campos_para_nc_csts",str(df_tmp_campos_para_nc_csts.count())))) 
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_campos_para_nc_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
-    #
-    
+        
     vStp01="Paso 62"
     print(lne_dvs())
     print(etq_info("Paso [62]: Ejecucion de funcion [tmp_costos_fact_final_v2_csts] - UNIVERSO PRINCIPAL CON LOS CAMPOS DE NOTAS DE CREDITO"))

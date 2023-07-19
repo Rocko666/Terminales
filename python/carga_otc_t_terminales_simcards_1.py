@@ -1,18 +1,20 @@
 # -- coding: utf-8 --
 import sys
 reload(sys)
-sys.setdefaultencoding('utf-8')
+from query import *
 from pyspark.sql import SparkSession, DataFrame
 from datetime import datetime
+from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from pyspark.sql.functions import *
+from pyspark_llap import HiveWarehouseSession
 import argparse
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from query_ext_terminales import *
 sys.path.insert(1, '/var/opt/tel_spark')
 from messages import *
 from functions import *
+from create import *
 
 ## STEP 1: Definir variables o constantes
 vLogInfo='INFO:'
@@ -22,52 +24,49 @@ timestart = datetime.now()
 ## STEP 2: Captura de argumentos en la entrada
 parser = argparse.ArgumentParser()
 parser.add_argument('--ventidad', required=False, type=str,help='Parametro de la entidad')
-parser.add_argument('--vval_fecha_formato', required=True, type=str,help='Parametro 1 de la query sql')
-parser.add_argument('--vval_dia_uno', required=True, type=str,help='Parametro 2 de la query sql')
-parser.add_argument('--vfecha_inicio', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vArchivo', required=True, type=str, help='Nombre del archivo final')
+parser.add_argument('--vhivebd', required=True, type=str, help='Nombre de la base de datos hive (tabla de salida)')
+parser.add_argument('--vfecha_fin', required=True, type=str,help='Parametro 1 de la query sql')
+parser.add_argument('--vfecha_meses_atras2', required=True, type=str,help='Parametro 3 de la query sql')
 
 parametros = parser.parse_args()
 vEntidad=parametros.ventidad
-vArchivo=parametros.vArchivo
-vval_fecha_formato=parametros.vval_fecha_formato
-vval_dia_uno=parametros.vval_dia_uno
-vfecha_inicio=parametros.vfecha_inicio
+vBaseHive=parametros.vhivebd
+vfecha_fin=parametros.vfecha_fin
+vfecha_meses_atras2=parametros.vfecha_meses_atras2
+vTTempTermSCards='db_desarrollo2021.tmp_otc_t_terminales_simcards'
 
 ## STEP 3: Inicio el SparkSession
 spark = SparkSession \
     .builder \
-    .config("spark.driver.maxResultSize", "4g") \
-    .config("hive.exec.dynamic.partition", "true") \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
-    .config("spark.yarn.queue", "capa_semantica") \
-    .config("hive.enforce.bucketing", "false")\
-    .config("hive.enforce.sorting", "false")\
+    .config("spark.rpc.askTimeout", "300s") \
     .appName(vEntidad) \
     .enableHiveSupport() \
     .getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
+hive_hwc = HiveWarehouseSession.session(spark).build()
 app_id = spark._sc.applicationId
 
 ##STEP 4:QUERYS
 print(lne_dvs())
 print(etq_info("INFO: Mostrar application_id => {}".format(str(app_id))))
 timestart_b = datetime.now()
-
 try:
-    vStp01="GENERACION DE ARCHIVO"
     print(lne_dvs())
     print(lne_dvs())
-    print(etq_info(vStp01))
+    vStp01="Paso 1"
     print(lne_dvs())
+    print(etq_info("Paso [1]: Ejecucion de funcion [tmp_otc_t_terminales_simcards]- CREA TEMPORAL CON LA INFORMACION DE LA TABLA PRINCIPAL DE CS TERMINALES[TRANSACCIONAL]"))
     print(lne_dvs())
-    df_arch1 = spark.sql(sql_file())
-    df_arch1.printSchema()
-    print(etq_info(msg_t_total_registros_obtenidos("df_arch1",str(df_arch1.count())))) #BORRAR
-    pandas_df1 = df_arch1.toPandas()
-    pandas_df1.to_csv(vArchivo, sep='|',index=False)   
+    df1=spark.sql(tmp_otc_t_terminales_simcards(vfecha_meses_atras2,vfecha_fin)).cache()
+    df1.printSchema()
+    ts_step_tbl = datetime.now()
+    df1.write.mode('overwrite').format('parquet').saveAsTable(vTTempTermSCards)
+    print(etq_info(msg_t_total_registros_obtenidos("df1",str(df1.count())))) 
+    te_step_tbl = datetime.now()
+    print(etq_info(msg_d_duracion_hive("df1",vle_duracion(ts_step_tbl,te_step_tbl))))
 except Exception as e:
 	exit(etq_error(msg_e_ejecucion(vStp01,str(e))))
 
@@ -76,16 +75,14 @@ vStpFin='Paso [Final]: Eliminando dataframes ..'
 print(lne_dvs())
 
 try:
-    ts_step = datetime.now()    
-    del df_arch1, pandas_df1
+    ts_step = datetime.now()
+    del df1
     te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStpFin,vle_duracion(ts_step,te_step))))
 except Exception as e:
     exit(msg_e_ejecucion(vStpFin,str(e)))
 
 spark.stop()
-spark.stop()
 timeend = datetime.now()
 print(etq_info(msg_d_duracion_ejecucion(vEntidad,vle_duracion(timestart,timeend))))
 print(lne_dvs())
-

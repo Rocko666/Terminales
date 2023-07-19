@@ -56,12 +56,6 @@ VAL_USUARIO_FINAL=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"
 VAL_MESES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES';"`
 VAL_MESES1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES1';"`
 VAL_MESES2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES2';"`
-VAL_FTP_PUERTO_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO_OUT';"`
-VAL_FTP_USER_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER_OUT';"`
-VAL_FTP_HOSTNAME_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME_OUT';"`
-VAL_FTP_PASS_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS_OUT';"`
-VAL_FTP_RUTA_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA_OUT';"`
-VAL_NOM_ARCHIVO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO';"`
 VAL_TIPO_CARGA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TIPO_CARGA';"`
 VAL_MASTER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MASTER';"`
 VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_DRIVER_MEMORY';"`
@@ -106,7 +100,6 @@ VAL_RUTA_ARCHIVO_2_0=$VAL_RUTA/input/$VAL_NOM_ARCHIVO2_0
 VAL_RUTA_ARCHIVO_1_3=$VAL_RUTA/input/$VAL_NOM_ARCHIVO1_3_CON
 VAL_RUTA_ARCHIVO_1_4=$VAL_RUTA/input/$VAL_NOM_ARCHIVO1_4
 VAL_RUTA_ARCHIVO_MP=$VAL_RUTA/input/$VAL_NOM_ARCHIVO_MP
-VAL_NOM_ARCHIVO_PREVIO=EXT_TERMINALES.txt
 vTablaDestino="otc_t_terminales_simcards"
 
 #VALIDACION DE PARAMETROS INICIALES
@@ -138,12 +131,6 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_MESES" ] || 
     [ -z "$VAL_MESES1" ] || 
     [ -z "$VAL_MESES2" ] || 
-    [ -z "$VAL_FTP_PUERTO_OUT" ] || 
-    [ -z "$VAL_FTP_USER_OUT" ] || 
-    [ -z "$VAL_FTP_HOSTNAME_OUT" ] || 
-    [ -z "$VAL_FTP_PASS_OUT" ] || 
-    [ -z "$VAL_FTP_RUTA_OUT" ] || 
-    [ -z "$VAL_NOM_ARCHIVO" ] || 
     [ -z "$VAL_TIPO_CARGA" ] || 
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
@@ -516,20 +503,10 @@ fi
 #HACE EL LLAMADO AL HQL QUE REALIZA LOS CRUCES PARA GENERAR LA INFORMACION EN LA TABLA FINAL OTC_T_TERMINALES_SIMCARDS
 if [ "$ETAPA" = "11" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 11: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 11: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_1.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "Fecha inicio:            $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
+echo "Fecha meses atras 2:     $VAL_MESES_ATRAS2" 2>&1 &>> $VAL_LOG
 echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
-echo "Fecha antes de ayer:     $VAL_FECHA_FORMATO_PRE" 2>&1 &>> $VAL_LOG
-echo "Anio mes:                $VAL_MES" 2>&1 &>> $VAL_LOG
-echo "Dia mes siguiente:       $VAL_DIA_UNO_MES_SIG_FRMT" 2>&1 &>> $VAL_LOG
-echo "Primer dia:              $VAL_FECHA_FORMATO_INI" 2>&1 &>> $VAL_LOG
-echo "Ultimo dia:              $VAL_FECHA_FORMATO" 2>&1 &>> $VAL_LOG
-echo "Meses atras:             $VAL_MESES_ATRAS - $VAL_MESES_ATRAS1 - $VAL_MESES_ATRAS2" 2>&1 &>> $VAL_LOG
-echo "Primer dia mes anterior: $VAL_TS_INI" 2>&1 &>> $VAL_LOG
-echo "Usuario:                 $VAL_USUARIO4" 2>&1 &>> $VAL_LOG
-echo "Usuario Final:           $VAL_USUARIO_FINAL" 2>&1 &>> $VAL_LOG
-echo "Tabla Destino:           $vTablaDestino" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-*.jar \
@@ -546,12 +523,63 @@ $VAL_RUTA_SPARK \
 --py-files /opt/cloudera/parcels/CDH/lib/hive_warehouse_connector/pyspark_hwc-1.0.0.7.1.7.1000-141.zip \
 --conf spark.sql.hive.hiveserver2.jdbc.url="jdbc:hive2://quisrvbigdata1.otecel.com.ec:2181,quisrvbigdata2.otecel.com.ec:2181,quisrvbigdata10.otecel.com.ec:2181,quisrvbigdata11.otecel.com.ec:2181/default;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" \
 --master $VAL_MASTER \
+--queue capa_semantica \
 --name $ENTIDAD \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
 --num-executors $VAL_NUM_EXECUTORS \
 --executor-cores $VAL_EXECUTOR_CORES \
-$VAL_RUTA/python/carga_otc_t_terminales_simcards.py \
+$VAL_RUTA/python/carga_otc_t_terminales_simcards_1.py \
+--ventidad=$ENTIDAD \
+--vhivebd=$HIVEDB \
+--vfecha_fin=$VAL_DIA_UNO \
+--vfecha_meses_atras2=$VAL_MESES_ATRAS2 2>&1 &>> $VAL_LOG
+
+error_spark=`egrep 'Traceback|error: argument|invalid syntax|An error occurred|Caused by:|cannot resolve|Non-ASCII character|UnicodeEncodeError:|can not accept object|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client|ImportError|SyntaxError' $VAL_LOG | wc -l`
+if [ $error_spark -eq 0 ];then
+echo "==== OK - La ejecucion del archivo spark carga_otc_t_terminales_simcards_1.py es EXITOSO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+else
+echo "==== ERROR: - En la ejecucion del archivo spark carga_otc_t_terminales_simcards_1.py ====" 2>&1 &>> $VAL_LOG
+exit 1
+fi
+
+ETAPA=12
+#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
+echo "==== OK - Se procesa la ETAPA 11 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='12' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+fi
+
+#HACE EL LLAMADO AL HQL QUE REALIZA LOS CRUCES PARA GENERAR LA INFORMACION EN LA TABLA FINAL OTC_T_TERMINALES_SIMCARDS
+if [ "$ETAPA" = "12" ]; then
+echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 12: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_2.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
+echo "Fecha inicio:            $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
+echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
+echo "Fecha antes de ayer:     $VAL_FECHA_FORMATO_PRE" 2>&1 &>> $VAL_LOG
+echo "Anio mes:                $VAL_MES" 2>&1 &>> $VAL_LOG
+echo "Dia mes siguiente:       $VAL_DIA_UNO_MES_SIG_FRMT" 2>&1 &>> $VAL_LOG
+echo "Primer dia:              $VAL_FECHA_FORMATO_INI" 2>&1 &>> $VAL_LOG
+echo "Ultimo dia:              $VAL_FECHA_FORMATO" 2>&1 &>> $VAL_LOG
+echo "Meses atras:             $VAL_MESES_ATRAS - $VAL_MESES_ATRAS1 - $VAL_MESES_ATRAS2" 2>&1 &>> $VAL_LOG
+echo "Primer dia mes anterior: $VAL_TS_INI" 2>&1 &>> $VAL_LOG
+echo "Usuario:                 $VAL_USUARIO4" 2>&1 &>> $VAL_LOG
+echo "Usuario Final:           $VAL_USUARIO_FINAL" 2>&1 &>> $VAL_LOG
+echo "Tabla Destino:           $vTablaDestino" 2>&1 &>> $VAL_LOG
+
+$VAL_RUTA_SPARK \
+--conf spark.ui.enabled=false \
+--conf spark.shuffle.service.enabled=true \
+--conf spark.dynamicAllocation.enabled=false \
+--conf spark.port.maxRetries=100 \
+--master $VAL_MASTER \
+--queue capa_semantica \
+--name $ENTIDAD \
+--driver-memory $VAL_DRIVER_MEMORY \
+--executor-memory $VAL_EXECUTOR_MEMORY \
+--num-executors $VAL_NUM_EXECUTORS \
+--executor-cores $VAL_EXECUTOR_CORES \
+$VAL_RUTA/python/carga_otc_t_terminales_simcards_2.py \
 --ventidad=$ENTIDAD \
 --vhivebd=$HIVEDB \
 --vfecha_fin=$VAL_DIA_UNO \
@@ -573,14 +601,14 @@ $VAL_RUTA/python/carga_otc_t_terminales_simcards.py \
 
 error_spark=`egrep 'Traceback|error: argument|invalid syntax|An error occurred|Caused by:|cannot resolve|Non-ASCII character|UnicodeEncodeError:|can not accept object|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client|ImportError|SyntaxError' $VAL_LOG | wc -l`
 if [ $error_spark -eq 0 ];then
-echo "==== OK - La ejecucion del archivo spark carga_otc_t_terminales_simcards.py es EXITOSO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== OK - La ejecucion del archivo spark carga_otc_t_terminales_simcards_2.py es EXITOSO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
 else
-echo "==== ERROR: - En la ejecucion del archivo spark carga_otc_t_terminales_simcards.py ====" 2>&1 &>> $VAL_LOG
+echo "==== ERROR: - En la ejecucion del archivo spark carga_otc_t_terminales_simcards_2.py ====" 2>&1 &>> $VAL_LOG
 exit 1
 fi
 
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 11 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== OK - Se procesa la ETAPA 12 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
 `mysql -N  <<<"update params_des set valor='1' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 

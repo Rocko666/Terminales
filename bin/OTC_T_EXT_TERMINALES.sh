@@ -1,6 +1,6 @@
 set -e
 #########################################################################################################
-# NOMBRE: SH_TERMINALES_SIMCARDS_ACTUAL.sh   	     	      								            #
+# NOMBRE: OTC_T_EXT_TERMINALES.sh   	     	      								            #
 # DESCRIPCION:																							#
 #   Shell que realiza el proceso del mes actual para generar la informacio de terminales simcards		#
 # AUTOR: Karina Castro - Softconsulting                            										#
@@ -14,6 +14,7 @@ set -e
 # 2022-12-30	Brigitte Balon	Se migra importacion a spark			 								#
 # 2023-07-14    Cristian Ortiz	Extractor con cambios de alcance para Comisiones    	                #			
 #########################################################################################################
+# sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_FACT.sh 20230704 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_NC.sh 20230704 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_CBM_BILL.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_AM_CPE.sh 20230704 &&  sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_V_USUARIOS.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/SH_TERMINALES_SIMCARDS.sh 20230704 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_EXT_TERMINALES.sh 20230704
 ##############
 # VARIABLES #
 ##############
@@ -25,35 +26,16 @@ $VAL_KINIT
 VAL_FECHA_EJEC=$1
 #VAL_RUTA=$2
 VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
-sh -x $VAL_RUTA/bin/OTC_T_AJUSTES_TERMINALES.sh
+#sh -x $VAL_RUTA/bin/OTC_T_AJUSTES_TERMINALES.sh
 
 ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
-VAL_FTP_PUERTO1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO1';"`
-VAL_FTP_PUERTO2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO2';"`
-VAL_FTP_USER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER';"`
-VAL_FTP_HOSTNAME=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME';"`
-VAL_FTP_PASS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS';"`
-VAL_FTP_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA';"`
 HIVEDB=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_BASE_DATOS';"`
-VAL_TABLA_TC=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_TC';"`
-VAL_TABLA_RDR=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_RDR';"`
-VAL_TABLA_T=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_T';"`
-VAL_TABLA_UO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_UO';"`
-VAL_TABLA_CANAL=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_CANAL';"`
-VAL_TABLA_SEG=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_SEG';"`
-VAL_TABLA_CST=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TABLA_CST';"`
-VAL_USUARIO4=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_USUARIO4';"`
-VAL_USUARIO_FINAL=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_USUARIO_FINAL';"`
-VAL_MESES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES';"`
-VAL_MESES1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES1';"`
-VAL_MESES2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MESES2';"`
 VAL_FTP_PUERTO_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO_OUT';"`
 VAL_FTP_USER_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER_OUT';"`
 VAL_FTP_HOSTNAME_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME_OUT';"`
 VAL_FTP_PASS_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS_OUT';"`
 VAL_FTP_RUTA_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA_OUT';"`
 VAL_NOM_ARCHIVO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO';"`
-VAL_TIPO_CARGA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TIPO_CARGA';"`
 VAL_MASTER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MASTER';"`
 VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_DRIVER_MEMORY';"`
 VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
@@ -69,22 +51,9 @@ VAL_DIA_UNO=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y%m01"` #fecha fin
 VAL_FECHA_INI=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m01"` #fecha ini
 VAL_FECHA_FORMATO_PRE=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m%d"`
 VAL_FECHA_FORMATO=`date -d "${VAL_DIA_UNO} -1 day"  +"%d/%m/%Y"`
-VAL_DIA_UNO_MES_SIG_FRMT=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y-%m-01"`
-VAL_MES=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m"`
-VAL_SOLO_ANIO=`echo $VAL_FECHA_INI | cut -c1-4`
-VAL_SOLO_MES=`echo $VAL_FECHA_INI | cut -c5-6`
-VAL_MESES_ATRAS=$(date -d "$(date -d $VAL_DIA_UNO +%Y%m%d) -${VAL_MESES} month" +%Y%m%d)
-VAL_MESES_ATRAS1=$(date -d "$(date -d $VAL_DIA_UNO +%Y%m%d) -${VAL_MESES1} month" +%Y%m%d)
-VAL_MESES_ATRAS2=$(date -d "$(date -d $VAL_DIA_UNO +%Y%m%d) -${VAL_MESES2} month" +%Y%m%d)
-VAL_FECHA_FORM_INI=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y-%m-01"`
-VAL_FECHA_FORMATO_INI=$VAL_FECHA_FORM_INI" 00:00:00"
-VAL_D1_MES_ANT=`date -d "${VAL_DIA_UNO} -1 month"  +"%Y-%m-%d"`
-VAL_TS_INI=$VAL_D1_MES_ANT" 00:00:00"
 VAL_DIA=`date '+%Y%m%d'` 
 VAL_HORA=`date '+%H%M%S'` 
-VAL_LOG=$VAL_RUTA/logs/SH_TERMINALES_SIMCARDS_$VAL_DIA$VAL_HORA.log
-VAL_RUTA_ARCHIVO=$VAL_RUTA/input
-VAL_RUTA_ARCHIVO_MP=$VAL_RUTA/input/$VAL_NOM_ARCHIVO_MP
+VAL_LOG=$VAL_RUTA/logs/OTC_T_EXT_TERMINALES_$VAL_DIA$VAL_HORA.log
 VAL_NOM_ARCHIVO_PREVIO=EXT_TERMINALES.txt
 
 #VALIDACION DE PARAMETROS INICIALES
@@ -92,25 +61,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_FECHA_EJEC" ] || 
     [ -z "$VAL_RUTA" ] || 
     [ -z "$ETAPA" ] || 
-    [ -z "$VAL_FTP_PUERTO1" ] || 
-    [ -z "$VAL_FTP_PUERTO2" ] || 
-    [ -z "$VAL_FTP_USER" ] || 
-    [ -z "$VAL_FTP_HOSTNAME" ] || 
-    [ -z "$VAL_FTP_PASS" ] || 
-    [ -z "$VAL_FTP_RUTA" ] || 
     [ -z "$HIVEDB" ] || 
-    [ -z "$VAL_TABLA_TC" ] || 
-    [ -z "$VAL_TABLA_RDR" ] || 
-    [ -z "$VAL_TABLA_T" ] || 
-    [ -z "$VAL_TABLA_UO" ] || 
-    [ -z "$VAL_TABLA_CANAL" ] || 
-    [ -z "$VAL_TABLA_SEG" ] || 
-    [ -z "$VAL_TABLA_CST" ] || 
-    [ -z "$VAL_USUARIO4" ] || 
-    [ -z "$VAL_USUARIO_FINAL" ] || 
-    [ -z "$VAL_MESES" ] || 
-    [ -z "$VAL_MESES1" ] || 
-    [ -z "$VAL_MESES2" ] || 
     [ -z "$VAL_FTP_PUERTO_OUT" ] || 
     [ -z "$VAL_FTP_USER_OUT" ] || 
     [ -z "$VAL_FTP_HOSTNAME_OUT" ] || 
@@ -131,12 +82,7 @@ echo "==========================================================================
 echo "Fecha inicio:            $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
 echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
 echo "Fecha antes de ayer:     $VAL_FECHA_FORMATO_PRE" 2>&1 &>> $VAL_LOG
-echo "Anio mes:                $VAL_MES" 2>&1 &>> $VAL_LOG
-echo "Dia mes siguiente:       $VAL_DIA_UNO_MES_SIG_FRMT" 2>&1 &>> $VAL_LOG
-echo "Primer dia:              $VAL_FECHA_FORMATO_INI" 2>&1 &>> $VAL_LOG
 echo "Ultimo dia:              $VAL_FECHA_FORMATO" 2>&1 &>> $VAL_LOG
-echo "Meses atras:             $VAL_MESES_ATRAS - $VAL_MESES_ATRAS1 - $VAL_MESES_ATRAS2" 2>&1 &>> $VAL_LOG
-echo "Primer dia mes anterior: $VAL_TS_INI" 2>&1 &>> $VAL_LOG
 echo "Usuario:                 $VAL_USUARIO4" 2>&1 &>> $VAL_LOG
 echo "Usuario Final:           $VAL_USUARIO_FINAL" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino:           $vTablaDestino" 2>&1 &>> $VAL_LOG
@@ -167,19 +113,7 @@ $VAL_RUTA/python/otc_t_ext_terminales.py \
 --vfecha_fin=$VAL_DIA_UNO \
 --vfecha_inicio=$VAL_FECHA_INI \
 --vfecha_antes_ayer=$VAL_FECHA_FORMATO_PRE \
---vdia_uno_mes_sig_frmt=$VAL_DIA_UNO_MES_SIG_FRMT \
---vultimo_dia_act_frmt=$VAL_FECHA_FORMATO \
---vanio_mes=$VAL_MES \
---vsolo_anio=$VAL_SOLO_ANIO \
---vsolo_mes=$VAL_SOLO_MES \
---vfecha_meses_atras=$VAL_MESES_ATRAS \
---vfecha_meses_atras1=$VAL_MESES_ATRAS1 \
---vfecha_meses_atras2=$VAL_MESES_ATRAS2 \
---vdia_uno_mes_act_frmt="${VAL_FECHA_FORMATO_INI}" \
---vdia_uno_mes_ant_frmt="${VAL_TS_INI}" \
---vval_usuario4=${VAL_USUARIO4} \
---vTablaDestino=$vTablaDestino \
---vval_usuario_final=${VAL_USUARIO_FINAL} 2>&1 &>> $VAL_LOG
+--vultimo_dia_act_frmt=$VAL_FECHA_FORMATO 2>&1 &>> $VAL_LOG
 
 error_spark=`egrep 'Traceback|error: argument|invalid syntax|An error occurred|Caused by:|cannot resolve|Non-ASCII character|UnicodeEncodeError:|can not accept object|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client|ImportError|SyntaxError' $VAL_LOG | wc -l`
 if [ $error_spark -eq 0 ];then
@@ -275,7 +209,7 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_FTP_RUTA_OUT}\n"
 		expect "sftp>"
-		send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
+		send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 		expect "sftp>"
 		send "exit\n"
 		interact

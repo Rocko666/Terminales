@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
 import sys
 reload(sys)
-from query import *
+from query_ext_terminales import *
 from pyspark.sql import SparkSession, DataFrame
 from datetime import datetime
 from pyspark.sql import functions as F
@@ -29,19 +29,7 @@ parser.add_argument('--vhivebd', required=True, type=str, help='Nombre de la bas
 parser.add_argument('--vfecha_fin', required=True, type=str,help='Parametro 1 de la query sql')
 parser.add_argument('--vfecha_inicio', required=True, type=str,help='Parametro 2 de la query sql')
 parser.add_argument('--vfecha_antes_ayer', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vdia_uno_mes_sig_frmt', required=True, type=str,help='Parametro 3 de la query sql')
 parser.add_argument('--vultimo_dia_act_frmt', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vanio_mes', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vsolo_anio', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vsolo_mes', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vfecha_meses_atras', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vfecha_meses_atras1', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vfecha_meses_atras2', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vdia_uno_mes_act_frmt', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vdia_uno_mes_ant_frmt', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vval_usuario4', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vval_usuario_final', required=True, type=str,help='Parametro 3 de la query sql')
-parser.add_argument('--vTablaDestino', required=True, type=str,help='Parametro 3 de la query sql')
 
 parametros = parser.parse_args()
 vEntidad=parametros.ventidad
@@ -49,19 +37,7 @@ vBaseHive=parametros.vhivebd
 vfecha_fin=parametros.vfecha_fin
 vfecha_inicio=parametros.vfecha_inicio
 vfecha_antes_ayer=parametros.vfecha_antes_ayer
-vdia_uno_mes_sig_frmt=parametros.vdia_uno_mes_sig_frmt
 vultimo_dia_act_frmt=parametros.vultimo_dia_act_frmt
-vanio_mes=parametros.vanio_mes
-vsolo_anio=parametros.vsolo_anio
-vsolo_mes=parametros.vsolo_mes
-vfecha_meses_atras=parametros.vfecha_meses_atras
-vfecha_meses_atras1=parametros.vfecha_meses_atras1
-vfecha_meses_atras2=parametros.vfecha_meses_atras2
-vdia_uno_mes_act_frmt=parametros.vdia_uno_mes_act_frmt
-vdia_uno_mes_ant_frmt=parametros.vdia_uno_mes_ant_frmt
-vval_usuario4=parametros.vval_usuario4
-vval_usuario_final=parametros.vval_usuario_final
-vTablaDestino=parametros.vTablaDestino
 
 ## STEP 3: Inicio el SparkSession
 spark = SparkSession \
