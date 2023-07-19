@@ -277,7 +277,7 @@ def tmp_imei_articulo_csts():
     cpe_mod.name AS nombre_articulo,
     cpe.purchase_price,
     cpe.modified_when   
-    FROM db_desarrollo2021.otc_t_r_am_cpe cpe 
+    FROM db_rdb.otc_t_r_am_cpe cpe 
     INNER JOIN db_rdb.otc_t_r_am_cpe_model cpe_mod 
     ON cpe_mod.object_id = cpe.stock_item_model
     """

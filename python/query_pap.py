@@ -6772,7 +6772,7 @@ AND
 
 def sql_file():
     qry="""
-SELECT * FROM db_temporales.otc_t_ext_terminales_ajst
+SELECT * FROM db_cs_terminales.otc_t_ext_terminales_ajst
     """
     print(qry)
     return qry

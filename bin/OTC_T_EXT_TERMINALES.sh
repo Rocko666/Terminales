@@ -244,3 +244,7 @@ fi
 	
 echo "==== Finaliza ejecucion del proceso Extractor de Terminales ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 
+
+
+
+
