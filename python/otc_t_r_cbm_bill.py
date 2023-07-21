@@ -50,7 +50,7 @@ PARENT_ID,
 PROJECT_ID, 
 SALES_ORDER_ID, 
 SOURCE_SYSTEM 
-FROM rdb_reportes.r_cbm_bill
+FROM r_cbm_bill
 """
 
 ## 2.- Inicio el SparkSession

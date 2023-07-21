@@ -29,12 +29,6 @@ VAL_FECHA_EJEC=$1
 VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
 
 ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
-VAL_FTP_PUERTO1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO1';"`
-VAL_FTP_PUERTO2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PUERTO2';"`
-VAL_FTP_USER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_USER';"`
-VAL_FTP_HOSTNAME=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_HOSTNAME';"`
-VAL_FTP_PASS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_PASS';"`
-VAL_FTP_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_FTP_RUTA';"`
 VAL_NOM_ARCHIVO1_0=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_0';"`
 VAL_NOM_ARCHIVO1_1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_1';"`
 VAL_NOM_ARCHIVO1_2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NOM_ARCHIVO1_2';"`
@@ -62,9 +56,15 @@ VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"
 VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
 VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS';"`
 VAL_EXECUTOR_CORES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_CORES';"`
+VAL_SFTP_RUTA_1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD" AND parametro = 'VAL_SFTP_RUTA_1';"`
+VAL_SFTP_RUTA_2=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD" AND parametro = 'VAL_SFTP_RUTA_2';"`
 
 #PARAMETROS GENERICOS
-VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
+VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
+VAL_SFTP_USER=`mysql -N  <<<"select valor from params where ENTIDAD = 'SFTP_GENERICO' AND parametro = 'VAL_SFTP_USER_MERCADEO';"`
+VAL_SFTP_PORT=`mysql -N  <<<"select valor from params where ENTIDAD = 'SFTP_GENERICO' AND parametro = 'VAL_SFTP_PORT';"`
+VAL_SFTP_HOSTNAME=`mysql -N  <<<"select valor from params where ENTIDAD = 'SFTP_GENERICO' AND parametro = 'VAL_SFTP_HOST';"`
+VAL_SFTP_PASS=`mysql -N  <<<"select valor from params where ENTIDAD = 'SFTP_GENERICO' AND parametro = 'VAL_SFTP_PASS_MERCADEO';"`
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
 VAL_FEC_AYER=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m%d"`
@@ -102,17 +102,23 @@ VAL_RUTA_ARCHIVO_1_4=$VAL_RUTA/input/$VAL_NOM_ARCHIVO1_4
 VAL_RUTA_ARCHIVO_MP=$VAL_RUTA/input/$VAL_NOM_ARCHIVO_MP
 vTablaDestino="otc_t_terminales_simcards"
 
+VAL_TRREMOTEDIR_1=`echo $VAL_SFTP_RUTA_1|sed "s/\~}</ /g"`  ## espacios en blanco reemplz
+VAL_TRREMOTEDIR1=$(echo "$VAL_TRREMOTEDIR_1" | sed "s/\"//g") ## para comilla doble
+
+VAL_TRREMOTEDIR_2=`echo $VAL_SFTP_RUTA_2|sed "s/\~}</ /g"`  ## espacios en blanco reemplz
+VAL_TRREMOTEDIR2=$(echo "$VAL_TRREMOTEDIR_2" | sed "s/\"//g") ## para comilla doble
+
 #VALIDACION DE PARAMETROS INICIALES
 if  [ -z "$ENTIDAD" ] || 
     [ -z "$VAL_FECHA_EJEC" ] || 
     [ -z "$VAL_RUTA" ] || 
     [ -z "$ETAPA" ] || 
-    [ -z "$VAL_FTP_PUERTO1" ] || 
-    [ -z "$VAL_FTP_PUERTO2" ] || 
-    [ -z "$VAL_FTP_USER" ] || 
-    [ -z "$VAL_FTP_HOSTNAME" ] || 
-    [ -z "$VAL_FTP_PASS" ] || 
-    [ -z "$VAL_FTP_RUTA" ] || 
+    [ -z "$VAL_SFTP_USER" ] || 
+    [ -z "$VAL_SFTP_PORT" ] || 
+    [ -z "$VAL_SFTP_HOSTNAME" ] || 
+    [ -z "$VAL_SFTP_PASS" ] || 
+    [ -z "$VAL_SFTP_RUTA_1" ] || 
+    [ -z "$VAL_SFTP_RUTA_2" ] || 
     [ -z "$VAL_NOM_ARCHIVO1_0" ] || 
     [ -z "$VAL_NOM_ARCHIVO1_2" ] || 
     [ -z "$VAL_NOM_ARCHIVO1_3" ] || 
@@ -150,36 +156,54 @@ if [ "$ETAPA" = "1" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "==== ETAPA 1: Realiza la transferencia de los archivos en formato Excel desde el servidor FTP a BigData ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "Servidor: $VAL_FTP_HOSTNAME" 2>&1 &>> $VAL_LOG
-echo "Puerto: $VAL_FTP_PUERTO1" 2>&1 &>> $VAL_LOG
-echo "Ruta: $VAL_FTP_RUTA" 2>&1 &>> $VAL_LOG
+echo "Servidor: $VAL_SFTP_HOSTNAME" 2>&1 &>> $VAL_LOG
+echo "Ruta: $VAL_TRREMOTEDIR1" 2>&1 &>> $VAL_LOG
+echo "Puerto: $VAL_SFTP_PORT" 2>&1 &>> $VAL_LOG
 echo "Archivo 1: $VAL_NOM_ARCHIVO1_0" 2>&1 &>> $VAL_LOG
 echo "Archivo 2: $VAL_NOM_ARCHIVO1_2_SIN" 2>&1 &>> $VAL_LOG
 echo "Archivo 3: $VAL_NOM_ARCHIVO1_3_SIN" 2>&1 &>> $VAL_LOG
 echo "Archivo 4: $VAL_NOM_ARCHIVO1_4" 2>&1 &>> $VAL_LOG
 #ELIMINA LOS ARCHIVOS EXCEL DE RUTA INPUT
 rm -r ${VAL_RUTA}/input/*
-ftp -inv $VAL_FTP_HOSTNAME $VAL_FTP_PUERTO1 <<EOF 2>&1 &>> $VAL_LOG
-user $VAL_FTP_USER $VAL_FTP_PASS
-bin
+
+#ftp -inv $VAL_FTP_HOSTNAME $VAL_FTP_PUERTO1 <<EOF 2>&1 &>> $VAL_LOG
+#user $VAL_FTP_USER $VAL_FTP_PASS
+#bin
+#pwd
+#cd ${VAL_FTP_RUTA}
+#lcd ${VAL_RUTA_ARCHIVO}
+#mget ${VAL_NOM_ARCHIVO1_0}
+#mget ${VAL_NOM_ARCHIVO1_2_SIN}
+#mget ${VAL_NOM_ARCHIVO1_3_SIN}
+#mget ${VAL_NOM_ARCHIVO1_4}
+#bye
+#EOF
+
+sshpass -p $VAL_SFTP_PASS sftp -P $VAL_SFTP_PORT -oBatchMode=no $VAL_SFTP_USER@$VAL_SFTP_HOSTNAME  << EOF | tee -a 2>&1 &>> $VAL_LOG;
+cd $VAL_TRREMOTEDIR1
 pwd
-cd ${VAL_FTP_RUTA}
 lcd ${VAL_RUTA_ARCHIVO}
 mget ${VAL_NOM_ARCHIVO1_0}
 mget ${VAL_NOM_ARCHIVO1_2_SIN}
 mget ${VAL_NOM_ARCHIVO1_3_SIN}
 mget ${VAL_NOM_ARCHIVO1_4}
+mget ${VAL_NOM_ARCHIVO1_1}
+mget ${VAL_NOM_ARCHIVO_MP}
 bye
 EOF
 
-#VALIDA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A BIGDATA
-echo "==== Valida la transferencia de los archivos desde el servidor FTP a BigData ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
-error_trnsf=`egrep 'User cannot log in|Connection timed out|Not connected|syntax is incorrect|cannot find|There is not enough space|cannot find the file specified|Permission denied|No such file or directory|cannot access' $VAL_LOG | wc -l`
-if [ $error_trnsf -eq 0 ];then
-	echo "==== OK - La transferencia de los archivos desde el servidor FTP se realiza con EXITO ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+VAL_ERRORES=`egrep -i 'ERROR - En la transferencia del archivo|not found|No such file or directory|Permission denied' $VAL_LOG | wc -l`
+VAL_UPLOAD=`egrep 'Uploading|Fetching' $VAL_LOG | wc -l`
+if [ $VAL_ERRORES -ne 0 ]; then
+	echo "==== ERROR - En la transferencia del archivo ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+	exit 1
+else
+	if [ $VAL_UPLOAD -ne 0 ]; then
+		echo "==== OK - La transferencia de los archivos desde el servidor SFTP se realiza con EXITO ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 	else
-	echo "==== ERROR: - En la transferencia de los archivos desde el servidor FTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
-    exit 1
+		echo "==== ERROR: - En la transferencia de los archivos desde el servidor SFTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+		exit 1
+	fi
 fi
 
 #REALIZA COPIA DE LOS ARCHIVOS 100 Nueva Categoria Y ASIGNACION CANAL DE VENTAS v3 PARA ELIMINAR ESPACIOS EN EL NOMBRE DE ACUERDO A LAS VARIABLES CONFIGURADAS EN params_des
@@ -194,6 +218,7 @@ for file in *.xlsx; do
         ix=$(($ix + 1))
     fi
 done
+
 ETAPA=2
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
 echo "==== OK - Se procesa la ETAPA 1 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
@@ -205,74 +230,54 @@ if [ "$ETAPA" = "2" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "==== ETAPA 2: Realiza la transferencia de los archivos en formato Excel desde el servidor FTP a BigData ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "Servidor: $VAL_FTP_HOSTNAME" 2>&1 &>> $VAL_LOG
-echo "Puerto: $VAL_FTP_PUERTO2" 2>&1 &>> $VAL_LOG
-echo "Ruta: $VAL_FTP_RUTA" 2>&1 &>> $VAL_LOG
+echo "Servidor: $VAL_SFTP_HOSTNAME" 2>&1 &>> $VAL_LOG
+echo "Ruta: $VAL_TRREMOTEDIR2" 2>&1 &>> $VAL_LOG
+echo "Puerto: $VAL_SFTP_PORT" 2>&1 &>> $VAL_LOG
 echo "Archivo 1: $VAL_NOM_ARCHIVO2_0" 2>&1 &>> $VAL_LOG
 echo "Archivo 2: $VAL_NOM_ARCHIVO2_1" 2>&1 &>> $VAL_LOG
-ftp -inv $VAL_FTP_HOSTNAME $VAL_FTP_PUERTO2 <<EOF 2>&1 &>> $VAL_LOG
-user $VAL_FTP_USER $VAL_FTP_PASS
-bin
-cd ${VAL_FTP_RUTA}
+#ftp -inv $VAL_FTP_HOSTNAME $VAL_FTP_PUERTO2 <<EOF 2>&1 &>> $VAL_LOG
+#user $VAL_FTP_USER $VAL_FTP_PASS
+#bin
+#cd ${VAL_FTP_RUTA}
+#lcd ${VAL_RUTA_ARCHIVO}
+#mget ${VAL_NOM_ARCHIVO2_0}
+#mget ${VAL_NOM_ARCHIVO2_1}
+#bye
+#EOF
+
+sshpass -p $VAL_SFTP_PASS sftp -P $VAL_SFTP_PORT -oBatchMode=no $VAL_SFTP_USER@$VAL_SFTP_HOSTNAME  << EOF | tee -a;
+cd $VAL_TRREMOTEDIR2
+pwd
 lcd ${VAL_RUTA_ARCHIVO}
 mget ${VAL_NOM_ARCHIVO2_0}
 mget ${VAL_NOM_ARCHIVO2_1}
 bye
 EOF
 
-
-#VALIDA LA TRANSFERENCIA DEL ARCHIVO DESDE EL SERVIDOR FTP A BIGDATA
-echo "==== Valida la transferencia de los archivos desde el servidor FTP a BigData ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
-error_trnsf=`egrep 'User cannot log in|Connection timed out|Not connected|syntax is incorrect|cannot find|There is not enough space|cannot find the file specified|Permission denied|No such file or directory|cannot access' $VAL_LOG | wc -l`
-if [ $error_trnsf -eq 0 ];then
-	echo "==== OK - La transferencia de los archivos desde el servidor FTP se realiza con EXITO ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+VAL_ERRORES=`egrep -i 'ERROR - En la transferencia del archivo|not found|No such file or directory|Permission denied' $VAL_LOG | wc -l`
+VAL_UPLOAD=`egrep 'Uploading|Fetching' $VAL_LOG | wc -l`
+if [ $VAL_ERRORES -ne 0 ]; then
+	echo "==== ERROR - En la transferencia del archivo ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+	exit 1
+else
+	if [ $VAL_UPLOAD -ne 0 ]; then
+		echo "==== OK - La transferencia de los archivos desde el servidor SFTP se realiza con EXITO ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 	else
-	echo "==== ERROR: - En la transferencia de los archivos desde el servidor FTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
-    exit 1
+		echo "==== ERROR: - En la transferencia de los archivos desde el servidor SFTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+		exit 1
+	fi
 fi
+
 ETAPA=3
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
 echo "==== OK - Se procesa la ETAPA 2 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
 `mysql -N  <<<"update params_des set valor='3' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#PASO 3: REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
+#PASO 3: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
 if [ "$ETAPA" = "3" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 3: Realiza la transferencia del archivo en formato Excel desde el servidor FTP a BigData ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
-echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "Servidor: $VAL_FTP_HOSTNAME" 2>&1 &>> $VAL_LOG
-echo "Puerto: $VAL_FTP_PUERTO1" 2>&1 &>> $VAL_LOG
-echo "Ruta: $VAL_FTP_RUTA" 2>&1 &>> $VAL_LOG
-echo "Archivo 1: $VAL_NOM_ARCHIVO_MP" 2>&1 &>> $VAL_LOG
-ftp -inv $VAL_FTP_HOSTNAME $VAL_FTP_PUERTO1 <<EOF 2>&1 &>> $VAL_LOG
-user $VAL_FTP_USER $VAL_FTP_PASS
-bin
-cd ${VAL_FTP_RUTA}
-lcd ${VAL_RUTA_ARCHIVO}
-mget ${VAL_NOM_ARCHIVO_MP}
-bye
-EOF
-
-#VALIDA LA TRANSFERENCIA DEL ARCHIVO DESDE EL SERVIDOR FTP A BIGDATA
-echo "==== Valida la transferencia del archivo desde el servidor FTP a BigData ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
-error_trnsf=`egrep 'User cannot log in|Connection timed out|Not connected|syntax is incorrect|cannot find|There is not enough space|cannot find the file specified|Permission denied|No such file or directory|cannot access' $VAL_LOG | wc -l`
-if [ $error_trnsf -eq 0 ];then
-	echo "==== OK - La transferencia del archivo desde el servidor FTP se realiza con EXITO ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
-	else
-	echo "==== ERROR: - En la transferencia del archivo desde el servidor FTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
-    exit 1
-fi
-ETAPA=4
-#SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 3 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='4' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
-fi
-
-#PASO 4: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
-if [ "$ETAPA" = "4" ]; then
-echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 4: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 3: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Proceso: ${VAL_RUTA}/python/read_excel_carga_hive.py" 2>&1 &>> $VAL_LOG
 echo "Archivo: $VAL_RUTA_ARCHIVO_1_2" 2>&1 &>> $VAL_LOG
@@ -296,16 +301,16 @@ fi
 
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_T"
 
-ETAPA=5
+ETAPA=4
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 4 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='5' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+echo "==== OK - Se procesa la ETAPA 3 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='4' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#PASO 5: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
-if [ "$ETAPA" = "5" ]; then
+#PASO 4: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
+if [ "$ETAPA" = "4" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 5: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 4: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Proceso: ${VAL_RUTA}/python/read_excel_carga_hive.py" 2>&1 &>> $VAL_LOG
 echo "Archivo: $VAL_RUTA_ARCHIVO_1_0" 2>&1 &>> $VAL_LOG
@@ -329,16 +334,16 @@ fi
 
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_RDR"
 
-ETAPA=6
+ETAPA=5
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 5 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='6' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+echo "==== OK - Se procesa la ETAPA 4 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='5' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#PASO 6: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
-if [ "$ETAPA" = "6" ]; then
+#PASO 5: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
+if [ "$ETAPA" = "5" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 6: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 5: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Proceso: ${VAL_RUTA}/python/read_excel_carga_hive.py" 2>&1 &>> $VAL_LOG
 echo "Archivo: $VAL_RUTA_ARCHIVO_2_1" 2>&1 &>> $VAL_LOG
@@ -362,16 +367,16 @@ fi
 
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_TC"
 
-ETAPA=7
+ETAPA=6
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 6 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='7' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+echo "==== OK - Se procesa la ETAPA 5 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='6' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#PASO 7: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
-if [ "$ETAPA" = "7" ]; then
+#PASO 6: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
+if [ "$ETAPA" = "6" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 7: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 6: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Proceso: ${VAL_RUTA}/python/read_excel_carga_hive.py" 2>&1 &>> $VAL_LOG
 echo "Archivo: $VAL_RUTA_ARCHIVO_2_0" 2>&1 &>> $VAL_LOG
@@ -395,16 +400,16 @@ fi
 
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_UO"
 
-ETAPA=8
+ETAPA=7
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 7 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='8' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+echo "==== OK - Se procesa la ETAPA 6 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='7' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#PASO 8: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
-if [ "$ETAPA" = "8" ]; then
+#PASO 7: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
+if [ "$ETAPA" = "7" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 8: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 7: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Proceso: ${VAL_RUTA}/python/read_excel_carga_hive.py" 2>&1 &>> $VAL_LOG
 echo "Archivo: $VAL_RUTA_ARCHIVO_1_3" 2>&1 &>> $VAL_LOG
@@ -428,16 +433,16 @@ fi
 
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_CANAL"
 
-ETAPA=9
+ETAPA=8
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 8 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='9' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+echo "==== OK - Se procesa la ETAPA 7 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='8' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#PASO 9: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
-if [ "$ETAPA" = "9" ]; then
+#PASO 8: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
+if [ "$ETAPA" = "8" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 9: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 8: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Proceso: ${VAL_RUTA}/python/read_excel_carga_hive.py" 2>&1 &>> $VAL_LOG
 echo "Archivo: $VAL_RUTA_ARCHIVO_1_4" 2>&1 &>> $VAL_LOG
@@ -461,16 +466,16 @@ fi
 
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_SEG"
 
-ETAPA=10
+ETAPA=9
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 9 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='10' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+echo "==== OK - Se procesa la ETAPA 8 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='9' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#PASO 10: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
-if [ "$ETAPA" = "10" ]; then
+#PASO 9: HACE EL LLAMADO AL ARCHIVO SPARK QUE CARGA EL CATALOGO DE EXCEL A HIVE
+if [ "$ETAPA" = "9" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 10: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 9: Ejecuta archivo spark read_excel_carga_hive.py que carga excel a Hive ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Proceso: ${VAL_RUTA}/python/read_excel_carga_hive.py" 2>&1 &>> $VAL_LOG
 echo "Archivo: $VAL_RUTA_ARCHIVO_MP" 2>&1 &>> $VAL_LOG
@@ -494,16 +499,16 @@ fi
 
 cat $VAL_LOG|grep "Total registros" |grep "$HIVEDB.$VAL_TABLA_CST"
 
-ETAPA=11
+ETAPA=10
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 10 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='11' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+echo "==== OK - Se procesa la ETAPA 9 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='10' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #HACE EL LLAMADO AL HQL QUE REALIZA LOS CRUCES PARA GENERAR LA INFORMACION EN LA TABLA FINAL OTC_T_TERMINALES_SIMCARDS
-if [ "$ETAPA" = "11" ]; then
+if [ "$ETAPA" = "10" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 11: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_1.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 10: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_1.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Fecha meses atras 2:     $VAL_MESES_ATRAS2" 2>&1 &>> $VAL_LOG
 echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
@@ -543,16 +548,16 @@ echo "==== ERROR: - En la ejecucion del archivo spark carga_otc_t_terminales_sim
 exit 1
 fi
 
-ETAPA=12
+ETAPA=11
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 11 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
-`mysql -N  <<<"update params_des set valor='12' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
+echo "==== OK - Se procesa la ETAPA 10 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+`mysql -N  <<<"update params_des set valor='11' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
 #HACE EL LLAMADO AL HQL QUE REALIZA LOS CRUCES PARA GENERAR LA INFORMACION EN LA TABLA FINAL OTC_T_TERMINALES_SIMCARDS
-if [ "$ETAPA" = "12" ]; then
+if [ "$ETAPA" = "11" ]; then
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "==== ETAPA 12: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_2.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== ETAPA 11: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_2.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Fecha inicio:            $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
 echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
@@ -608,7 +613,7 @@ exit 1
 fi
 
 #SE REALIZA EL SETEO DE LA ETAPA EN LA TABLA params_des
-echo "==== OK - Se procesa la ETAPA 12 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== OK - Se procesa la ETAPA 11 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
 `mysql -N  <<<"update params_des set valor='1' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 

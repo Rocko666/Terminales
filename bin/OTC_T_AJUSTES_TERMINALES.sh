@@ -28,11 +28,11 @@ VAL_FTP_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTI
 VAL_FTP_NOM_ARCHIVO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VAL_FTP_NOM_ARCHIVO';"` 
 VAL_DIR_HDFS_CAT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VAL_DIR_HDFS_CAT';"` 
 
-vMASTER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'vMASTER';"`
-vDRIVER_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'vDRIVER_MEMORY';"`
-vEXECUTOR_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'vEXECUTOR_MEMORY';"`
-vNUM_EXECUTORS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'vNUM_EXECUTORS';"`
-vNUM_EXECUTORS_CORES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'vNUM_EXECUTORS_CORES';"`
+VAL_MASTER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MASTER';"`
+VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_DRIVER_MEMORY';"`
+VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
+VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS';"`
+VAL_EXECUTOR_CORES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_CORES';"`
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
 VAL_DIA=`date '+%Y%m%d'` 
@@ -57,11 +57,11 @@ if  [ -z "$ENTIDAD" ] ||
 	[ -z "$VAL_FTP_PASS" ] || 
 	[ -z "$VAL_FTP_RUTA" ] || 
 	[ -z "$VAL_DIR_HDFS_CAT" ] ||
-	[ -z "$vMASTER" ] || 
-	[ -z "$vDRIVER_MEMORY" ] || 
-	[ -z "$vEXECUTOR_MEMORY" ] || 
-	[ -z "$vNUM_EXECUTORS" ] || 
-	[ -z "$vNUM_EXECUTORS_CORES" ] ; then
+	[ -z "$VAL_MASTER" ] || 
+	[ -z "$VAL_DRIVER_MEMORY" ] || 
+	[ -z "$VAL_EXECUTOR_MEMORY" ] || 
+	[ -z "$VAL_NUM_EXECUTORS" ] || 
+	[ -z "$VAL_EXECUTOR_CORES" ] ; then
 	echo " ERROR - uno de los parametros esta vacio o nulo"
 	exit 1
 fi
@@ -94,7 +94,7 @@ if [ $error_trnsf -eq 0 ];then
 	echo "==== ERROR - En la transferencia de los archivos desde el servidor FTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
     exit 1
 fi
-fi
+
 
 echo "==== Finaliza la transferencia de AJUSTES_TERMINALES.xlsx===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 
@@ -105,25 +105,18 @@ if [ "$ETAPA" = "2" ]; then
 echo "==== Hace el llamado al python que realiza la conversion del archivo xlsx a tabla en Hive ====" 2>&1 &>> $VAL_LOG
 ###########################################################################################################################################################
 $vRUTA_SPARK \
---jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-*.jar \
---conf spark.sql.extensions=com.hortonworks.spark.sql.rule.Extensions \
---conf spark.security.credentials.hiveserver2.enabled=false \
---conf spark.sql.hive.hwc.execution.mode=spark \
---conf spark.datasource.hive.warehouse.read.via.llap=false \
---conf spark.datasource.hive.warehouse.load.staging.dir=/tmp \
---conf spark.datasource.hive.warehouse.read.jdbc.mode=cluster \
---conf spark.datasource.hive.warehouse.user.name="rgenerator" \
+--conf spark.ui.enabled=false \
+--conf spark.shuffle.service.enabled=true \
+--conf spark.dynamicAllocation.enabled=false \
 --conf spark.port.maxRetries=100 \
---py-files /opt/cloudera/parcels/CDH/lib/hive_warehouse_connector/pyspark_hwc-1.0.0.7.1.7.1000-141.zip \
---conf spark.sql.hive.hiveserver2.jdbc.url="jdbc:hive2://quisrvbigdata1.otecel.com.ec:2181,quisrvbigdata2.otecel.com.ec:2181,quisrvbigdata10.otecel.com.ec:2181,quisrvbigdata11.otecel.com.ec:2181/default;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" \
 --name $ENTIDAD \
---master $vMASTER \
---driver-memory $vDRIVER_MEMORY \
---executor-memory $vEXECUTOR_MEMORY \
---num-executors $vNUM_EXECUTORS \
---executor-cores $vNUM_EXECUTORS_CORES \
+--master $VAL_MASTER \
+--driver-memory $VAL_DRIVER_MEMORY \
+--executor-memory $VAL_EXECUTOR_MEMORY \
+--num-executors $VAL_NUM_EXECUTORS \
+--executor-cores $VAL_EXECUTOR_CORES \
 $VAL_RUTA/python/otc_t_ajustes_terminales.py \
---rutain=$VAL_RUTA/input/$VAL_FTP_NOM_ARCHIVO \
+--rutain=$VAL_RUTA/input/$VAL_SFTP_NOM_ARCHIVO \
 --tablaout=$VAL_DIR_HDFS_CAT \
 --tipo=overwrite 2>&1 &>> $VAL_LOG
 

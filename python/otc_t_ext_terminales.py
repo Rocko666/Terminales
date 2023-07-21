@@ -5,13 +5,10 @@ from query_ext_terminales import *
 from pyspark.sql import SparkSession, DataFrame
 from datetime import datetime
 from pyspark.sql import functions as F
-from pyspark.sql.window import Window
 from pyspark.sql.functions import *
-from pyspark_llap import HiveWarehouseSession
 import argparse
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-import subprocess
 sys.path.insert(1, '/var/opt/tel_spark')
 from messages import *
 from functions import *
@@ -38,7 +35,7 @@ vfecha_fin=parametros.vfecha_fin
 vfecha_inicio=parametros.vfecha_inicio
 vfecha_antes_ayer=parametros.vfecha_antes_ayer
 vultimo_dia_act_frmt=parametros.vultimo_dia_act_frmt
-
+vTablaFinal='db_desarrollo2021.otc_t_ext_terminales_ajst'
 ## STEP 3: Inicio el SparkSession
 spark = SparkSession \
     .builder \
@@ -51,7 +48,6 @@ spark = SparkSession \
 spark.sparkContext.setLogLevel("ERROR")
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
-hive_hwc = HiveWarehouseSession.session(spark).build()
 app_id = spark._sc.applicationId
 
 ##STEP 4:QUERYS
@@ -107,7 +103,7 @@ try:
     df4=spark.sql(otc_t_ext_terminales_ajst()).cache()
     df4.printSchema()
     ts_step_tbl = datetime.now()
-    df4.write.mode('overwrite').format('parquet').saveAsTable('db_desarrollo2021.otc_t_ext_terminales_ajst')
+    df4.write.mode('overwrite').format('parquet').saveAsTable(vTablaFinal)
     print(etq_info(msg_t_total_registros_obtenidos("df4",str(df4.count())))) 
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df4",vle_duracion(ts_step_tbl,te_step_tbl))))
