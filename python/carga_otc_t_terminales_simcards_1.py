@@ -33,7 +33,7 @@ vEntidad=parametros.ventidad
 vBaseHive=parametros.vhivebd
 vfecha_fin=parametros.vfecha_fin
 vfecha_meses_atras2=parametros.vfecha_meses_atras2
-vTTempTermSCards='db_desarrollo2021.tmp_otc_t_terminales_simcards'
+vTTempTermSCards='db_temporales.tmp_otc_t_terminales_simcards'
 
 ## STEP 3: Inicio el SparkSession
 spark = SparkSession \

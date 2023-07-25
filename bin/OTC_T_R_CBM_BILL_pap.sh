@@ -14,7 +14,7 @@ set -e
 # 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#								
 #########################################################################################################
 
-ENTIDAD=URMRCBMBILL3100
+ENTIDAD=URMCBMBILL4060
 VAL_KINIT=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_KINIT';"`
 $VAL_KINIT
 
@@ -44,7 +44,7 @@ VAL_NUM_EXECUTORS_CORES=`mysql -N  <<<"select valor from params where ENTIDAD = 
 #PARAMETROS DE OPERACION Y AUTOGENERADOS
 VAL_DIA=`date '+%Y%m%d'` 
 VAL_HORA=`date '+%H%M%S'` 
-VAL_LOG=$VAL_RUTA/logs/OTC_T_R_CBM_BILL_$VAL_DIA$VAL_HORA.log
+VAL_LOG=$VAL_RUTA/log/OTC_T_R_CBM_BILL_$VAL_DIA$VAL_HORA.log
 VAL_JDBCURL=jdbc:oracle:thin:@//$TDHOST_RDB2:$TDPORT_RDB/$TDSERVICE_RDB
 HIVETABLE="otc_t_r_cbm_bill"
 
@@ -83,9 +83,6 @@ echo "Password BD: $TDPASS_RDB" 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 #REALIZA EL LLAMADO EL ARCHIVO SPARK QUE REALIZA LA EXTRACCION DE LA INFORMACION DE ORACLE A HIVE
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
---conf spark.shuffle.service.enabled=true \
---conf spark.dynamicAllocation.enabled=false \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --name R_CBM_BILL \

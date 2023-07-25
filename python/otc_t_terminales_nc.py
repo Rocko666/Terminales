@@ -143,12 +143,12 @@ try:
             cols.append(column)
         df3=df1.select(cols)
         df3.printSchema()
-        df3.repartition(1).write.format("parquet").partitionBy(vCampoParte).mode(vTipoCarga).saveAsTable("{}.{}".format(vBaseHive,vTablaHive))
+        df3.write.format("parquet").partitionBy(vCampoParte).mode(vTipoCarga).saveAsTable("{}.{}".format(vBaseHive,vTablaHive))
     else:
         df3=df1
         df3.printSchema()
-        df3.write.option("compression","none").format("orc").partitionBy(vCampoParte).mode(vTipoCarga).saveAsTable("{}.{}".format(vBaseHive,vTablaHive))
-    e_step = datetime.now()
+        df3.write.format("parquet").partitionBy(vCampoParte).mode(vTipoCarga).saveAsTable("{}.{}".format(vBaseHive,vTablaHive))
+    te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStp02,vle_duracion(ts_step,te_step))))
 except Exception as e:
     exit(etq_error(msg_e_insert_hive(nme_table,str(e))))  

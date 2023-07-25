@@ -14,7 +14,7 @@ set -e
 # 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#								
 #########################################################################################################
 
-ENTIDAD=D_URMTRMNLSVUSR3090
+ENTIDAD=D_URMTRMNLSVUSR4050
 VAL_KINIT=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_KINIT';"`
 $VAL_KINIT
 
@@ -83,9 +83,6 @@ echo "Password BD: $TDPASS_RDB" 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 #REALIZA EL LLAMADO EL ARCHIVO SPARK QUE REALIZA LA EXTRACCION DE LA INFORMACION DE ORACLE A HIVE
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
---conf spark.shuffle.service.enabled=true \
---conf spark.dynamicAllocation.enabled=false \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --name OTC_V_USUARIOS \
@@ -94,15 +91,14 @@ $VAL_RUTA_SPARK \
 --num-executors $VAL_NUM_EXECUTORS \
 --executor-cores $VAL_NUM_EXECUTORS_CORES \
 --jars $VAL_RUTA_LIB/$VAL_NOM_JAR_ORC_11 \
-$VAL_RUTA_IMP_SPARK/$VAL_NOM_IMP_SPARK \
+$VAL_RUTA/python/otc_t_v_usuarios.py \
 --vclass=oracle.jdbc.driver.OracleDriver \
 --vjdbcurl=$VAL_JDBCURL \
 --vusuariobd=$TDUSER_RDB \
 --vclavebd=$TDPASS_RDB \
 --vhivebd=$HIVEDB \
 --vtablahive=$HIVETABLE \
---vtipocarga=$VAL_TIPO_CARGA \
---vfilesql=$VAL_RUTA/python/otc_t_v_usuarios.sql 2>&1 &>> $VAL_LOG
+--vtipocarga=$VAL_TIPO_CARGA 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'invalid syntax|Traceback|An error occurred|Caused by:|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`

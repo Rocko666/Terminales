@@ -14,7 +14,7 @@ set -e
 # 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#								
 #########################################################################################################
 
-ENTIDAD=D_URMTRMNLSNC3090
+ENTIDAD=D_TRMNLSNC0030
 VAL_KINIT=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_KINIT';"`
 $VAL_KINIT
 
@@ -79,17 +79,14 @@ echo "==========================================================================
 echo "==== Ejecuta el proceso - Fuente RBM - OTC_T_TERMINALES_NC ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Proceso: $VAL_RUTA/otc_t_terminales_nc.py " 2>&1 &>> $VAL_LOG
-echo "Fecha Inicio: $VAL_FEC_INI " 2>&1 &>> $VAL_LOG
-echo "Fecha Fin: $VAL_FEC_FIN " 2>&1 &>> $VAL_LOG
+echo "Fecha Inicio: $VAL_FEC_FIN " 2>&1 &>> $VAL_LOG
+echo "Fecha Fin: $VAL_FEC_AYER " 2>&1 &>> $VAL_LOG
 echo "Tabla destino: $HIVEDB.$HIVETABLE" 2>&1 &>> $VAL_LOG
 echo "Usuario BD: $TDUSER_RBM" 2>&1 &>> $VAL_LOG
 echo "Password BD: $TDPASS_RBM" 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 #REALIZA EL LLAMADO EL ARCHIVO SPARK QUE REALIZA LA EXTRACCION DE LA INFORMACION DE ORACLE A HIVE
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
---conf spark.shuffle.service.enabled=true \
---conf spark.dynamicAllocation.enabled=false \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --name OTC_T_TERMINALES_NC \
@@ -106,8 +103,8 @@ $VAL_RUTA/python/otc_t_terminales_nc.py \
 --vhivebd=$HIVEDB \
 --vtablahive=$HIVETABLE \
 --vtipocarga=$VAL_TIPO_CARGA \
---vfechai=$VAL_FEC_INI \
---vfechaf=$VAL_FEC_FIN \
+--vfechai=$VAL_FEC_FIN \
+--vfechaf=$VAL_FEC_AYER \
 --vcampoparte="pt_fecha" 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK

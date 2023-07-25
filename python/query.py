@@ -7,19 +7,19 @@ from datetime import datetime
 import os
 from pyspark.sql.functions import col, substring_index
 
-#db_desarrollo2021.otc_t_catalogo_terminales -> db_desarrollo2021.otc_t_catalogo_terminales_prycldr 
-#db_desarrollo2021.otc_t_terminales_fact -> db_desarrollo2021.otc_t_terminales_fact_prycldr
-#db_desarrollo2021.otc_t_terminales_nc -> db_desarrollo2021.otc_t_terminales_nc_prycldr
-#db_rdb.otc_t_r_cbm_bill -> db_desarrollo2021.otc_t_r_cbm_bill_prycldr
-#db_rdb.otc_t_r_am_cpe -> db_desarrollo2021.otc_t_r_am_cpe_prycldr
-#db_rdb.otc_t_v_usuarios -> db_desarrollo2021.otc_t_v_usuarios_prycldr
-#db_cs_terminales.otc_t_catalogo_ruc_das_retail -> db_desarrollo2021.otc_t_catalogo_ruc_das_retail_prycldr
-#db_cs_terminales.otc_t_catalogo_tipo_canal ->  db_desarrollo2021.otc_t_catalogo_tipo_canal_prycldr
-#db_cs_terminales.otc_t_catalogo_canal_online ->  db_desarrollo2021.otc_t_catalogo_canal_online_prycldr
-#db_cs_terminales.otc_t_asigna_canal_ventas -> db_desarrollo2021.otc_t_asigna_canal_ventas_prycldr
-#db_cs_terminales.otc_t_ctl_cat_seg_sub_seg -> db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg_prycldr
-#db_cs_terminales.otc_t_ctl_seg_terminal -> db_desarrollo2021.otc_t_ctl_seg_terminal_prycldr
-#db_temporales.tmp_otc_t_terminales_simcards --->db_desarrollo2021.tmp_otc_t_terminales_simcards
+#db_cs_terminales.otc_t_catalogo_terminales -> db_cs_terminales.otc_t_catalogo_terminales ---> SI
+#db_rbm.otc_t_terminales_fact -> db_rbm.otc_t_terminales_fact ---> NO  
+#db_rbm.otc_t_terminales_nc -> db_rbm.otc_t_terminales_nc ---> NO
+#db_rdb.otc_t_r_cbm_bill -> db_rdb.otc_t_r_cbm_bill ---> SI
+#db_rdb.otc_t_r_am_cpe -> db_rdb.otc_t_r_am_cpe ---> SI
+#db_rdb.otc_t_v_usuarios -> db_rdb.otc_t_v_usuarios ---> SI
+#db_cs_terminales.otc_t_catalogo_ruc_das_retail -> db_cs_terminales.otc_t_catalogo_ruc_das_retail  -->SI
+#db_cs_terminales.otc_t_catalogo_tipo_canal ->  db_cs_terminales.otc_t_catalogo_tipo_canal-->SI
+#db_cs_terminales.otc_t_catalogo_canal_online ->  db_desarrollo2021.otc_t_catalogo_canal_online -->SI
+#db_cs_terminales.otc_t_asigna_canal_ventas -> db_cs_terminales.otc_t_asigna_canal_ventas
+#db_cs_terminales.otc_t_ctl_cat_seg_sub_seg -> db_cs_terminales.otc_t_ctl_cat_seg_sub_seg
+#db_cs_terminales.otc_t_ctl_seg_terminal -> db_cs_terminales.otc_t_ctl_seg_terminal
+
 def tmp_otc_t_terminales_simcards(fecha_meses_atras2,fecha_fin):
     qry="""
     SELECT 

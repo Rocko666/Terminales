@@ -56,8 +56,8 @@ VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"
 VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
 VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS';"`
 VAL_EXECUTOR_CORES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_CORES';"`
-VAL_SFTP_RUTA_1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD" AND parametro = 'VAL_SFTP_RUTA_1';"`
-VAL_SFTP_RUTA_2=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD" AND parametro = 'VAL_SFTP_RUTA_2';"`
+VAL_SFTP_RUTA_1=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_RUTA_1';"`
+VAL_SFTP_RUTA_2=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_RUTA_2';"`
 
 #PARAMETROS GENERICOS
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
@@ -71,9 +71,9 @@ VAL_FEC_AYER=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m%d"`
 VAL_DIA_UNO=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y%m01"` #fecha fin
 VAL_FECHA_INI=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m01"` #fecha ini
 VAL_FECHA_FORMATO_PRE=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m%d"`
-VAL_FECHA_FORMATO=`date -d "${VAL_DIA_UNO} -1 day"  +"%d/%m/%Y"`
+VAL_FECHA_FORMATO=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%d/%m/%Y"`
 VAL_DIA_UNO_MES_SIG_FRMT=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y-%m-01"`
-VAL_MES=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m"`
+VAL_MES=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y%m"`
 VAL_SOLO_ANIO=`echo $VAL_FECHA_INI | cut -c1-4`
 VAL_SOLO_MES=`echo $VAL_FECHA_INI | cut -c5-6`
 VAL_MESES_ATRAS=$(date -d "$(date -d $VAL_DIA_UNO +%Y%m%d) -${VAL_MESES} month" +%Y%m%d)
@@ -149,7 +149,7 @@ echo "==== Inicia ejecucion del proceso BI CS Terminales Simcards  ===="`date '+
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Los parametros del proceso son los siguientes:" 2>&1 &>> $VAL_LOG
 echo "Fecha Inicio: $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
-echo "Fecha Fin: $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
+echo "Fecha Fin: $VAL_FEC_AYER" 2>&1 &>> $VAL_LOG
 
 #PASO 1: REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
 if [ "$ETAPA" = "1" ]; then
@@ -511,22 +511,19 @@ echo "==========================================================================
 echo "==== ETAPA 10: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_1.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Fecha meses atras 2:     $VAL_MESES_ATRAS2" 2>&1 &>> $VAL_LOG
-echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
+echo "Fecha Fin:               $VAL_FEC_AYER" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
---jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-*.jar \
---conf spark.sql.extensions=com.hortonworks.spark.sql.rule.Extensions \
---conf spark.security.credentials.hiveserver2.enabled=false \
+--jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-1.0.0.7.1.7.1000-141.jar \
 --conf spark.sql.hive.hwc.execution.mode=spark \
---conf spark.datasource.hive.warehouse.read.via.llap=false \
---conf spark.datasource.hive.warehouse.load.staging.dir=/tmp \
---conf spark.datasource.hive.warehouse.read.jdbc.mode=cluster \
---conf spark.ui.enabled=false \
---conf spark.shuffle.service.enabled=false \
---conf spark.dynamicAllocation.enabled=false \
---conf spark.datasource.hive.warehouse.user.name="rgenerator" \
+--conf spark.kryo.registrator=com.qubole.spark.hiveacid.util.HiveAcidKyroRegistrator \
+--conf spark.sql.extensions=com.qubole.spark.hiveacid.HiveAcidAutoConvertExtension \
 --py-files /opt/cloudera/parcels/CDH/lib/hive_warehouse_connector/pyspark_hwc-1.0.0.7.1.7.1000-141.zip \
+--conf spark.datasource.hive.warehouse.read.mode=DIRECT_READER_V2 \
 --conf spark.sql.hive.hiveserver2.jdbc.url="jdbc:hive2://quisrvbigdata1.otecel.com.ec:2181,quisrvbigdata2.otecel.com.ec:2181,quisrvbigdata10.otecel.com.ec:2181,quisrvbigdata11.otecel.com.ec:2181/default;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" \
+--conf spark.hadoop.hive.metastore.uris="thrift://quisrvbigdata1.otecel.com.ec:9083,thrift://quisrvbigdata10.otecel.com.ec:9083" \
+--conf spark.datasource.hive.warehouse.user.name="rgenerator" \
+--conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --queue capa_semantica \
 --name $ENTIDAD \
@@ -537,7 +534,7 @@ $VAL_RUTA_SPARK \
 $VAL_RUTA/python/carga_otc_t_terminales_simcards_1.py \
 --ventidad=$ENTIDAD \
 --vhivebd=$HIVEDB \
---vfecha_fin=$VAL_DIA_UNO \
+--vfecha_fin=$VAL_FEC_AYER \
 --vfecha_meses_atras2=$VAL_MESES_ATRAS2 2>&1 &>> $VAL_LOG
 
 error_spark=`egrep 'Traceback|error: argument|invalid syntax|An error occurred|Caused by:|cannot resolve|Non-ASCII character|UnicodeEncodeError:|can not accept object|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client|ImportError|SyntaxError' $VAL_LOG | wc -l`
@@ -560,7 +557,7 @@ echo "==========================================================================
 echo "==== ETAPA 11: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_2.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Fecha inicio:            $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
-echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
+echo "Fecha Fin:               $VAL_FEC_AYER" 2>&1 &>> $VAL_LOG
 echo "Fecha antes de ayer:     $VAL_FECHA_FORMATO_PRE" 2>&1 &>> $VAL_LOG
 echo "Anio mes:                $VAL_MES" 2>&1 &>> $VAL_LOG
 echo "Dia mes siguiente:       $VAL_DIA_UNO_MES_SIG_FRMT" 2>&1 &>> $VAL_LOG
@@ -573,9 +570,15 @@ echo "Usuario Final:           $VAL_USUARIO_FINAL" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino:           $vTablaDestino" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
---conf spark.shuffle.service.enabled=true \
---conf spark.dynamicAllocation.enabled=false \
+--jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-1.0.0.7.1.7.1000-141.jar \
+--conf spark.sql.hive.hwc.execution.mode=spark \
+--conf spark.kryo.registrator=com.qubole.spark.hiveacid.util.HiveAcidKyroRegistrator \
+--conf spark.sql.extensions=com.qubole.spark.hiveacid.HiveAcidAutoConvertExtension \
+--py-files /opt/cloudera/parcels/CDH/lib/hive_warehouse_connector/pyspark_hwc-1.0.0.7.1.7.1000-141.zip \
+--conf spark.datasource.hive.warehouse.read.mode=DIRECT_READER_V2 \
+--conf spark.sql.hive.hiveserver2.jdbc.url="jdbc:hive2://quisrvbigdata1.otecel.com.ec:2181,quisrvbigdata2.otecel.com.ec:2181,quisrvbigdata10.otecel.com.ec:2181,quisrvbigdata11.otecel.com.ec:2181/default;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" \
+--conf spark.hadoop.hive.metastore.uris="thrift://quisrvbigdata1.otecel.com.ec:9083,thrift://quisrvbigdata10.otecel.com.ec:9083" \
+--conf spark.datasource.hive.warehouse.user.name="rgenerator" \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --queue capa_semantica \
@@ -587,7 +590,7 @@ $VAL_RUTA_SPARK \
 $VAL_RUTA/python/carga_otc_t_terminales_simcards_2.py \
 --ventidad=$ENTIDAD \
 --vhivebd=$HIVEDB \
---vfecha_fin=$VAL_DIA_UNO \
+--vfecha_fin=$VAL_FEC_AYER \
 --vfecha_inicio=$VAL_FECHA_INI \
 --vfecha_antes_ayer=$VAL_FECHA_FORMATO_PRE \
 --vdia_uno_mes_sig_frmt=$VAL_DIA_UNO_MES_SIG_FRMT \

@@ -3,6 +3,7 @@ import sys
 reload(sys)
 from query import *
 from pyspark.sql import SparkSession, DataFrame
+from pyspark_llap import HiveWarehouseSession
 from datetime import datetime
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
@@ -74,6 +75,7 @@ spark = SparkSession\
     .getOrCreate()
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")
+hive_hwc = HiveWarehouseSession.session(spark).build()
 app_id = spark._sc.applicationId
 print(etq_info("INFO: Mostrar application_id => {}".format(str(app_id))))
 
