@@ -60,7 +60,6 @@ spark = SparkSession. \
     .config("spark.sql.broadcastTimeout", "36000") \
     .config("hive.exec.dynamic.partition", "true") \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
-    .config("spark.yarn.queue", "default") \
     .getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
 sc = spark.sparkContext
@@ -70,7 +69,6 @@ app_id = spark._sc.applicationId
 timestart = datetime.now()
 print(lne_dvs())
 vStp00='Paso [0]: Iniciando proceso/Cargando configuracion..'
-
 try:
     ts_step = datetime.now()
     print(etq_info("INFO: Mostrar application_id => {}".format(str(app_id))))
@@ -91,7 +89,6 @@ try:
 except Exception as e:
     exit(etq_error(msg_e_ejecucion(vStp00,str(e))))
 
-
 print(lne_dvs())
 vStp01='PASO [1]: Conexion a la base de datos y escritura '
 try:
@@ -110,7 +107,6 @@ try:
         exit(etq_nodata(msg_e_df_nodata(str('df0'))))
     else:
         df1 = df0.withColumn("fechacarga",F.lit(datetime.now()))
-        #df1 = df0
         df1 = df1.select([F.col(x).alias(x.lower()) for x in df1.columns])
         df1.printSchema()
         df1.write.format('parquet').mode("overwrite").saveAsTable(nme_table)
@@ -119,7 +115,6 @@ try:
 except Exception as e:
     exit(etq_error(msg_e_ejecucion(vStp01,str(e))))
 print(lne_dvs())
-
 
 ## 4.- Cierre
 spark.stop()

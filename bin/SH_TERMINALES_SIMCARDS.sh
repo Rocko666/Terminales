@@ -68,20 +68,22 @@ VAL_SFTP_PASS=`mysql -N  <<<"select valor from params where ENTIDAD = 'SFTP_GENE
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
 VAL_FEC_AYER=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m%d"`
-VAL_DIA_UNO=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y%m01"` #fecha fin
+VAL_DIA_UNO=$VAL_FEC_AYER
+VAL_F_MESES_AUX=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m01"`
 VAL_FECHA_INI=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m01"` #fecha ini
+VAL_FECHA_AUX2=`date -d "${VAL_FECHA_INI} +1 month"  +"%Y%m%d"` #fecha ini
 VAL_FECHA_FORMATO_PRE=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m%d"`
-VAL_FECHA_FORMATO=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%d/%m/%Y"`
-VAL_DIA_UNO_MES_SIG_FRMT=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y-%m-01"`
-VAL_MES=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y%m"`
+VAL_FECHA_FORMATO=`date -d "${VAL_DIA_UNO} -1 day"  +"%d/%m/%Y"`
+VAL_DIA_UNO_MES_SIG_FRMT=`date -d "${VAL_FEC_AYER}"  +"%Y-%m-01"`
+VAL_MES=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m"`
 VAL_SOLO_ANIO=`echo $VAL_FECHA_INI | cut -c1-4`
 VAL_SOLO_MES=`echo $VAL_FECHA_INI | cut -c5-6`
-VAL_MESES_ATRAS=$(date -d "$(date -d $VAL_DIA_UNO +%Y%m%d) -${VAL_MESES} month" +%Y%m%d)
-VAL_MESES_ATRAS1=$(date -d "$(date -d $VAL_DIA_UNO +%Y%m%d) -${VAL_MESES1} month" +%Y%m%d)
-VAL_MESES_ATRAS2=$(date -d "$(date -d $VAL_DIA_UNO +%Y%m%d) -${VAL_MESES2} month" +%Y%m%d)
-VAL_FECHA_FORM_INI=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y-%m-01"`
+VAL_MESES_ATRAS=$(date -d "$(date -d $VAL_FECHA_AUX2 +%Y%m01) -${VAL_MESES} month" +%Y%m%d)
+VAL_MESES_ATRAS1=$(date -d "$(date -d $VAL_FECHA_AUX2 +%Y%m01) -${VAL_MESES1} month" +%Y%m%d)
+VAL_MESES_ATRAS2=$(date -d "$(date -d $VAL_FECHA_AUX2 +%Y%m01) -${VAL_MESES2} month" +%Y%m%d)
+VAL_FECHA_FORM_INI=`date -d "${VAL_FEC_AYER}"  +"%Y-%m-01"`
 VAL_FECHA_FORMATO_INI=$VAL_FECHA_FORM_INI" 00:00:00"
-VAL_D1_MES_ANT=`date -d "${VAL_DIA_UNO} -1 month"  +"%Y-%m-%d"`
+VAL_D1_MES_ANT=`date -d "${VAL_F_MESES_AUX} -1 month"  +"%Y-%m-%d"`
 VAL_TS_INI=$VAL_D1_MES_ANT" 00:00:00"
 VAL_DIA=`date '+%Y%m%d'` 
 VAL_HORA=`date '+%H%M%S'` 
@@ -148,8 +150,21 @@ echo "==========================================================================
 echo "==== Inicia ejecucion del proceso BI CS Terminales Simcards  ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Los parametros del proceso son los siguientes:" 2>&1 &>> $VAL_LOG
+echo "Fecha Ejecucion: $VAL_FECHA_EJEC" 2>&1 &>> $VAL_LOG
 echo "Fecha Inicio: $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
-echo "Fecha Fin: $VAL_FEC_AYER" 2>&1 &>> $VAL_LOG
+echo "Fecha Fin: $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
+echo "Fecha Ayer: $VAL_FEC_AYER" 2>&1 &>> $VAL_LOG
+echo "Fecha F.Pre: $VAL_FECHA_FORMATO_PRE" 2>&1 &>> $VAL_LOG
+echo "Fecha Formato: $VAL_FECHA_FORMATO" 2>&1 &>> $VAL_LOG
+echo "Fecha D1 Mes sig: $VAL_DIA_UNO_MES_SIG_FRMT" 2>&1 &>> $VAL_LOG
+echo "Fecha Mes: $VAL_MES" 2>&1 &>> $VAL_LOG
+echo "Fecha Solo anio: $VAL_SOLO_ANIO" 2>&1 &>> $VAL_LOG
+echo "Fecha solo mes: $VAL_SOLO_MES" 2>&1 &>> $VAL_LOG
+echo "Fecha M Atras: $VAL_MESES_ATRAS" 2>&1 &>> $VAL_LOG
+echo "Fecha M Atras1: $VAL_MESES_ATRAS1" 2>&1 &>> $VAL_LOG
+echo "Fecha M Atras2: $VAL_MESES_ATRAS2" 2>&1 &>> $VAL_LOG
+echo "Fecha F ini: $VAL_FECHA_FORM_INI" 2>&1 &>> $VAL_LOG
+echo "Fecha D1 mes ant: $VAL_D1_MES_ANT" 2>&1 &>> $VAL_LOG
 
 #PASO 1: REALIZA LA TRANSFERENCIA DE LOS ARCHIVOS DESDE EL SERVIDOR FTP A RUTA LOCAL EN BIGDATA
 if [ "$ETAPA" = "1" ]; then
@@ -511,7 +526,7 @@ echo "==========================================================================
 echo "==== ETAPA 10: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_1.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Fecha meses atras 2:     $VAL_MESES_ATRAS2" 2>&1 &>> $VAL_LOG
-echo "Fecha Fin:               $VAL_FEC_AYER" 2>&1 &>> $VAL_LOG
+echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-1.0.0.7.1.7.1000-141.jar \
@@ -534,7 +549,7 @@ $VAL_RUTA_SPARK \
 $VAL_RUTA/python/carga_otc_t_terminales_simcards_1.py \
 --ventidad=$ENTIDAD \
 --vhivebd=$HIVEDB \
---vfecha_fin=$VAL_FEC_AYER \
+--vfecha_fin=$VAL_DIA_UNO \
 --vfecha_meses_atras2=$VAL_MESES_ATRAS2 2>&1 &>> $VAL_LOG
 
 error_spark=`egrep 'Traceback|error: argument|invalid syntax|An error occurred|Caused by:|cannot resolve|Non-ASCII character|UnicodeEncodeError:|can not accept object|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client|ImportError|SyntaxError' $VAL_LOG | wc -l`
@@ -557,7 +572,7 @@ echo "==========================================================================
 echo "==== ETAPA 11: Ejecuta subproceso PySpark carga_otc_t_terminales_simcards_2.py ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "Fecha inicio:            $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
-echo "Fecha Fin:               $VAL_FEC_AYER" 2>&1 &>> $VAL_LOG
+echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
 echo "Fecha antes de ayer:     $VAL_FECHA_FORMATO_PRE" 2>&1 &>> $VAL_LOG
 echo "Anio mes:                $VAL_MES" 2>&1 &>> $VAL_LOG
 echo "Dia mes siguiente:       $VAL_DIA_UNO_MES_SIG_FRMT" 2>&1 &>> $VAL_LOG
@@ -590,7 +605,7 @@ $VAL_RUTA_SPARK \
 $VAL_RUTA/python/carga_otc_t_terminales_simcards_2.py \
 --ventidad=$ENTIDAD \
 --vhivebd=$HIVEDB \
---vfecha_fin=$VAL_FEC_AYER \
+--vfecha_fin=$VAL_DIA_UNO \
 --vfecha_inicio=$VAL_FECHA_INI \
 --vfecha_antes_ayer=$VAL_FECHA_FORMATO_PRE \
 --vdia_uno_mes_sig_frmt=$VAL_DIA_UNO_MES_SIG_FRMT \

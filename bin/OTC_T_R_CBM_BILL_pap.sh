@@ -11,7 +11,8 @@ set -e
 #########################################################################################################
 # MODIFICACIONES														 								#
 # FECHA  		AUTOR     		DESCRIPCION MOTIVO						 								#
-# 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#								
+# 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#														 								#
+# 2023-07-27	Cristian Ortiz	BIGD-62                                                                 #							
 #########################################################################################################
 
 ENTIDAD=URMCBMBILL4060
@@ -29,6 +30,7 @@ TDPASS_RDB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERI
 TDHOST_RDB2=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDHOST_RDB2';"`
 TDPORT_RDB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDPORT_RDB';"`
 TDSERVICE_RDB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDSERVICE_RDB';"`
+TDCLASS_ORC=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_SPARK_GENERICO' AND parametro = 'TDCLASS_ORC';"`
 
 #PARAMETROS PROPIOS DEL PROCESO OBTENIDOS DE LA TABLA params
 VAL_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'RUTA';"`
@@ -57,6 +59,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$TDPASS_RDB" ] || 
     [ -z "$TDPORT_RDB" ] || 
     [ -z "$VAL_MASTER" ] || 
+    [ -z "$TDCLASS_ORC" ] || 
     [ -z "$VAL_DRIVER_MEMORY" ] || 
     [ -z "$VAL_EXECUTOR_MEMORY" ] || 
     [ -z "$VAL_NUM_EXECUTORS" ] || 
@@ -86,13 +89,14 @@ $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --name R_CBM_BILL \
+--queue capa_semantica \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
 --num-executors $VAL_NUM_EXECUTORS \
 --executor-cores $VAL_NUM_EXECUTORS_CORES \
 --jars $VAL_RUTA_LIB/$VAL_NOM_JAR_ORC_11 \
 $VAL_RUTA/python/otc_t_r_cbm_bill.py \
---vclass=oracle.jdbc.driver.OracleDriver \
+--vclass=$TDCLASS_ORC \
 --vjdbcurl=$VAL_JDBCURL \
 --vusuariobd=$TDUSER_RDB \
 --vclavebd=$TDPASS_RDB \

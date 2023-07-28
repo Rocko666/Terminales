@@ -96,9 +96,9 @@ echo "Password BD: $TDPASS_RDB" 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 #REALIZA EL LLAMADO EL ARCHIVO SPARK QUE REALIZA LA EXTRACCION DE LA INFORMACION DE ORACLE A HIVE
 $VAL_RUTA_SPARK \
---conf spark.ui.enabled=false \
+ 
 --conf spark.shuffle.service.enabled=true \
---conf spark.dynamicAllocation.enabled=false \
+
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --name OTC_T_R_AM_CPE \

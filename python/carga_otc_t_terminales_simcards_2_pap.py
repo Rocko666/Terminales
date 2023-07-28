@@ -73,9 +73,10 @@ spark = SparkSession\
     .config("hive.enforce.bucketing", "false")\
     .config("hive.enforce.sorting", "false")\
     .getOrCreate()
-spark.sparkContext.setLogLevel("ERROR")
-app_id = spark._sc.applicationId
+sc = spark.sparkContext
+sc.setLogLevel("ERROR")
 hive_hwc = HiveWarehouseSession.session(spark).build()
+app_id = spark._sc.applicationId
 print(etq_info("INFO: Mostrar application_id => {}".format(str(app_id))))
 
 ##STEP 4:QUERYS

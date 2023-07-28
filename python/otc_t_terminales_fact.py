@@ -25,6 +25,7 @@ parser.add_argument('--vtipocarga', required=True, type=str, help='Tipo de carga
 parser.add_argument('--vcampoparte', required=False, type=str, help='Campo de particion, este campo debe ser definido si es una carga tipo append')
 parser.add_argument('--vfechai', required=False, type=str,help='Parametro 1 de la query sql')
 parser.add_argument('--vfechaf', required=False, type=str,help='Parametro 1 de la query sql')
+parser.add_argument('--vttemp', required=False, type=str,help='Tabla temporal1')
 
 parametros = parser.parse_args()
 vClass=parametros.vclass
@@ -37,39 +38,90 @@ vTipoCarga=parametros.vtipocarga
 vCampoParte=parametros.vcampoparte
 vfechai=parametros.vfechai
 vfechaf=parametros.vfechaf
+vTTemp=parametros.vttemp
+nme_table=vBaseHive+'.'+vTablaHive  ##db_desarrollo2021.otc_t_terminales_fact
 
-vSQL="""
+vSQL_ORA="""
 SELECT 
-fecha_factura, 
-bill_status, 
-sri_authorization_date, 
-document_type_id, 
-document_type_name, 
-invoice_num, 
-office_code, 
-office_name, 
-usuario, 
-account_num, 
-num_abonado, 
-nombre_cliente, 
-customer_id_number, 
-revenue_code_id, 
-revenue_code_desc, 
-imei_imsi, 
-product_quantity, 
-monto,
-TO_CHAR(fecha_factura,'yyyyMMdd') AS pt_fecha
+    fecha_factura, 
+    bill_status, 
+    sri_authorization_date, 
+    document_type_id, 
+    document_type_name, 
+    invoice_num, 
+    office_code, 
+    office_name, 
+    usuario, 
+    account_num, 
+    num_abonado, 
+    nombre_cliente, 
+    customer_id_number, 
+    revenue_code_id, 
+    revenue_code_desc, 
+    imei_imsi, 
+    product_quantity, 
+    monto,
+    TO_CHAR(fecha_factura,'yyyyMMdd') AS pt_fecha
 FROM rbm_reportes.otc_t_terminales_fact 
 WHERE fecha_factura >= to_date('{vfechai}','yyyyMMdd') AND fecha_factura < to_date('{vfechaf}','yyyyMMdd')
 """.format(vfechai=vfechai, vfechaf=vfechaf)
-print(vSQL)
+
+vSql_Hive="""
+SELECT 
+    a.fecha_factura, 
+    a.bill_status, 
+    a.sri_authorization_date, 
+    a.document_type_id, 
+    a.document_type_name, 
+    a.invoice_num, 
+    a.office_code, 
+    a.office_name, 
+    a.usuario, 
+    a.account_num, 
+    a.num_abonado, 
+    a.nombre_cliente, 
+    a.customer_id_number, 
+    a.revenue_code_id, 
+    a.revenue_code_desc, 
+    a.imei_imsi, 
+    a.product_quantity, 
+    a.monto,
+    a.pt_fecha
+FROM {nme_table} a
+LEFT OUTER JOIN (SELECT b.fecha_factura FROM {nme_table} b WHERE fecha_factura>='{vfechai}' AND fecha_factura<'{vfechaf}') b
+ON a.fecha_factura = b.fecha_factura
+WHERE b.fecha_factura IS NULL
+""".format(nme_table=nme_table,vfechai=vfechai,vfechaf=vfechaf)
+
+vSql_HiveTmp="""
+SELECT  
+    a.fecha_factura, 
+    a.bill_status, 
+    a.sri_authorization_date, 
+    a.document_type_id, 
+    a.document_type_name, 
+    a.invoice_num, 
+    a.office_code, 
+    a.office_name, 
+    a.usuario, 
+    a.account_num, 
+    a.num_abonado, 
+    a.nombre_cliente, 
+    a.customer_id_number, 
+    a.revenue_code_id, 
+    a.revenue_code_desc, 
+    a.imei_imsi, 
+    a.product_quantity, 
+    a.monto,
+    a.pt_fecha
+FROM {vTTemp} a
+""".format(vTTemp=vTTemp)
 
 ## 2.- Inicio el SparkSession
 spark = SparkSession. \
     builder. \
     enableHiveSupport(). \
     config("hive.exec.dynamic.partition", "true"). \
-    config("spark.yarn.queue", "reportes"). \
     config("hive.exec.dynamic.partition.mode", "nonstrict"). \
     getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
@@ -102,54 +154,56 @@ try:
 except Exception as e:
     exit(etq_error(msg_e_ejecucion(vStp00,str(e))))
 
-
 print(lne_dvs())
-vStp01='PASO [1]: Conexion a la base de datos'
+vStp01='PASO [1]: Conexion a la base de datos y escritura: '
 try:
     ts_step = datetime.now()  
     print(etq_info(str(vStp01)))
-    print(etq_sql(vSQL))
+    print(etq_sql(vSQL_ORA))
     df0 = spark.read.format("jdbc")\
 			.option("url",vUrlJdbc)\
 			.option("driver",vClass)\
 			.option("user",vUsuarioBD)\
 			.option("password",vClaveBD)\
 			.option("fetchsize",1000)\
-            .option("dbtable","({})".format(vSQL))\
+            .option("dbtable","({})".format(vSQL_ORA))\
 			.load()
     if df0.rdd.isEmpty():
         exit(etq_nodata(msg_e_df_nodata(str('df0'))))
     else:
-        df1 = df0.withColumn("fechacarga",F.lit(datetime.now())).withColumn("pt_fecha", F.col('pt_fecha').cast("int"))
+        df1 = df0
         df1 = df1.select([F.col(x).alias(x.lower()) for x in df1.columns])
         df1.printSchema()
     te_step = datetime.now()
+    print(etq_info(('Total de registros a insertarse en tabla ',nme_table,':',str(df1.count()))))
     print(etq_info(msg_d_duracion_ejecucion(vStp01,vle_duracion(ts_step,te_step))))
 except Exception as e:
     exit(etq_error(msg_e_ejecucion(vStp01,str(e))))
 print(lne_dvs())
 
-
 print("***************************TABLA A CARGAR****************************")
-vStp02='PASO [2]: Escritura en Hive'
+vStp02='PASO [2]: Borrado e insercion de datos Hive'
 try:
-    ts_step = datetime.now()
-    nme_table=vBaseHive+'.'+vTablaHive
-    
-    if spark._jsparkSession.catalog().tableExists(vBaseHive, vTablaHive):
-        print("*EXISTE*")
-        columns = spark.table(nme_table).columns
-        cols = []
-        for column in columns:
-            cols.append(column)
-        df3=df1.select(cols)
-        df3.printSchema()
-        df3.write.format("parquet").partitionBy(vCampoParte).mode(vTipoCarga).saveAsTable("{}.{}".format(vBaseHive,vTablaHive))
-    else:
-        print("*NO EXISTE*")
-        df3=df1
-        df3.printSchema()
-        df3.write.format("parquet").partitionBy(vCampoParte).mode(vTipoCarga).saveAsTable("{}.{}".format(vBaseHive,vTablaHive))
+    print(etq_info(str(vStp02)))
+    print(lne_dvs())
+    print(etq_info(msg_i_insert_hive(nme_table)))
+    ts_step = datetime.now()   
+    df_hive = spark.sql(vSql_Hive)
+    print(vSql_Hive)
+    print('Tabla union:')
+    df_insert = df1.union(df_hive)
+    df_insert.repartition(1).write.format('parquet').mode(vTipoCarga).saveAsTable(vTTemp)
+    df_fin = spark.sql(vSql_HiveTmp)
+    columns = spark.table(nme_table).columns
+    cols = []
+    for column in columns:
+        cols.append(column)
+    df3=df_fin.select(cols)
+    df3.printSchema()
+    print('Tabla final:')
+    df3.repartition(1).write.format("parquet").mode(vTipoCarga).saveAsTable(nme_table)
+    print(etq_info(('Total de registros en tabla principal ',nme_table,':',str(df3.count()))))
+    print(lne_dvs())
     te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStp02,vle_duracion(ts_step,te_step))))
 except Exception as e:
@@ -158,7 +212,5 @@ except Exception as e:
 ## 4.- Cierre
 spark.stop()
 timeend = datetime.now()
-duracion = timeend-timestart 
 print(etq_info(msg_d_duracion_ejecucion('otc_t_terminales_fact.py',vle_duracion(timestart,timeend))))
 print(lne_dvs())
-

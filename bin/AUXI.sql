@@ -29,3 +29,18 @@ AND fecha_archivo<=20230731
 GROUP BY substr(fecha_archivo,1,6)'''
 
 df=spark.sql(vSql).show()
+
+
+--queue capa_semantica \
+
+
+## STEP 3: Inicio el SparkSession
+spark = SparkSession. \
+        builder. \
+        enableHiveSupport(). \
+        getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
+app_id = spark._sc.applicationId
+hive_hwc = HiveWarehouseSession.session(spark).build()
+print(etq_info("INFO: Mostrar application_id => {}".format(str(app_id))))
+
