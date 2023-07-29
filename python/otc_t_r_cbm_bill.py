@@ -109,8 +109,9 @@ try:
         df1 = df0.withColumn("fechacarga",F.lit(datetime.now()))
         df1 = df1.select([F.col(x).alias(x.lower()) for x in df1.columns])
         df1.printSchema()
-        df1.write.format('parquet').mode("overwrite").saveAsTable(nme_table)
+        df1.repartition(1).write.format('parquet').mode("overwrite").saveAsTable(nme_table)
     te_step = datetime.now()
+    print(etq_info(msg_t_total_registros_obtenidos("df1",str(df1.count())))) 
     print(etq_info(msg_d_duracion_ejecucion(vStp01,vle_duracion(ts_step,te_step))))
 except Exception as e:
     exit(etq_error(msg_e_ejecucion(vStp01,str(e))))

@@ -11,7 +11,8 @@ set -e
 #########################################################################################################
 # MODIFICACIONES														 								#
 # FECHA  		AUTOR     		DESCRIPCION MOTIVO						 								#
-# 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#								
+# 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#	
+# 2023-07-27	Cristian Ortiz	BIGD-62                                                                 #							
 #########################################################################################################
 
 ENTIDAD=URMTRMNLSVUSR4050
@@ -29,10 +30,10 @@ TDPASS_RDB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERI
 TDHOST_RDB2=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDHOST_RDB2';"`
 TDPORT_RDB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDPORT_RDB';"`
 TDSERVICE_RDB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDSERVICE_RDB';"`
+TDCLASS_ORC=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDCLASS_ORC';"`
 
 #PARAMETROS PROPIOS DEL PROCESO OBTENIDOS DE LA TABLA params
 VAL_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
-TDTABLE=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'TDTABLE';"`
 HIVEDB=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'HIVEDB';"`
 VAL_TIPO_CARGA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TIPO_CARGA';"`
 VAL_MASTER=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MASTER';"`
@@ -40,13 +41,13 @@ VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENT
 VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
 VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS';"`
 VAL_NUM_EXECUTORS_CORES=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS_CORES';"`
+HIVETABLE=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'HIVETABLE';"`
 
 #PARAMETROS DE OPERACION Y AUTOGENERADOS
 VAL_DIA=`date '+%Y%m%d'` 
 VAL_HORA=`date '+%H%M%S'` 
 VAL_LOG=$VAL_RUTA/log/OTC_T_V_USUARIOS_$VAL_DIA$VAL_HORA.log
 VAL_JDBCURL=jdbc:oracle:thin:@//$TDHOST_RDB2:$TDPORT_RDB/$TDSERVICE_RDB
-HIVETABLE="otc_t_v_usuarios"
 
 #VALIDACION DE PARAMETROS INICIALES
 if  [ -z "$ENTIDAD" ] || 
@@ -59,13 +60,14 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$TDSERVICE_RDB" ] || 
     [ -z "$TDUSER_RDB" ] || 
     [ -z "$VAL_MASTER" ] || 
+    [ -z "$TDCLASS_ORC" ] ||
     [ -z "$VAL_DRIVER_MEMORY" ] || 
     [ -z "$VAL_EXECUTOR_MEMORY" ] || 
     [ -z "$VAL_NUM_EXECUTORS" ] || 
     [ -z "$VAL_NUM_EXECUTORS_CORES" ] || 
     [ -z "$VAL_RUTA" ] || 
-    [ -z "$TDTABLE" ] || 
     [ -z "$HIVEDB" ] || 
+    [ -z "$HIVETABLE" ] || 
     [ -z "$VAL_TIPO_CARGA" ] || 
     [ -z "$VAL_JDBCURL" ] || 
     [ -z "$VAL_LOG" ]; then
@@ -86,13 +88,14 @@ $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --name OTC_V_USUARIOS \
+--queue capa_semantica \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
 --num-executors $VAL_NUM_EXECUTORS \
 --executor-cores $VAL_NUM_EXECUTORS_CORES \
 --jars $VAL_RUTA_LIB/$VAL_NOM_JAR_ORC_11 \
 $VAL_RUTA/python/otc_t_v_usuarios.py \
---vclass=oracle.jdbc.driver.OracleDriver \
+--vclass=$TDCLASS_ORC \
 --vjdbcurl=$VAL_JDBCURL \
 --vusuariobd=$TDUSER_RDB \
 --vclavebd=$TDPASS_RDB \

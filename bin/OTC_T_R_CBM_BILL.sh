@@ -34,7 +34,6 @@ TDCLASS_ORC=`mysql -N  <<<"select valor from params_des where ENTIDAD = 'D_SPARK
 
 #PARAMETROS PROPIOS DEL PROCESO OBTENIDOS DE LA TABLA params_des
 VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'RUTA';"`
-TDTABLE=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'TDTABLE';"`
 HIVEDB=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'HIVEDB';"`
 VAL_TIPO_CARGA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TIPO_CARGA';"`
 VAL_MASTER=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MASTER';"`
@@ -67,8 +66,8 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$TDSERVICE_RDB" ] || 
     [ -z "$TDUSER_RDB" ] || 
     [ -z "$VAL_RUTA" ] || 
-    [ -z "$TDTABLE" ] || 
     [ -z "$HIVEDB" ] || 
+    [ -z "$HIVETABLE" ] || 
     [ -z "$VAL_TIPO_CARGA" ] || 
     [ -z "$VAL_JDBCURL" ] || 
     [ -z "$VAL_LOG" ]; then

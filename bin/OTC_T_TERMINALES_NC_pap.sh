@@ -11,7 +11,8 @@ set -e
 #########################################################################################################
 # MODIFICACIONES														 								#
 # FECHA  		AUTOR     		DESCRIPCION MOTIVO						 								#
-# 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#								
+# 2022-12-29	Brigitte Balon	Se migra importacion a spark			 								#										 								#													 								#
+# 2023-07-27	Cristian Ortiz	BIGD-62 cambio a ejecucion diaria y tabla final particionada            #								
 #########################################################################################################
 
 ENTIDAD=TRMNLSNC0030
@@ -29,10 +30,12 @@ TDPASS_RBM=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERI
 TDHOST_RBM2=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDHOST_RBM2';"`
 TDPORT_RBM=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDPORT_RBM';"`
 TDSERVICE_RBM1=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDSERVICE_RBM1';"`
+TDCLASS_ORC=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDCLASS_ORC';"`
 
 #PARAMETROS PROPIOS DEL PROCESO OBTENIDOS DE LA TABLA params
 VAL_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
-HIVETABLE=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'TDTABLE';"`
+HIVETABLE=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'HIVETABLE';"`
+VTTEMP=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VTTEMP';"`
 HIVEDB=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'HIVEDB';"`
 VAL_TIPO_CARGA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_TIPO_CARGA';"`
 VAL_MASTER=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_MASTER';"`
@@ -60,6 +63,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$TDPORT_RBM" ] || 
     [ -z "$TDSERVICE_RBM1" ] || 
     [ -z "$TDUSER_RBM" ] || 
+    [ -z "$TDCLASS_ORC" ] || 
     [ -z "$VAL_MASTER" ] || 
     [ -z "$VAL_DRIVER_MEMORY" ] || 
     [ -z "$VAL_EXECUTOR_MEMORY" ] || 
@@ -67,6 +71,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_NUM_EXECUTORS_CORES" ] || 
     [ -z "$VAL_RUTA" ] || 
     [ -z "$HIVETABLE" ] || 
+    [ -z "$VTTEMP" ] || 
     [ -z "$HIVEDB" ] || 
     [ -z "$VAL_TIPO_CARGA" ] || 
     [ -z "$VAL_JDBCURL" ] || 
@@ -89,6 +94,7 @@ echo "==========================================================================
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
+--queue capa_semantica \
 --name OTC_T_TERMINALES_NC \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
@@ -96,7 +102,7 @@ $VAL_RUTA_SPARK \
 --executor-cores $VAL_NUM_EXECUTORS_CORES \
 --jars $VAL_RUTA_LIB/$VAL_NOM_JAR_ORC_11 \
 $VAL_RUTA/python/otc_t_terminales_nc.py \
---vclass=oracle.jdbc.driver.OracleDriver \
+--vclass=$TDCLASS_ORC \
 --vjdbcurl=$VAL_JDBCURL \
 --vusuariobd=$TDUSER_RBM \
 --vclavebd=$TDPASS_RBM \
@@ -105,6 +111,7 @@ $VAL_RUTA/python/otc_t_terminales_nc.py \
 --vtipocarga=$VAL_TIPO_CARGA \
 --vfechai=$VAL_FEC_FIN \
 --vfechaf=$VAL_FEC_AYER \
+--vttemp=$VTTEMP \
 --vcampoparte="pt_fecha" 2>&1 &>> $VAL_LOG
 
 #VALIDA EJECUCION DEL ARCHIVO SPARK

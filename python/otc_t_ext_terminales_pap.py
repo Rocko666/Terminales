@@ -40,7 +40,6 @@ vTablaFinal='db_cs_terminales.otc_t_ext_terminales_ajst'
 spark = SparkSession \
     .builder \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
-    .config("spark.yarn.queue", "reportes") \
     .config("spark.rpc.askTimeout", "300s") \
     .appName(vEntidad) \
     .enableHiveSupport() \

@@ -16,7 +16,7 @@ set -e
 # 2022-12-30	Brigitte Balon	Se migra importacion a spark			 								#
 # 2023-07-14    Cristian Ortiz	Extractor con cambios de alcance para Comisiones    	                #			
 #########################################################################################################
-# sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_FACT.sh 20230704 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_NC.sh 20230704 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_CBM_BILL.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_AM_CPE.sh 20230704 &&  sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_V_USUARIOS.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/SH_TERMINALES_SIMCARDS.sh 20230704 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_EXT_TERMINALES.sh 20230704
+
 ##############
 # VARIABLES #
 ##############
@@ -99,6 +99,8 @@ echo "Servidor: $VAL_SFTP_HOSTNAME" 2>&1 &>> $VAL_LOG
 echo "Puerto: $VAL_SFTP_PORT" 2>&1 &>> $VAL_LOG
 echo "Ruta: $VAL_SFTP_RUTA" 2>&1 &>> $VAL_LOG
 
+rm -r ${VAL_RUTA}/input/*
+
 #ftp -inv $VAL_SFTP_HOSTNAME $VAL_SFTP_PUERTO <<EOF 2>&1 &>> $VAL_LOG
 #user $VAL_SFTP_USER $VAL_SFTP_PASS
 #bin
@@ -150,6 +152,7 @@ $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --name $ENTIDAD \
 --master $VAL_MASTER \
+--queue capa_semantica \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
 --num-executors $VAL_NUM_EXECUTORS \
@@ -199,6 +202,7 @@ $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --name $ENTIDAD \
+--queue capa_semantica \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
 --num-executors $VAL_NUM_EXECUTORS \
@@ -281,7 +285,7 @@ echo "==== OK - Se procesa la ETAPA 4 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $
 `mysql -N  <<<"update params set valor='5' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_TEST.txt'
+vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_TEST_may.txt'
 #CREA FUNCION PARA LA EXPORTACION DEL ARCHIVO A RUTA SFTP Y REALIZA LA TRANSFERENCIA
 if [ "$ETAPA" = "5" ]; then
 echo "==== Crea funcion para la exportacion del archivo a ruta SFTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
@@ -295,7 +299,7 @@ function exportar()
 		expect "sftp>"
 		send "cd ${VAL_SFTP_RUTA_OUT}\n"
 		expect "sftp>"
-		send "put ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO\n"
+		send "put ${VAL_RUTA}/output/${VAL_NOM_ARCHIVO} $(basename ${vFTP_NOM_ARCHIVO_FORMATO})\n"
 		expect "sftp>"
 		send "exit\n"
 		interact

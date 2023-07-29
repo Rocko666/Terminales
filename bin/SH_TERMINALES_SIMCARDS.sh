@@ -11,10 +11,8 @@ set -e
 #########################################################################################################
 # MODIFICACIONES														 								#
 # FECHA  		AUTOR     		DESCRIPCION MOTIVO						 								#
-# 2022-12-30	Brigitte Balon	Se migra importacion a spark			 								#								
-#########################################################################################################
-# MODIFICACIONES																						#
-# FECHA  		AUTOR     		DESCRIPCION MOTIVO														#
+# 2022-12-30	Brigitte Balon	Se migra importacion a spark			 								#	
+# 2023-07-27	Cristian Ortiz	BIGD-62 Terminales, separacion extractor,ajustes,                       #								
 #########################################################################################################
 ##############
 # VARIABLES #
