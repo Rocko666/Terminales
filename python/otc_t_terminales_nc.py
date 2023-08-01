@@ -40,7 +40,8 @@ vfechai=parametros.vfechai
 vfechaf=parametros.vfechaf
 vTTemp=parametros.vttemp
 nme_table=vBaseHive+'.'+vTablaHive  ##db_desarrollo2021.otc_t_terminales_nc
-
+anio_mes = vfechai[:6]
+print(anio_mes)
 vSQL_ORA="""
 SELECT 
     office_code, 
@@ -62,63 +63,10 @@ SELECT
     revenue_code_desc, 
     imei_imsi, 
     monto,
-    TO_CHAR(bill_dtm,'yyyyMMdd') AS pt_fecha
+    TO_CHAR(bill_dtm,'yyyyMM') AS pt_fecha
 FROM rbm_reportes.otc_t_terminales_nc
 WHERE bill_dtm >= to_date('{vfechai}','yyyyMMdd') AND bill_dtm < to_date('{vfechaf}','yyyyMMdd')
 """.format(vfechai=vfechai, vfechaf=vfechaf)
-
-vSql_Hive="""
-SELECT 
-    a.office_code, 
-    a.office_name, 
-    a.usuario, 
-    a.account_num, 
-    a.num_abonado, 
-    a.bill_dtm, 
-    a.document_type_id, 
-    a.documento, 
-    a.origin_doc_type_id, 
-    a.document_type_name, 
-    a.nro_nota_credito, 
-    a.origin_invoice_num, 
-    a.customer_id_type, 
-    a.customer_id_number, 
-    a.nombre_cliente, 
-    a.revenue_code_id, 
-    a.revenue_code_desc, 
-    a.imei_imsi, 
-    a.monto,
-    a.pt_fecha
-FROM {nme_table} a
-LEFT OUTER JOIN (SELECT b.bill_dtm FROM {nme_table} b WHERE bill_dtm>='{vfechai}' AND bill_dtm<'{vfechaf}') b
-ON a.bill_dtm = b.bill_dtm
-WHERE b.bill_dtm IS NULL
-""".format(nme_table=nme_table,vfechai=vfechai,vfechaf=vfechaf)
-
-vSql_HiveTmp="""
-SELECT 
-    a.office_code, 
-    a.office_name, 
-    a.usuario, 
-    a.account_num, 
-    a.num_abonado, 
-    a.bill_dtm, 
-    a.document_type_id, 
-    a.documento, 
-    a.origin_doc_type_id, 
-    a.document_type_name, 
-    a.nro_nota_credito, 
-    a.origin_invoice_num, 
-    a.customer_id_type, 
-    a.customer_id_number, 
-    a.nombre_cliente, 
-    a.revenue_code_id, 
-    a.revenue_code_desc, 
-    a.imei_imsi, 
-    a.monto,
-    a.pt_fecha
-FROM {vTTemp} a
-""".format(vTTemp=vTTemp)
 
 ## 2.- Inicio el SparkSession
 spark = SparkSession. \
@@ -157,7 +105,6 @@ try:
 except Exception as e:
     exit(etq_error(msg_e_ejecucion(vStp00,str(e))))
 
-
 print(lne_dvs())
 vStp01='PASO [1]: Conexion a la base de datos y escritura: '
 try:
@@ -190,23 +137,15 @@ vStp02='PASO [2]: Borrado e insercion de datos Hive'
 try:
     print(etq_info(str(vStp02)))
     print(lne_dvs())
+    print(etq_info("REALIZA EL BORRADO DE PARTICIONES CORRESPONDIENTES AL MES DE PROCESO (DESDE EL DIA 1 HASTA DIA CAIDO)"))
+    query_truncate = "ALTER TABLE "+nme_table+" DROP IF EXISTS PARTITION (pt_fecha = " + str(anio_mes)+ ") purge"
+    print(query_truncate)
+    spark.sql(query_truncate)
     print(etq_info(msg_i_insert_hive(nme_table)))
-    ts_step = datetime.now()   
-    df_hive = spark.sql(vSql_Hive)
-    print(vSql_Hive)
-    print('Tabla union:')
-    df_insert = df1.union(df_hive)
-    df_insert.repartition(1).write.format('parquet').mode(vTipoCarga).saveAsTable(vTTemp)
-    df_fin = spark.sql(vSql_HiveTmp)
-    columns = spark.table(nme_table).columns
-    cols = []
-    for column in columns:
-        cols.append(column)
-    df3=df_fin.select(cols)
-    df3.printSchema()
+    df1.write.mode("append").insertInto(nme_table)
+    df1.printSchema() 
     print('Tabla final:')
-    df3.repartition(1).write.format("parquet").mode(vTipoCarga).saveAsTable(nme_table)
-    print(etq_info(('Total de registros en tabla principal ',nme_table,':',str(df3.count()))))
+    print(etq_info(('Total de registros insertados en tabla principal ',nme_table,':',str(df1.count()))))
     print(lne_dvs())
     te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStp02,vle_duracion(ts_step,te_step))))

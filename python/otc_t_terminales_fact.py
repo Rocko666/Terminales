@@ -4,6 +4,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 from pyspark.sql import SparkSession, DataFrame
 from datetime import datetime
+from pyspark.sql import HiveContext
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from pyspark.sql.functions import udf
@@ -65,57 +66,6 @@ SELECT
 FROM rbm_reportes.otc_t_terminales_fact 
 WHERE fecha_factura >= to_date('{vfechai}','yyyyMMdd') AND fecha_factura < to_date('{vfechaf}','yyyyMMdd')
 """.format(vfechai=vfechai, vfechaf=vfechaf)
-
-vSql_Hive="""
-SELECT 
-    a.fecha_factura, 
-    a.bill_status, 
-    a.sri_authorization_date, 
-    a.document_type_id, 
-    a.document_type_name, 
-    a.invoice_num, 
-    a.office_code, 
-    a.office_name, 
-    a.usuario, 
-    a.account_num, 
-    a.num_abonado, 
-    a.nombre_cliente, 
-    a.customer_id_number, 
-    a.revenue_code_id, 
-    a.revenue_code_desc, 
-    a.imei_imsi, 
-    a.product_quantity, 
-    a.monto,
-    a.pt_fecha
-FROM {nme_table} a
-LEFT OUTER JOIN (SELECT b.fecha_factura FROM {nme_table} b WHERE fecha_factura>='{vfechai}' AND fecha_factura<'{vfechaf}') b
-ON a.fecha_factura = b.fecha_factura
-WHERE b.fecha_factura IS NULL
-""".format(nme_table=nme_table,vfechai=vfechai,vfechaf=vfechaf)
-
-vSql_HiveTmp="""
-SELECT  
-    a.fecha_factura, 
-    a.bill_status, 
-    a.sri_authorization_date, 
-    a.document_type_id, 
-    a.document_type_name, 
-    a.invoice_num, 
-    a.office_code, 
-    a.office_name, 
-    a.usuario, 
-    a.account_num, 
-    a.num_abonado, 
-    a.nombre_cliente, 
-    a.customer_id_number, 
-    a.revenue_code_id, 
-    a.revenue_code_desc, 
-    a.imei_imsi, 
-    a.product_quantity, 
-    a.monto,
-    a.pt_fecha
-FROM {vTTemp} a
-""".format(vTTemp=vTTemp)
 
 ## 2.- Inicio el SparkSession
 spark = SparkSession. \
@@ -186,23 +136,20 @@ vStp02='PASO [2]: Borrado e insercion de datos Hive'
 try:
     print(etq_info(str(vStp02)))
     print(lne_dvs())
+    print(etq_info("REALIZA EL BORRADO DE PARTICIONES CORRESPONDIENTES AL MES DE PROCESO (DESDE EL DIA 1 HASTA DIA CAIDO)"))
+    partitions = spark.sql("SHOW PARTITIONS "+nme_table)
+    listpartitions = list(partitions.select('partition').toPandas()['partition'])
+    cleanpartitions = [ i.split('=')[1] for i in listpartitions]
+    filtered = [i for i in cleanpartitions if i >= str(vfechai) and i < str(vfechaf)]
+    for i in filtered:
+        query_truncate = "ALTER TABLE "+nme_table+" DROP IF EXISTS PARTITION (pt_fecha = " + str(i)+ ") purge"
+        print(query_truncate)
+        spark.sql(query_truncate)
     print(etq_info(msg_i_insert_hive(nme_table)))
-    ts_step = datetime.now()   
-    df_hive = spark.sql(vSql_Hive)
-    print(vSql_Hive)
-    print('Tabla union:')
-    df_insert = df1.union(df_hive)
-    df_insert.repartition(1).write.format('parquet').mode(vTipoCarga).saveAsTable(vTTemp)
-    df_fin = spark.sql(vSql_HiveTmp)
-    columns = spark.table(nme_table).columns
-    cols = []
-    for column in columns:
-        cols.append(column)
-    df3=df_fin.select(cols)
-    df3.printSchema()
+    df1.write.mode("append").insertInto(nme_table)
+    df1.printSchema() 
     print('Tabla final:')
-    df3.repartition(1).write.format("parquet").mode(vTipoCarga).saveAsTable(nme_table)
-    print(etq_info(('Total de registros en tabla principal ',nme_table,':',str(df3.count()))))
+    print(etq_info(('Total de registros insertados en tabla principal ',nme_table,':',str(df1.count()))))
     print(lne_dvs())
     te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStp02,vle_duracion(ts_step,te_step))))
