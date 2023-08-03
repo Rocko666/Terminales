@@ -590,7 +590,7 @@ SELECT
 FROM
 	tmp_terminales_simcards t
 INNER JOIN 
-    db_temporales.tmp_ajsts_terminales ajt 
+    db_reportes.otc_t_ajsts_terminales ajt 
 ON  
     (ajt.fecha_proceso=t.fecha_proceso)
 AND 

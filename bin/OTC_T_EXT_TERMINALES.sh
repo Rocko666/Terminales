@@ -16,7 +16,7 @@ set -e
 # 2022-12-30	Brigitte Balon	Se migra importacion a spark			 								#
 # 2023-07-14    Cristian Ortiz	Extractor con cambios de alcance para Comisiones    	                #			
 #########################################################################################################
-# sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_FACT.sh 20230728 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_NC.sh 20230728 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_CBM_BILL.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_V_USUARIOS.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/SH_TERMINALES_SIMCARDS.sh 20230728 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_EXT_TERMINALES.sh 20230604
+# sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_FACT.sh 20230802 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_NC.sh 20230802 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_CBM_BILL.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_V_USUARIOS.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/SH_TERMINALES_SIMCARDS.sh 20230802 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_EXT_TERMINALES.sh 20230704
 
 
 
@@ -36,7 +36,6 @@ VAL_FECHA_EJEC=$1
 
 VAL_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_RUTA';"`
 ETAPA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'ETAPA';"`
-HIVEDB=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_BASE_DATOS';"`
 VAL_SFTP_PUERTO_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_PUERTO_OUT';"`
 VAL_SFTP_USER_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_USER_OUT';"`
 VAL_SFTP_HOSTNAME_OUT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_HOSTNAME_OUT';"`
@@ -51,6 +50,7 @@ VAL_EXECUTOR_CORES=`mysql -N  <<<"select valor from params_des where ENTIDAD = '
 VAL_DIR_HDFS_CAT=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VAL_DIR_HDFS_CAT';"` 
 VAL_SFTP_NOM_ARCHIVO=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VAL_SFTP_NOM_ARCHIVO';"`
 VAL_SFTP_RUTA=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VAL_SFTP_RUTA';"` 
+VTFINAL=`mysql -N  <<<"select valor from params_des where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VTFINAL';"` 
 
 #PARAMETROS GENERICOS
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
@@ -71,7 +71,7 @@ VAL_FECHA_FORMATO_PRE=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m%d"`
 VAL_FECHA_FORMATO=`date -d "${VAL_DIA_UNO} -1 day"  +"%d/%m/%Y"`
 VAL_DIA=`date '+%Y%m%d'` 
 VAL_HORA=`date '+%H%M%S'` 
-VAL_LOG=$VAL_RUTA/logs/OTC_T_EXT_TERMINALES_$VAL_DIA$VAL_HORA.log
+VAL_LOG=$VAL_RUTA/logs/OTC_T_EXT_TERMINALES_$VAL_DIA$VAL_HORA.log  ## ojo LOG
 VAL_NOM_ARCHIVO_PREVIO=EXT_TERMINALES.txt
 
 #VALIDACION DE PARAMETROS INICIALES
@@ -79,7 +79,6 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_FECHA_EJEC" ] || 
     [ -z "$VAL_RUTA" ] || 
     [ -z "$ETAPA" ] || 
-    [ -z "$HIVEDB" ] || 
     [ -z "$VAL_SFTP_PUERTO_OUT" ] || 
     [ -z "$VAL_SFTP_USER_OUT" ] || 
     [ -z "$VAL_SFTP_HOSTNAME_OUT" ] || 
@@ -92,6 +91,7 @@ if  [ -z "$ENTIDAD" ] ||
 	[ -z "$VAL_SFTP_PASS" ] || 
 	[ -z "$VAL_SFTP_RUTA" ] || 
 	[ -z "$VAL_DIR_HDFS_CAT" ] ||
+	[ -z "$VTFINAL" ] ||
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
@@ -194,7 +194,7 @@ echo "Fecha inicio:            $VAL_FECHA_INI" 2>&1 &>> $VAL_LOG
 echo "Fecha Fin:               $VAL_DIA_UNO" 2>&1 &>> $VAL_LOG
 echo "Fecha antes de ayer:     $VAL_FECHA_FORMATO_PRE" 2>&1 &>> $VAL_LOG
 echo "Ultimo dia:              $VAL_FECHA_FORMATO" 2>&1 &>> $VAL_LOG
-echo "Tabla Destino:           db_cs_terminales.otc_t_ext_terminales_ajst" 2>&1 &>> $VAL_LOG
+echo "Tabla Destino:           db_reportes.otc_t_ext_terminales_ajst" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --jars /opt/cloudera/parcels/CDH/jars/hive-warehouse-connector-assembly-1.0.0.7.1.7.1000-141.jar \
@@ -216,9 +216,9 @@ $VAL_RUTA_SPARK \
 --executor-cores $VAL_EXECUTOR_CORES \
 $VAL_RUTA/python/otc_t_ext_terminales.py \
 --ventidad=$ENTIDAD \
---vhivebd=$HIVEDB \
 --vfecha_fin=$VAL_DIA_UNO \
 --vfecha_inicio=$VAL_FECHA_INI \
+--vtfinal=$VTFINAL \
 --vfecha_antes_ayer=$VAL_FECHA_FORMATO_PRE \
 --vultimo_dia_act_frmt=$VAL_FECHA_FORMATO 2>&1 &>> $VAL_LOG
 
@@ -292,7 +292,7 @@ echo "==== OK - Se procesa la ETAPA 4 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $
 `mysql -N  <<<"update params_des set valor='5' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_TEST_may.txt'
+vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_TEST_jun.txt'
 #CREA FUNCION PARA LA EXPORTACION DEL ARCHIVO A RUTA SFTP Y REALIZA LA TRANSFERENCIA
 if [ "$ETAPA" = "5" ]; then
 echo "==== Crea funcion para la exportacion del archivo a ruta SFTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG

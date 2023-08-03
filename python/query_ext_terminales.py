@@ -602,7 +602,7 @@ SELECT
 FROM
 	tmp_terminales_simcards t
 INNER JOIN 
-    db_desarrollo2021.tmp_ajsts_terminales ajt
+    db_desarrollo2021.otc_t_ajsts_terminales ajt
 ON  
     (ajt.fecha_proceso=t.fecha_proceso)
 AND 

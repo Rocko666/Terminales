@@ -25,7 +25,6 @@ parser.add_argument('--vtipocarga', required=True, type=str, help='Tipo de carga
 parser.add_argument('--vcampoparte', required=False, type=str, help='Campo de particion, este campo debe ser definido si es una carga tipo append')
 parser.add_argument('--vfechai', required=False, type=str,help='Parametro 1 de la query sql')
 parser.add_argument('--vfechaf', required=False, type=str,help='Parametro 1 de la query sql')
-parser.add_argument('--vttemp', required=False, type=str,help='Tabla temporal1')
 
 parametros = parser.parse_args()
 vClass=parametros.vclass
@@ -38,10 +37,10 @@ vTipoCarga=parametros.vtipocarga
 vCampoParte=parametros.vcampoparte
 vfechai=parametros.vfechai
 vfechaf=parametros.vfechaf
-vTTemp=parametros.vttemp
-nme_table=vBaseHive+'.'+vTablaHive  ##db_desarrollo2021.otc_t_terminales_nc
+nme_table=vBaseHive+'.'+vTablaHive  
 anio_mes = vfechai[:6]
-print(anio_mes)
+print('Fecha anio-mes YYYYMM:',anio_mes)
+
 vSQL_ORA="""
 SELECT 
     office_code, 
@@ -142,7 +141,7 @@ try:
     print(query_truncate)
     spark.sql(query_truncate)
     print(etq_info(msg_i_insert_hive(nme_table)))
-    df1.write.mode("append").insertInto(nme_table)
+    df1.write.mode(vTipoCarga).insertInto(nme_table)
     df1.printSchema() 
     print('Tabla final:')
     print(etq_info(('Total de registros insertados en tabla principal ',nme_table,':',str(df1.count()))))

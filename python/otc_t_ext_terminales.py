@@ -22,25 +22,24 @@ timestart = datetime.now()
 ## STEP 2: Captura de argumentos en la entrada
 parser = argparse.ArgumentParser()
 parser.add_argument('--ventidad', required=False, type=str,help='Parametro de la entidad')
-parser.add_argument('--vhivebd', required=True, type=str, help='Nombre de la base de datos hive (tabla de salida)')
 parser.add_argument('--vfecha_fin', required=True, type=str,help='Parametro 1 de la query sql')
 parser.add_argument('--vfecha_inicio', required=True, type=str,help='Parametro 2 de la query sql')
 parser.add_argument('--vfecha_antes_ayer', required=True, type=str,help='Parametro 3 de la query sql')
 parser.add_argument('--vultimo_dia_act_frmt', required=True, type=str,help='Parametro 3 de la query sql')
+parser.add_argument('--vtfinal', required=True, type=str,help='Tabla final del proceso')
 
 parametros = parser.parse_args()
 vEntidad=parametros.ventidad
-vBaseHive=parametros.vhivebd
 vfecha_fin=parametros.vfecha_fin
 vfecha_inicio=parametros.vfecha_inicio
 vfecha_antes_ayer=parametros.vfecha_antes_ayer
 vultimo_dia_act_frmt=parametros.vultimo_dia_act_frmt
-vTablaFinal='db_desarrollo2021.otc_t_ext_terminales_ajst'
+vTablaFinal=parametros.vtfinal
+
 ## STEP 3: Inicio el SparkSession
 spark = SparkSession \
     .builder \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
-    .config("spark.yarn.queue", "reportes") \
     .config("spark.rpc.askTimeout", "300s") \
     .appName(vEntidad) \
     .enableHiveSupport() \

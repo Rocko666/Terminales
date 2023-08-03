@@ -4,7 +4,6 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 from pyspark.sql import SparkSession, DataFrame
 from datetime import datetime
-from pyspark.sql import HiveContext
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 from pyspark.sql.functions import udf
@@ -26,7 +25,6 @@ parser.add_argument('--vtipocarga', required=True, type=str, help='Tipo de carga
 parser.add_argument('--vcampoparte', required=False, type=str, help='Campo de particion, este campo debe ser definido si es una carga tipo append')
 parser.add_argument('--vfechai', required=False, type=str,help='Parametro 1 de la query sql')
 parser.add_argument('--vfechaf', required=False, type=str,help='Parametro 1 de la query sql')
-parser.add_argument('--vttemp', required=False, type=str,help='Tabla temporal1')
 
 parametros = parser.parse_args()
 vClass=parametros.vclass
@@ -39,8 +37,7 @@ vTipoCarga=parametros.vtipocarga
 vCampoParte=parametros.vcampoparte
 vfechai=parametros.vfechai
 vfechaf=parametros.vfechaf
-vTTemp=parametros.vttemp
-nme_table=vBaseHive+'.'+vTablaHive  ##db_desarrollo2021.otc_t_terminales_fact
+nme_table=vBaseHive+'.'+vTablaHive  
 
 vSQL_ORA="""
 SELECT 
@@ -146,7 +143,7 @@ try:
         print(query_truncate)
         spark.sql(query_truncate)
     print(etq_info(msg_i_insert_hive(nme_table)))
-    df1.write.mode("append").insertInto(nme_table)
+    df1.write.mode(vTipoCarga).insertInto(nme_table)
     df1.printSchema() 
     print('Tabla final:')
     print(etq_info(('Total de registros insertados en tabla principal ',nme_table,':',str(df1.count()))))
