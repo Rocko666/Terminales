@@ -56,6 +56,7 @@ VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENT
 VAL_EXECUTOR_CORES=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_CORES';"`
 VAL_SFTP_RUTA_1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_RUTA_1';"`
 VAL_SFTP_RUTA_2=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_RUTA_2';"`
+vTablaDestino=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VTABLADESTINO';"`
 
 #PARAMETROS GENERICOS
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
@@ -85,7 +86,7 @@ VAL_D1_MES_ANT=`date -d "${VAL_F_MESES_AUX} -1 month"  +"%Y-%m-%d"`
 VAL_TS_INI=$VAL_D1_MES_ANT" 00:00:00"
 VAL_DIA=`date '+%Y%m%d'` 
 VAL_HORA=`date '+%H%M%S'` 
-VAL_LOG=$VAL_RUTA/logs/SH_TERMINALES_SIMCARDS_$VAL_DIA$VAL_HORA.log
+VAL_LOG=$VAL_RUTA/logs/SH_TERMINALES_SIMCARDS_$VAL_DIA$VAL_HORA.log  ## ojo ---> LOGS
 VAL_RUTA_ARCHIVO=$VAL_RUTA/input
 VAL_NOM_ARCHIVO1_2_SIN=`echo $VAL_NOM_ARCHIVO1_2|sed "s/\*/ /g"`
 VAL_NOM_ARCHIVO1_2_CON_PRE=`echo $VAL_NOM_ARCHIVO1_2|sed "s/\"//g"`
@@ -100,7 +101,6 @@ VAL_RUTA_ARCHIVO_2_0=$VAL_RUTA/input/$VAL_NOM_ARCHIVO2_0
 VAL_RUTA_ARCHIVO_1_3=$VAL_RUTA/input/$VAL_NOM_ARCHIVO1_3_CON
 VAL_RUTA_ARCHIVO_1_4=$VAL_RUTA/input/$VAL_NOM_ARCHIVO1_4
 VAL_RUTA_ARCHIVO_MP=$VAL_RUTA/input/$VAL_NOM_ARCHIVO_MP
-vTablaDestino="otc_t_terminales_simcards"
 
 VAL_TRREMOTEDIR_1=`echo $VAL_SFTP_RUTA_1|sed "s/\~}</ /g"`  ## espacios en blanco reemplz
 VAL_TRREMOTEDIR1=$(echo "$VAL_TRREMOTEDIR_1" | sed "s/\"//g") ## para comilla doble
@@ -138,6 +138,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_MESES1" ] || 
     [ -z "$VAL_MESES2" ] || 
     [ -z "$VAL_TIPO_CARGA" ] || 
+    [ -z "$vTablaDestino" ] || 
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1

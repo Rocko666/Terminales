@@ -1,5 +1,5 @@
 
-CREATE TABLE db_desarrollo2021.otc_t_terminales_nc
+CREATE TABLE db_rbm.otc_t_terminales_nc
 (
   `office_code` string, 
   `office_name` string, 
@@ -28,7 +28,7 @@ TBLPROPERTIES('transactional'='false');
 
 
 
-CREATE TABLE db_desarrollo2021.otc_t_terminales_fact
+CREATE TABLE db_rbm.otc_t_terminales_fact
 (
   `fecha_factura` timestamp, 
   `bill_status` decimal(2,0), 
@@ -53,3 +53,4 @@ COMMENT 'Tabla particionada con la informacion de Oracle Facturacion terminales'
 PARTITIONED BY (pt_fecha bigint)
 STORED AS PARQUET
 TBLPROPERTIES('transactional'='false');
+

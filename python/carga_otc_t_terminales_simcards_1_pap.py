@@ -44,10 +44,8 @@ spark = SparkSession \
     .enableHiveSupport() \
     .getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
-sc = spark.sparkContext
-sc.setLogLevel("ERROR")
-hive_hwc = HiveWarehouseSession.session(spark).build()
 app_id = spark._sc.applicationId
+hive_hwc = HiveWarehouseSession.session(spark).build()
 
 ##STEP 4:QUERYS
 print(lne_dvs())

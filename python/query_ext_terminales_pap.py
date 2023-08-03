@@ -7,7 +7,6 @@ from datetime import datetime
 import os
 from pyspark.sql.functions import col, substring_index
 
-
 ##**************************************************************--
 ##******  Cambio de alcance (2023-04-12)  (Cristian Ortiz) ****--
 ##**************************************************************--
@@ -590,7 +589,7 @@ SELECT
 FROM
 	tmp_terminales_simcards t
 INNER JOIN 
-    db_reportes.otc_t_ajsts_terminales ajt 
+    db_reportes.otc_t_ajsts_terminales ajt
 ON  
     (ajt.fecha_proceso=t.fecha_proceso)
 AND 
@@ -662,7 +661,7 @@ fecha_proceso
 , linea_negocio_homologado
 , id_hash
 , aplica_comision
-FROM db_cs_terminales.otc_t_ext_terminales_ajst
+FROM db_reportes.otc_t_ext_terminales_ajst
     """
     print(qry)
     return qry

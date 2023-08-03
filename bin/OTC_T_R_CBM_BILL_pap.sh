@@ -23,8 +23,6 @@ $VAL_KINIT
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
 VAL_RUTA_LIB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_LIB';"`
 VAL_NOM_JAR_ORC_11=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_NOM_JAR_ORC_11';"`
-VAL_RUTA_IMP_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_IMP_SPARK';"`
-VAL_NOM_IMP_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_NOM_IMP_SPARK2';"`
 TDUSER_RDB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDUSER_RDB';"`
 TDPASS_RDB=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDPASS_RDB';"`
 TDHOST_RDB2=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'TDHOST_RDB2';"`
@@ -46,7 +44,7 @@ HIVETABLE=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' A
 #PARAMETROS DE OPERACION Y AUTOGENERADOS
 VAL_DIA=`date '+%Y%m%d'` 
 VAL_HORA=`date '+%H%M%S'` 
-VAL_LOG=$VAL_RUTA/log/OTC_T_R_CBM_BILL_$VAL_DIA$VAL_HORA.log
+VAL_LOG=$VAL_RUTA/log/OTC_T_R_CBM_BILL_$VAL_DIA$VAL_HORA.log   ### ojo ---> log
 VAL_JDBCURL=jdbc:oracle:thin:@//$TDHOST_RDB2:$TDPORT_RDB/$TDSERVICE_RDB
 
 #VALIDACION DE PARAMETROS INICIALES
@@ -78,7 +76,7 @@ fi
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
 echo "==== Ejecuta el proceso - Fuente RDB - R_CBM_BILL ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG
 echo "=======================================================================================================" 2>&1 &>> $VAL_LOG
-echo "Proceso: $VAL_RUTA_IMP_SPARK/$VAL_NOM_IMP_SPARK " 2>&1 &>> $VAL_LOG
+echo "Proceso: R_CBM_BILL.sh " 2>&1 &>> $VAL_LOG
 echo "Tabla destino: $HIVEDB.$HIVETABLE" 2>&1 &>> $VAL_LOG
 echo "Usuario BD: $TDUSER_RDB" 2>&1 &>> $VAL_LOG
 echo "Password BD: $TDPASS_RDB" 2>&1 &>> $VAL_LOG
@@ -106,9 +104,9 @@ $VAL_RUTA/python/otc_t_r_cbm_bill.py \
 #VALIDA EJECUCION DEL ARCHIVO SPARK
 error_spark=`egrep 'invalid syntax|Traceback|An error occurred|Caused by:|pyspark.sql.utils.ParseException|AnalysisException:|NameError:|IndentationError:|Permission denied:|ValueError:|ERROR:|error:|unrecognized arguments:|No such file or directory|Failed to connect|Could not open client' $VAL_LOG | wc -l`
 if [ $error_spark -eq 0 ];then
-echo "==== OK - La ejecucion del archivo spark $VAL_NOM_IMP_SPARK es EXITOSO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
+echo "==== OK - La ejecucion del archivo spark otc_t_r_cbm_bill.py es EXITOSO ===="`date '+%H%M%S'` 2>&1 &>> $VAL_LOG
 else
-echo "==== ERROR: - En la ejecucion del archivo spark $VAL_NOM_IMP_SPARK ====" 2>&1 &>> $VAL_LOG
+echo "==== ERROR: - En la ejecucion del archivo spark otc_t_r_cbm_bill.py ====" 2>&1 &>> $VAL_LOG
 exit 1
 fi
 
