@@ -113,7 +113,7 @@ try:
     print(lne_dvs())
     print(etq_info("Paso [3]: Ejecucion de funcion [tmp_notas_credito_csts]- UNIVERSO PRINCIPAL DE NOTAS CREDITO"))
     print(lne_dvs())
-    df_tmp_notas_credito_csts=spark.sql(tmp_notas_credito_csts(vfecha_inicio,vfecha_fin)).cache()
+    df_tmp_notas_credito_csts=spark.sql(tmp_notas_credito_csts(vanio_mes)).cache()
     df_tmp_notas_credito_csts.printSchema()
     ts_step_tbl = datetime.now()
     df_tmp_notas_credito_csts.createOrReplaceTempView("tmp_notas_credito_csts")

@@ -188,7 +188,7 @@ def tmp_facturas_csts(fecha_inicio,fecha_fin):
     print(qry)
     return qry
 
-def tmp_notas_credito_csts(fecha_inicio,fecha_fin):
+def tmp_notas_credito_csts(vanio_mes):
     qry="""
     SELECT a.office_code,
     a.office_name,
@@ -221,8 +221,8 @@ def tmp_notas_credito_csts(fecha_inicio,fecha_fin):
     FROM db_rbm.otc_t_terminales_nc a
     INNER JOIN tmp_catalogo_terminales_csts b
     ON a.revenue_code_id=b.concepto_facturable
-    WHERE a.pt_fecha>={fecha_inicio} AND a.pt_fecha<{fecha_fin}
-    """.format(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin)
+    WHERE a.pt_fecha={vanio_mes}
+    """.format(vanio_mes=vanio_mes)
     print(qry)
     return qry
 
@@ -3595,7 +3595,11 @@ def tmp_campos_para_nc_csts():
     domain_login_ow,
     domain_login_sub,
     ejecutivo_perimetro,
-    CAST(fecha_proceso AS date) AS fecha_proceso,
+    cast(CONCAT(
+    SUBSTR(fecha_proceso, 7, 4), '-',   -- Anio
+    SUBSTR(fecha_proceso, 4, 2), '-',   -- Mes
+    SUBSTR(fecha_proceso, 1, 2)         -- Dia
+    ) as date )AS  fecha_proceso,
     fuente_canal,
     fuente_costo,
     fuente_movimiento,
@@ -5829,7 +5833,11 @@ def tmp_costo_fact_exporta_otra_csts():
     a.precio_base AS pvp_prepago,
     a.subsidio_unitario,
     a.fuente_costo,
-    CAST(a.fecha_proceso AS date) AS fecha_proceso,
+    cast(CONCAT(
+    SUBSTR(a.fecha_proceso, 7, 4), '-',   -- Anio
+    SUBSTR(a.fecha_proceso, 4, 2), '-',   -- Mes
+    SUBSTR(a.fecha_proceso, 1, 2)         -- Dia
+    ) as date )AS  fecha_proceso,
     a.tienda,
     a.branch,
     a.canal_netcracker,

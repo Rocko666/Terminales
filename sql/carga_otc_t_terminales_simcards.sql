@@ -2947,7 +2947,7 @@ ON a.modelo_terminal=b.modelo_terminal
 WHERE a.rn=1;
 
 --CREA TABLA TEMPORAL CON LA INFORMACION DE COSTO FINAL
-CREATE TABLE db_desarrollo2021.tmp_costo_fac_final_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fac_final_csts AS   --30/06/2023
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -3155,7 +3155,7 @@ WHERE actual_bill_dtm>='${fecha_inicio}' AND actual_bill_dtm<'${fecha_fin}'
 GROUP BY account_num,invoice_num,bill_seq;
 
 --CREA TABLA TEMPORAL CON LA INFORMACION DEL UNIVERSO PRINCIPAL CON LAS CUOTAS, CANAL Y USUARIOS
-CREATE TABLE db_desarrollo2021.tmp_fact_final_csts AS
+CREATE TABLE db_desarrollo2021.tmp_fact_final_csts AS  --31/10/2022
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -3275,7 +3275,7 @@ LEFT JOIN db_desarrollo2021.tmp_usuario_cm_csts d
 ON UPPER(a.usuario_cruzar)=UPPER(d.usuario);
 
 --CREA TABLA TEMPORAL CON LA INFORMACION DEL UNIVERSO PRINCIPAL CON EL TIPO DE CANAL
-CREATE TABLE db_desarrollo2021.tmp_fact_final_tipcanal_csts AS
+CREATE TABLE db_desarrollo2021.tmp_fact_final_tipcanal_csts AS   --31/10/2022
 SELECT fecha_factura,
 bill_status,
 sri_authorization_date,
@@ -3378,7 +3378,7 @@ cuotas_financiadas
 FROM db_desarrollo2021.tmp_fact_final_csts;
 
 --CREA TABLA TEMPORAL CON LA INFORMACION DE CAMPOS PARA NOTAS DE CREDITO
-CREATE TABLE db_desarrollo2021.tmp_campos_para_nc_csts AS
+CREATE TABLE db_desarrollo2021.tmp_campos_para_nc_csts AS  -- varias en formato 2022-02-23 (parece que aca no se esta manejando bien el tipo de dato string y date)
 SELECT DISTINCT a.account_num,
 b.num_factura as nota_credito,
 a.fecha_proceso,
@@ -3507,7 +3507,7 @@ AND a.account_num=b.account_num
 AND b.tipo_documento='NOTA DE CREDITO';
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON LOS CAMPOS DE NOTAS DE CREDITO
-CREATE TABLE db_desarrollo2021.tmp_costos_fact_final_v2_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costos_fact_final_v2_csts AS  ---31/10/2022
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -3796,7 +3796,7 @@ a.nombre_usuario
 FROM db_desarrollo2021.tmp_costos_fact_final_v2_csts a;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON UPDATE DE CAMPOS CANAL Y FUENTE CANAL
-CREATE TABLE db_desarrollo2021.tmp_fact_final_update2_csts AS
+CREATE TABLE db_desarrollo2021.tmp_fact_final_update2_csts AS --31/10/2022
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -3898,7 +3898,7 @@ a.nombre_usuario
 FROM db_desarrollo2021.tmp_fact_final_update1_csts a;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON UPDATE DE CAMPOS LINEA NEGOCIO, SEGMENTO, SUBSEGMENTO Y MOVIMIENTO
-CREATE TABLE db_desarrollo2021.tmp_fact_final_update3_csts AS
+CREATE TABLE db_desarrollo2021.tmp_fact_final_update3_csts AS -- 31/10/2022
 SELECT fecha_factura,
 bill_status,
 sri_authorization_date,
@@ -4000,7 +4000,7 @@ nombre_usuario
 FROM db_desarrollo2021.tmp_fact_final_update2_csts;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON UPDATE DE CAMPOS LINEA NEGOCIO, SEGMENTO, SUBSEGMENTO Y MOVIMIENTO
-CREATE TABLE db_desarrollo2021.tmp_fact_final_update4_csts AS
+CREATE TABLE db_desarrollo2021.tmp_fact_final_update4_csts AS --31/10/2022
 SELECT fecha_factura,
 bill_status,
 sri_authorization_date,
@@ -4210,7 +4210,7 @@ nombre_usuario
 FROM db_desarrollo2021.tmp_fact_final_update4_csts;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON UPDATE DE LOS CAMPOS REGION, MOVIMIENTO, FUENTE MOVIMIENTO
-CREATE TABLE db_desarrollo2021.tmp_fact_final_update6_csts AS
+CREATE TABLE db_desarrollo2021.tmp_fact_final_update6_csts AS --31/10/2022
 SELECT fecha_factura,
 bill_status,
 sri_authorization_date,
@@ -4312,7 +4312,7 @@ nombre_usuario
 FROM db_desarrollo2021.tmp_fact_final_update5_csts;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL DESCARTANDO ALGUNOS REGISTROS
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v2_1_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v2_1_csts AS --30/06/2023
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -4501,7 +4501,7 @@ WHERE b.num_factura IS NULL
 AND b.account_num IS NULL;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL ACTUALIZANDO CAMPOS A PARTIR DEL CATALOGO TIPO CANAL Y LA INFORMACION DL ARTICULO
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v3_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v3_csts AS  --31/10/2022
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -4617,7 +4617,7 @@ LEFT JOIN db_desarrollo2021.tmp_concepto_articulo_csts c
 ON a.concepto_facturable=c.concepto_facturable;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL ACTUALIZANDO ALGUNOS CAMPOS
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v4_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v4_csts AS --31/10/2022
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -4755,7 +4755,7 @@ AND a.telefono = e.phone_number
 AND a.imei IS NOT NULL);
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL ACTUALIZANDO LOS CAMPOS DE REGION, FUENTE CANAL Y CANAL
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v4up_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v4up_csts AS  --31/10/2022
 SELECT fecha_factura,
 bill_status,
 sri_authorization_date,
@@ -4869,7 +4869,7 @@ nota_credito_masiva
 FROM db_desarrollo2021.tmp_costo_fact_final_v4_csts;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL ACTUALIZANDO LOS CAMPOS DE REGION, CANAL, SEGMENTO Y TIPO VENTA
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v5up_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v5up_csts AS --31/10/2022
 SELECT fecha_factura,
 bill_status,
 sri_authorization_date,
@@ -4982,7 +4982,7 @@ nota_credito_masiva
 FROM db_desarrollo2021.tmp_costo_fact_final_v4up_csts;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL ACTUALIZANDO LOS CAMPOS REGION Y CANAL
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v5_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v5_csts AS  --31/10/2022
 SELECT fecha_factura,
 bill_status,
 sri_authorization_date,
@@ -5091,7 +5091,7 @@ nota_credito_masiva
 FROM db_desarrollo2021.tmp_costo_fact_final_v5up_csts;
 
 --CREA TABLA TEMPORAL CON LA INFORMACION DE LA TARJETA BANCO
-CREATE TABLE db_desarrollo2021.tmp_tarjeta_banco_csts AS
+CREATE TABLE db_desarrollo2021.tmp_tarjeta_banco_csts AS --
 SELECT DISTINCT a.account_num,
 a.account_payment_mny/10000000 as valor,
 b.bank_name as tarjeta_banco,
@@ -5136,7 +5136,7 @@ ON a.factura=c.factura AND a.rn=1 AND c.rn=3)
 WHERE a.rn=1;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON LA INFORMACION DEL MONTO FINANCIADO SIN IVA Y LA TARJETA BANCO
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v6_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v6_csts AS  --31/10/2022
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -5257,7 +5257,7 @@ LEFT JOIN db_desarrollo2021.tmp_pivot_tarjeta_banco_csts c
 ON a.num_factura=c.factura;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON CALCULO DE ALGUNOS CAMPOS Y ASIGNACION DE MONTOS Y TARJETA
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v4_1_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_final_v4_1_csts AS  --31/10/2022
 SELECT DISTINCT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -5395,7 +5395,7 @@ AND a.tarjeta_banco3=e.tarjeta_banco)
 WHERE a.codigo_tipo_documento<>2;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON ACTUALIZACION EN ALGUNOS CAMPOS
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_exporta_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_exporta_csts AS --31/10/2022
 SELECT a.fecha_factura,
 a.bill_status,
 a.sri_authorization_date,
@@ -5534,7 +5534,7 @@ LEFT JOIN db_desarrollo2021.tmp_perimetros_unicos_csts pu
 ON a.identificacion_cliente=pu.identificador;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON ACTUALIZACION DE CAMPOS PARA CUADRES
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_exporta_otra_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_exporta_otra_csts AS  ---- null
 SELECT (CASE WHEN a.linea_negocio='PREPAGO' THEN 'PREPAGO' ELSE 'POSPAGO' END) AS linea_negocio,
 (CASE WHEN a.segmento IS NULL AND (CASE WHEN a.linea_negocio='PREPAGO' THEN 'PREPAGO' ELSE 'POSPAGO' END)='POSPAGO' THEN 'SIN SEGMENTO' 
 WHEN a.segmento IS NULL AND (CASE WHEN a.linea_negocio='PREPAGO' THEN 'PREPAGO' ELSE 'POSPAGO' END)='PREPAGO' THEN 'PREPAGO'
@@ -5593,7 +5593,11 @@ a.costo_total,
 a.precio_base AS pvp_prepago,
 a.subsidio_unitario,
 a.fuente_costo,
-CAST(a.fecha_proceso AS date) AS fecha_proceso,
+cast(CONCAT(
+    SUBSTR(a.fecha_proceso, 7, 4), '-',   -- Anio
+    SUBSTR(a.fecha_proceso, 4, 2), '-',   -- Mes
+    SUBSTR(a.fecha_proceso, 1, 2)         -- Dia
+    ) as date )AS  fecha_proceso,
 a.tienda,
 a.branch,
 a.canal_netcracker,
@@ -5653,7 +5657,7 @@ CAST(from_unixtime(unix_timestamp(a.fecha_factura,'yyyy-MM-dd'),'yyyyMMdd') AS I
 FROM db_desarrollo2021.tmp_costo_fact_exporta_csts a;
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL CON IDs
-CREATE TABLE db_desarrollo2021.tmp_costo_fact_exporta_otra1_csts AS
+CREATE TABLE db_desarrollo2021.tmp_costo_fact_exporta_otra1_csts AS   -- null
 SELECT (CASE WHEN a.segmento_final IN ('RETAIL','ZONIFICADOS','CREDICEL','PAYJOY') THEN 'PREPAGO' ELSE linea_negocio END) AS linea_negocio,
 a.segmento,
 a.sub_segmento,
@@ -5785,7 +5789,7 @@ AND nombre_id='ID_PRODUCTO') g
 ON (UPPER(CONCAT_WS(' ',a.movimiento,a.tipo_venta))=UPPER(g.tipo_movimiento));
 
 --CREA TABLA TEMPORAL CON EL UNIVERSO PRINCIPAL SIN DUPLICADOS
-CREATE TABLE db_desarrollo2021.tmp_fact_exporta_nodupli_csts AS
+CREATE TABLE db_desarrollo2021.tmp_fact_exporta_nodupli_csts AS  -- null
 SELECT (CASE WHEN movimiento='PREPAGO' THEN 'PREPAGO'
 WHEN a.movimiento IN('CONTRATO','RENOVACION') THEN 'POSPAGO' ELSE a.linea_negocio END) AS linea_negocio,
 a.segmento,
