@@ -5305,30 +5305,43 @@ def tmp_costo_fact_final_v5_csts():
 
 def tmp_tarjeta_banco_csts(fecha_inicio,fecha_fin):
     qry="""
-    SELECT DISTINCT a.account_num,
-    a.account_payment_mny/10000000 as valor,
-    b.bank_name as tarjeta_banco,
-    b.invoice_prefix as factura,
-    b.total_installments as num_cuotas,
-    b.identification_num,
-    b.bank_account_holder_name
-    FROM db_rbm.otc_t_accountpayment a
-    INNER JOIN db_rbm.otc_t_accountpayattributes b
-    ON a.account_num=b.account_num
-    AND a.account_payment_seq=b.account_payment_seq
-    AND b.bank_name<>'INTERDIN 1 (SSP)'
-    AND b.invoice_prefix IS NOT NULL
-    INNER JOIN db_rbm.otc_t_physicalpayment c
-    ON a.customer_ref=c.customer_ref
-    AND a.physical_payment_seq=c.physical_payment_seq
-    INNER JOIN db_rbm.otc_t_accountattributes d
-    ON a.account_num=d.account_num
-    INNER JOIN db_rbm.otc_t_paymentmethod e
-    ON c.payment_method_id=e.payment_method_id
-    AND e.payment_method_id=1
-    WHERE a.created_dtm_date>={fecha_inicio} AND a.created_dtm_date<{fecha_fin}
-    AND b.pt_fecha>={fecha_inicio} AND b.pt_fecha<{fecha_fin}
-    AND c.created_dtm_date>={fecha_inicio} AND c.created_dtm_date<{fecha_fin}
+    select 
+        f.account_num
+        ,f.valor
+        ,f.tarjeta_banco
+        ,f.factura
+        ,f.num_cuotas
+        ,f.identification_num
+        ,f.bank_account_holder_name
+    from(
+        SELECT DISTINCT 
+            a.account_num,
+            a.account_payment_mny/10000000 as valor,
+            b.bank_name as tarjeta_banco,
+            b.invoice_prefix as factura,
+            b.total_installments as num_cuotas,
+            b.identification_num,
+            b.bank_account_holder_name
+            , ROW_NUMBER() OVER (PARTITION BY b.invoice_prefix
+			ORDER BY (a.account_payment_mny/10000000) DESC) AS rnum
+        FROM db_rbm.otc_t_accountpayment a
+        INNER JOIN db_rbm.otc_t_accountpayattributes b
+        ON a.account_num=b.account_num
+        AND a.account_payment_seq=b.account_payment_seq
+        AND b.bank_name<>'INTERDIN 1 (SSP)'
+        AND b.invoice_prefix IS NOT NULL
+        INNER JOIN db_rbm.otc_t_physicalpayment c
+        ON a.customer_ref=c.customer_ref
+        AND a.physical_payment_seq=c.physical_payment_seq
+        INNER JOIN db_rbm.otc_t_accountattributes d
+        ON a.account_num=d.account_num
+        INNER JOIN db_rbm.otc_t_paymentmethod e
+        ON c.payment_method_id=e.payment_method_id
+        AND e.payment_method_id=1
+        WHERE a.created_dtm_date>={fecha_inicio} AND a.created_dtm_date<{fecha_fin}
+        AND b.pt_fecha>={fecha_inicio} AND b.pt_fecha<{fecha_fin}
+        AND c.created_dtm_date>={fecha_inicio} AND c.created_dtm_date<{fecha_fin}
+        ) f where rnum=1
     """.format(fecha_inicio=fecha_inicio,fecha_fin=fecha_fin)
     print(qry)
     return qry
@@ -6152,7 +6165,7 @@ def tmp_fact_exporta_nodupli_csts(fecha_antes_ayer):
     print(qry)
     return qry  
 ##84
-def otc_t_terminales_simcards(anio_mes):
+def otc_t_terminales_simcards(tabla, anio_mes):
     qry="""
     SELECT linea_negocio,
     segmento,
@@ -6268,7 +6281,7 @@ def otc_t_terminales_simcards(anio_mes):
     tipo_doc_cliente,
     linea_negocio_homologado,
     p_fecha_factura
-    FROM tmp_fact_exporta_nodupli_csts
-    """.format(anio_mes=anio_mes)
-    print(qry)
+    FROM {tabla}
+    """.format(tabla=tabla, anio_mes=anio_mes)
+    #print(qry)
     return qry  

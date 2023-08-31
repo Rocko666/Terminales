@@ -2,7 +2,7 @@
 --AGREGA NUEVOS CAMPOS A TABLA DESTINO otc_t_terminales_simcards
 ALTER TABLE db_cs_terminales.otc_t_terminales_simcards ADD COLUMNS (forma_pago_factura varchar(40) COMMENT 'forma de pago para facturas');
 ALTER TABLE db_cs_terminales.otc_t_terminales_simcards ADD COLUMNS (tarjeta_banco varchar(40) COMMENT 'tarjeta de banco');  
-ALTER TABLE db_cs_terminales.otc_t_terminales_simcards ADD COLUMNS (cuotas string varchar(3) 'cuotas del producto');
+ALTER TABLE db_cs_terminales.otc_t_terminales_simcards ADD COLUMNS (cuotas varchar(3) COMMENT 'cuotas del producto');
 ALTER TABLE db_cs_terminales.otc_t_terminales_simcards ADD COLUMNS (tarjeta_banco2 varchar(40) COMMENT 'tarjeta de banco2');
 ALTER TABLE db_cs_terminales.otc_t_terminales_simcards ADD COLUMNS (cuotas2 varchar(3) COMMENT 'cuotas2 del producto');
 ALTER TABLE db_cs_terminales.otc_t_terminales_simcards ADD COLUMNS (tarjeta_banco3 varchar(40) COMMENT 'tarjeta de banco3');
