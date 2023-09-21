@@ -5484,7 +5484,7 @@ def tmp_costo_fact_final_v6_csts():
     print(qry)
     return qry
 
-def tmp_costo_fact_final_v4_1_csts():
+def tmp_costo_fact_final_v4_1_csts():  ### ojo parece q eliminar distinct
     qry="""
     SELECT DISTINCT a.fecha_factura,
     a.bill_status,

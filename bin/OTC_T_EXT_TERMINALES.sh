@@ -16,7 +16,8 @@ set -e
 # 2022-12-30	Brigitte Balon	Se migra importacion a spark			 								#
 # 2023-07-14    Cristian Ortiz	Extractor con cambios de alcance para Comisiones    	                #			
 #########################################################################################################
-# sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_FACT.sh 20230702 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_NC.sh 20230702 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_CBM_BILL.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_V_USUARIOS.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/SH_TERMINALES_SIMCARDS.sh 20230702 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_EXT_TERMINALES.sh 20230704
+
+# sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_FACT.sh 20230802 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_NC.sh 20230802 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_CBM_BILL.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_V_USUARIOS.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/SH_TERMINALES_SIMCARDS.sh 20230802 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_EXT_TERMINALES.sh 20230904
 
 
 
@@ -64,7 +65,8 @@ VAL_TRREMOTEDIR=`echo $VAL_SFTP_RUTA|sed "s/\~}</ /g"`
 VAL_REMOTEDIRFINAL=${VAL_TRREMOTEDIR}
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
-VAL_FEC_AYER=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m%d"`
+VAL_FECHA_PARAM=`date -d "${VAL_FECHA_EJEC}"  +"%Y%m04"`
+VAL_FEC_AYER=`date -d "${VAL_FECHA_PARAM} -1 day"  +"%Y%m%d"`
 VAL_DIA_UNO=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y%m01"` #fecha fin
 VAL_FECHA_INI=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m01"` #fecha ini
 VAL_FECHA_FORMATO_PRE=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m%d"`
@@ -292,7 +294,7 @@ echo "==== OK - Se procesa la ETAPA 4 con EXITO ===="`date '+%H%M%S'` 2>&1 &>> $
 `mysql -N  <<<"update params_des set valor='5' where ENTIDAD = '${ENTIDAD}' and parametro = 'ETAPA' ;"`
 fi
 
-#vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_TEST_jun.txt'
+#vFTP_NOM_ARCHIVO_FORMATO='Extractor_Terminales_TEST.txt'
 #CREA FUNCION PARA LA EXPORTACION DEL ARCHIVO A RUTA SFTP Y REALIZA LA TRANSFERENCIA
 if [ "$ETAPA" = "5" ]; then
 echo "==== Crea funcion para la exportacion del archivo a ruta SFTP ===="`date '+%Y%m%d%H%M%S'` 2>&1 &>> $VAL_LOG

@@ -71,7 +71,6 @@ WHERE bill_dtm >= to_date('{vfechai}','yyyyMMdd') AND bill_dtm < to_date('{vfech
 spark = SparkSession. \
     builder. \
     enableHiveSupport(). \
-    config("hive.exec.dynamic.partition", "true"). \
     config("hive.exec.dynamic.partition.mode", "nonstrict"). \
     getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
@@ -141,7 +140,7 @@ try:
     print(query_truncate)
     spark.sql(query_truncate)
     print(etq_info(msg_i_insert_hive(nme_table)))
-    df1.write.mode(vTipoCarga).insertInto(nme_table)
+    df1.repartition(1).write.mode(vTipoCarga).insertInto(nme_table)
     df1.printSchema() 
     print('Tabla final:')
     print(etq_info(('Total de registros insertados en tabla principal ',nme_table,':',str(df1.count()))))

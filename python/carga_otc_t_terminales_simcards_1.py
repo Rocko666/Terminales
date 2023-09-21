@@ -39,6 +39,7 @@ vTTempTermSCards='db_desarrollo2021.tmp_otc_t_terminales_simcards'
 spark = SparkSession. \
         builder. \
         enableHiveSupport(). \
+        config("hive.exec.dynamic.partition.mode", "nonstrict"). \
         getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
 app_id = spark._sc.applicationId
@@ -58,7 +59,7 @@ try:
     df1=spark.sql(tmp_otc_t_terminales_simcards(vfecha_meses_atras2,vfecha_fin)).cache()
     df1.printSchema()
     ts_step_tbl = datetime.now()
-    df1.write.mode('overwrite').format('parquet').saveAsTable(vTTempTermSCards)
+    df1.repartition(1).write.mode('overwrite').format('parquet').saveAsTable(vTTempTermSCards)
     print(etq_info(msg_t_total_registros_obtenidos("df1",str(df1.count())))) 
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df1",vle_duracion(ts_step_tbl,te_step_tbl))))

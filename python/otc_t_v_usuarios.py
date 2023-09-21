@@ -13,7 +13,6 @@ from create import *
 
 ## 1.-Captura de argumentos en la entrada
 parser = argparse.ArgumentParser()
-parser = argparse.ArgumentParser()
 parser.add_argument('--vclass', required=True, type=str, help='Clase java del conector JDBC')
 parser.add_argument('--vjdbcurl', required=True, type=str, help='URL del conector JDBC Ejm: jdbc:mysql://localhost:3306/base')
 parser.add_argument('--vusuariobd', required=True, type=str, help='Usuario de la base de datos')
@@ -45,8 +44,6 @@ FROM rdb_reportes.otc_v_usuarios
 spark = SparkSession. \
     builder. \
     enableHiveSupport() \
-    .config("spark.sql.broadcastTimeout", "36000") \
-    .config("hive.exec.dynamic.partition", "true") \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
     .getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")

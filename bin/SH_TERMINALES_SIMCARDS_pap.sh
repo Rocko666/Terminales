@@ -298,6 +298,7 @@ echo "Archivo: $VAL_RUTA_ARCHIVO_1_2" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino: $HIVEDB.$VAL_TABLA_T" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
+--conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_1_2 \
@@ -331,6 +332,7 @@ echo "Archivo: $VAL_RUTA_ARCHIVO_1_0" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino: $HIVEDB.$VAL_TABLA_RDR" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
+--conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain="$VAL_RUTA_ARCHIVO_1_0" \
@@ -364,6 +366,7 @@ echo "Archivo: $VAL_RUTA_ARCHIVO_2_1" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino: $HIVEDB.$VAL_TABLA_TC" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
+--conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_2_1 \
@@ -397,6 +400,7 @@ echo "Archivo: $VAL_RUTA_ARCHIVO_2_0" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino: $HIVEDB.$VAL_TABLA_UO" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
+--conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_2_0 \
@@ -430,6 +434,7 @@ echo "Archivo: $VAL_RUTA_ARCHIVO_1_3" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino: $HIVEDB.$VAL_TABLA_CANAL" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
+--conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_1_3 \
@@ -463,6 +468,7 @@ echo "Archivo: $VAL_RUTA_ARCHIVO_1_4" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino: $HIVEDB.$VAL_TABLA_SEG" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
+--conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_1_4 \
@@ -496,6 +502,7 @@ echo "Archivo: $VAL_RUTA_ARCHIVO_MP" 2>&1 &>> $VAL_LOG
 echo "Tabla Destino: $HIVEDB.$VAL_TABLA_CST" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
+--conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_MP \
