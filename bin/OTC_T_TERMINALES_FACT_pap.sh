@@ -42,6 +42,7 @@ VAL_DRIVER_MEMORY=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENT
 VAL_EXECUTOR_MEMORY=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_EXECUTOR_MEMORY';"`
 VAL_NUM_EXECUTORS=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS';"`
 VAL_NUM_EXECUTORS_CORES=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_NUM_EXECUTORS_CORES';"`
+VAL_QUEUE=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_QUEUE';"`
 
 #PARAMETROS DE OPERACION Y AUTOGENERADOS
 VAL_FEC_AYER=`date -d "${VAL_FECHAEJE} -1 day"  +"%Y%m%d"`
@@ -73,6 +74,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$HIVEDB" ] || 
     [ -z "$VAL_TIPO_CARGA" ] || 
     [ -z "$VAL_JDBCURL" ] || 
+    [ -z "$VAL_QUEUE" ] || 
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
@@ -92,7 +94,7 @@ echo "==========================================================================
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
---queue capa_semantica \
+--queue $VAL_QUEUE \
 --name OTC_T_TERMINALES_FACT \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \

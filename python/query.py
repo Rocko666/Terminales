@@ -145,7 +145,7 @@ def tmp_catalogo_terminales_csts():
      CONCEPTO_FACTURABLE,
      clasificacion,
     row_number() OVER (PARTITION BY concepto_facturable ORDER BY modelo_scl DESC) AS rn
-    FROM db_desarrollo2021.otc_t_catalogo_terminales)a 
+    FROM db_cs_terminales.otc_t_catalogo_terminales)a 
     WHERE a.rn=1
     """
     print(qry)
@@ -183,7 +183,7 @@ def tmp_facturas_csts(fecha_inicio,fecha_fin):
     ROW_NUMBER() OVER (PARTITION BY a.invoice_num,a.sri_authorization_date
     ,a.bill_status,a.num_abonado,a.imei_imsi,a.revenue_code_desc
     ORDER BY a.invoice_num DESC) AS indice
-    FROM db_desarrollo2021.otc_t_terminales_fact a
+    FROM db_rbm.otc_t_terminales_fact a
     INNER JOIN tmp_catalogo_terminales_csts b
     ON a.revenue_code_id=b.concepto_facturable
     WHERE a.pt_fecha>={fecha_inicio} AND a.pt_fecha<{fecha_fin}
@@ -221,7 +221,7 @@ def tmp_notas_credito_csts(vanio_mes):
     b.clasificacion_terminal,
     b.concepto_facturable,
     b.clasificacion
-    FROM db_desarrollo2021.otc_t_terminales_nc a
+    FROM db_rbm.otc_t_terminales_nc a
     INNER JOIN tmp_catalogo_terminales_csts b
     ON a.revenue_code_id=b.concepto_facturable
     WHERE a.pt_fecha={vanio_mes}
@@ -257,7 +257,7 @@ def tmp_orden_venta_csts(fecha_meses_atras,fecha_fin):
     c.full_name AS nombre_propietario_orden_venta,
     (CASE WHEN b.submitted_by=110 THEN 'internal' ELSE d.name END) AS codigo_confirmador_orden_venta,
     d.full_name AS nombre_confirmador_orden_venta
-    FROM db_desarrollo2021.otc_t_r_cbm_bill a 
+    FROM db_rdb.otc_t_r_cbm_bill a 
     INNER JOIN db_rdb.otc_t_r_boe_sales_ord b 
     ON (a.sales_order_id=b.object_id 
     AND b.type_id = 9062352550013045460)
@@ -319,7 +319,7 @@ def tmp_facturacion_usuario_csts():
     a.clasificacion,
     a.indice
     FROM tmp_facturas_csts a
-    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios b
+    LEFT JOIN db_rdb.otc_t_v_usuarios b
     ON a.usuario = b.object_id_user
     """
     print(qry)
@@ -358,7 +358,7 @@ def tmp_nota_credito_usuario_csts():
     a.concepto_facturable,
     a.clasificacion
     FROM tmp_notas_credito_csts a
-    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios b
+    LEFT JOIN db_rdb.otc_t_v_usuarios b
     ON a.usuario = b.object_id_user
     """
     print(qry)
@@ -468,7 +468,7 @@ def tmp_clientes_csts(fecha_antes_ayer):
     row_number() OVER (PARTITION BY account_num ORDER BY fecha_alta DESC) AS rn
     FROM db_reportes.otc_t_360_general
     WHERE fecha_proceso={fecha_antes_ayer}) a
-    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg b
+    LEFT JOIN db_cs_terminales.otc_t_ctl_cat_seg_sub_seg b
     ON UPPER(a.sub_segmento)=UPPER(b.subsegmento_up)
     WHERE a.rn=1
     """.format(fecha_antes_ayer=fecha_antes_ayer)
@@ -1077,7 +1077,7 @@ def tmp_trmneqp_fuente_canal_csts():
     COALESCE(usuario_cruzar,usuario) AS test,
     indice
     FROM tmp_trmnl_eqp_canal_usu_csts) a
-    LEFT JOIN db_desarrollo2021.otc_t_v_usuarios b
+    LEFT JOIN db_rdb.otc_t_v_usuarios b
     ON a.test=b.usuario
     """
     print(qry)
@@ -1168,7 +1168,7 @@ def tmp_trmneqp_cruza_ruc_csts():
     a.nuevo_subcanal,
     a.indice
     FROM tmp_trmneqp_fuente_canal_csts a
-    LEFT JOIN db_desarrollo2021.otc_t_catalogo_ruc_das_retail b
+    LEFT JOIN db_cs_terminales.otc_t_catalogo_ruc_das_retail b
     ON a.customer_id_number=b.ruc
     AND a.usuario IN ('NA1008122','NA400899','NA002860','NA002569','xaherrera','NA400757','NA400415','NA184482','NA184482','NA400042')
     """
@@ -2241,7 +2241,7 @@ def tmp_universo_fact_mov_csts():
     LEFT JOIN tmp_cuenta_segmento_csts b
     ON (a.account_num=b.account_num
     AND a.linea_negocio IS NULL)
-    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg c
+    LEFT JOIN db_cs_terminales.otc_t_ctl_cat_seg_sub_seg c
     ON UPPER(TRIM(des_categoria))=UPPER(TRIM(b.sub_segmento))
     """
     print(qry)
@@ -2336,7 +2336,7 @@ def tmp_universo_fact_mov2_csts():
     LEFT JOIN tmp_cuenta_seg_masivo_csts b
     ON (a.account_num=b.account_num
     AND a.linea_negocio IS NULL)
-    LEFT JOIN db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg c
+    LEFT JOIN db_cs_terminales.otc_t_ctl_cat_seg_sub_seg c
     ON UPPER(TRIM(a.sub_segmento))=UPPER(TRIM(c.des_categoria))
     """
     print(qry)
@@ -2456,7 +2456,7 @@ def tmp_fact_mov_perimetro_csts():
     LEFT JOIN tmp_perimetros_unicos_csts b
     ON (a.identificacion_cliente=b.identificador
     AND a.bnd_ln=0)
-    LEFT JOIN (SELECT ruc FROM db_desarrollo2021.otc_t_catalogo_ruc_das_retail) c
+    LEFT JOIN (SELECT ruc FROM db_cs_terminales.otc_t_catalogo_ruc_das_retail) c
     ON (a.identificacion_cliente=c.ruc
     AND c.ruc IS NULL)
     LEFT JOIN tmp_perimetros_unicos_csts e
@@ -3111,7 +3111,7 @@ def tmp_costo_rep_anterior_csts(fecha_meses_atras1,fecha_inicio):
     a.fecha_factura
     FROM (SELECT modelo_terminal,costo_unitario,fecha_factura,
     row_number() OVER (PARTITION BY modelo_terminal ORDER BY fecha_factura DESC) AS rn
-    FROM db_desarrollo2021.tmp_otc_t_terminales_simcards
+    FROM db_temporales.tmp_otc_t_terminales_simcards
     WHERE p_fecha_factura>={fecha_meses_atras1} AND p_fecha_factura<{fecha_inicio}) a 
     LEFT JOIN (SELECT modelo_terminal FROM tmp_costo_sin_imei_csts
     WHERE costo_unitario IS NULL
@@ -3461,7 +3461,7 @@ def tmp_fact_final_csts():
     LEFT JOIN tmp_cuotas_financiadas_csts b
     ON (a.account_num=b.account_num
     AND x.bill_seq=b.bill_seq)
-    LEFT JOIN db_desarrollo2021.otc_t_catalogo_tipo_canal c
+    LEFT JOIN db_cs_terminales.otc_t_catalogo_tipo_canal c
     ON a.canal=c.canal
     LEFT JOIN tmp_usuario_cm_csts d
     ON UPPER(a.usuario_cruzar)=UPPER(d.usuario)
@@ -3705,7 +3705,7 @@ def tmp_campos_para_nc_csts():
     usuario_factura AS usuario,
     usuario_final AS usuario_cruzar,
     1 as indice
-    FROM db_desarrollo2021.tmp_otc_t_terminales_simcards) a 
+    FROM db_temporales.tmp_otc_t_terminales_simcards) a 
     INNER JOIN tmp_fact_final_tipcanal_csts b 
     ON a.num_factura=b.origin_invoice_num
     AND a.account_num=b.account_num
@@ -4854,7 +4854,7 @@ def tmp_costo_fact_final_v3_csts():
     a.nombre_usuario,
     a.indice
     FROM tmp_costo_fact_final_v2_1_csts a
-    LEFT JOIN db_desarrollo2021.otc_t_catalogo_tipo_canal b
+    LEFT JOIN db_cs_terminales.otc_t_catalogo_tipo_canal b
     ON a.llave_canal=b.canal
     LEFT JOIN tmp_concepto_articulo_csts c
     ON a.concepto_facturable=c.concepto_facturable
@@ -4990,7 +4990,7 @@ def tmp_costo_fact_final_v4_csts(val_usuario4):
     canal_venta,
     region,
     ROW_NUMBER() over (PARTITION BY nombre_oficina_venta ORDER BY nombre_oficina_venta DESC) rn
-    FROM db_desarrollo2021.otc_t_asigna_canal_ventas) x
+    FROM db_cs_terminales.otc_t_asigna_canal_ventas) x
     WHERE rn=1) b
     ON UPPER(a.nombre_cliente)=UPPER(b.nombre_oficina_venta)
     LEFT JOIN tmp_usuario_cm_csts c
@@ -5825,7 +5825,7 @@ def tmp_costo_fact_exporta_csts(fecha_inicio,fecha_fin,fecha_antes_ayer):
     ON a.num_factura=b.nota_credito 
     AND a.account_num=b.account_num_nc
     AND b.fechafactura>={fecha_inicio} AND b.fechafactura<{fecha_fin}
-    LEFT JOIN db_desarrollo2021.otc_t_ctl_seg_terminal c
+    LEFT JOIN db_cs_terminales.otc_t_ctl_seg_terminal c
     ON a.identificacion_cliente=c.ruc
     LEFT JOIN tmp_perimetros_unicos_csts pu
     ON a.identificacion_cliente=pu.identificador

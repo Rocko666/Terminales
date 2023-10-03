@@ -7,6 +7,7 @@ from pyspark_llap import HiveWarehouseSession
 from datetime import datetime
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
+from pyspark.sql import HiveContext
 from pyspark.sql.functions import *
 import argparse
 from datetime import datetime, timedelta
@@ -63,16 +64,18 @@ vval_usuario4=parametros.vval_usuario4
 vval_usuario_final=parametros.vval_usuario_final
 vTablaDestino=parametros.vTablaDestino
 
+vTablaPrevia="db_temporales.tmp_fact_exporta_nodupli_csts"  ##db_temporales
+
 ## STEP 3: Inicio el SparkSession
-spark = SparkSession\
-    .builder\
-    .enableHiveSupport() \
-    .config("spark.sql.broadcastTimeout", "36000") \
-    .config("hive.exec.dynamic.partition", "true") \
-    .config("hive.exec.dynamic.partition.mode", "nonstrict") \
-    .config("hive.enforce.bucketing", "false")\
-    .config("hive.enforce.sorting", "false")\
-    .getOrCreate()
+spark = SparkSession. \
+    builder. \
+    config("hive.exec.dynamic.partition.mode", "nonstrict"). \
+    config('hive.auto.convert.sortmerge.join', 'true'). \
+    config('hive.optimize.bucketmapjoin', 'true'). \
+    config('hive.optimize.bucketmapjoin.sortedmerge', 'true'). \
+    config('hive.auto.convert.join', 'false'). \
+    enableHiveSupport(). \
+    getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
 app_id = spark._sc.applicationId
 hive_hwc = HiveWarehouseSession.session(spark).build()
@@ -1161,7 +1164,8 @@ try:
     df_tmp_fact_exporta_nodupli_csts=spark.sql(tmp_fact_exporta_nodupli_csts(vfecha_antes_ayer)).cache()
     df_tmp_fact_exporta_nodupli_csts.printSchema()
     ts_step_tbl = datetime.now()
-    df_tmp_fact_exporta_nodupli_csts.createOrReplaceTempView("tmp_fact_exporta_nodupli_csts")
+    #df_tmp_fact_exporta_nodupli_csts.createOrReplaceTempView("tmp_fact_exporta_nodupli_csts")
+    df_tmp_fact_exporta_nodupli_csts.write.format("parquet").mode("overwrite").saveAsTable(vTablaPrevia)
     print(etq_info(msg_t_total_registros_obtenidos("df_tmp_fact_exporta_nodupli_csts",str(df_tmp_fact_exporta_nodupli_csts.count())))) 
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df_tmp_fact_exporta_nodupli_csts",vle_duracion(ts_step_tbl,te_step_tbl))))
@@ -1171,7 +1175,7 @@ try:
     print(lne_dvs())
     print(etq_info("Paso [84]: Ejecucion de funcion [otc_t_terminales_simcards] - INFORMACION DE TODAS LAS PARTICIONES CORRESPONDIENTES AL MES DE PROCESO (DESDE EL DIA 1 HASTA DIA CAIDO)"))
     print(lne_dvs())
-    df_otc_t_terminales_simcards=spark.sql(otc_t_terminales_simcards(vanio_mes)).cache()
+    df_otc_t_terminales_simcards=spark.sql(otc_t_terminales_simcards(vTablaPrevia,vanio_mes)).cache()
     df_otc_t_terminales_simcards.printSchema()
     ts_step_tbl = datetime.now()
     columns = spark.table(vBaseHive+"."+vTablaDestino).columns
@@ -1188,9 +1192,14 @@ try:
     for i in filtered:
         query_truncate = "ALTER TABLE "+vBaseHive+"."+vTablaDestino+" DROP IF EXISTS PARTITION (p_fecha_factura = " + str(i)+ ") purge"
         print(query_truncate)
-        spark.sql(query_truncate)
+        hive_hwc.executeUpdate(query_truncate)
     
-    df_otc_t_terminales_simcards.write.mode("append").insertInto(vBaseHive+"."+vTablaDestino)
+    query_final="INSERT INTO "+vBaseHive+"."+vTablaDestino+" partition (p_fecha_factura) "
+    query_final=query_final+(otc_t_terminales_simcards(vTablaPrevia, vanio_mes))
+    print(lne_dvs())
+    print(query_final)
+    hive_hwc.executeUpdate(query_final)
+    #df_otc_t_terminales_simcards.write.mode("append").insertInto(vBaseHive+"."+vTablaDestino)
     print(etq_info("Insercion Ok de la tabla destino: "+str(vTablaDestino))) 
     print(etq_info(msg_t_total_registros_hive("df_otc_t_terminales_simcards",str(df_otc_t_terminales_simcards.count())))) 
     te_step_tbl = datetime.now()

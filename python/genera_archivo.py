@@ -38,11 +38,8 @@ vfecha_inicio=parametros.vfecha_inicio
 spark = SparkSession \
     .builder \
     .config("spark.driver.maxResultSize", "4g") \
-    .config("hive.exec.dynamic.partition", "true") \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
     .config("spark.yarn.queue", "capa_semantica") \
-    .config("hive.enforce.bucketing", "false")\
-    .config("hive.enforce.sorting", "false")\
     .appName(vEntidad) \
     .enableHiveSupport() \
     .getOrCreate()

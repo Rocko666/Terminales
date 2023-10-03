@@ -57,6 +57,7 @@ VAL_EXECUTOR_CORES=`mysql -N  <<<"select valor from params where ENTIDAD = '"$EN
 VAL_SFTP_RUTA_1=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_RUTA_1';"`
 VAL_SFTP_RUTA_2=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_SFTP_RUTA_2';"`
 vTablaDestino=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VTABLADESTINO';"`
+VAL_QUEUE=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_QUEUE';"`
 
 #PARAMETROS GENERICOS
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
@@ -139,6 +140,7 @@ if  [ -z "$ENTIDAD" ] ||
     [ -z "$VAL_MESES2" ] || 
     [ -z "$VAL_TIPO_CARGA" ] || 
     [ -z "$vTablaDestino" ] || 
+    [ -z "$VAL_QUEUE" ] || 
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
@@ -299,6 +301,7 @@ echo "Tabla Destino: $HIVEDB.$VAL_TABLA_T" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
+--queue $VAL_QUEUE \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_1_2 \
@@ -333,6 +336,7 @@ echo "Tabla Destino: $HIVEDB.$VAL_TABLA_RDR" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
+--queue $VAL_QUEUE \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain="$VAL_RUTA_ARCHIVO_1_0" \
@@ -367,6 +371,7 @@ echo "Tabla Destino: $HIVEDB.$VAL_TABLA_TC" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
+--queue $VAL_QUEUE \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_2_1 \
@@ -401,6 +406,7 @@ echo "Tabla Destino: $HIVEDB.$VAL_TABLA_UO" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
+--queue $VAL_QUEUE \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_2_0 \
@@ -435,6 +441,7 @@ echo "Tabla Destino: $HIVEDB.$VAL_TABLA_CANAL" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
+--queue $VAL_QUEUE \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_1_3 \
@@ -469,6 +476,7 @@ echo "Tabla Destino: $HIVEDB.$VAL_TABLA_SEG" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
+--queue $VAL_QUEUE \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_1_4 \
@@ -503,6 +511,7 @@ echo "Tabla Destino: $HIVEDB.$VAL_TABLA_CST" 2>&1 &>> $VAL_LOG
 
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
+--queue $VAL_QUEUE \
 --master $VAL_MASTER \
 ${VAL_RUTA}/python/read_excel_carga_hive.py \
 --rutain=$VAL_RUTA_ARCHIVO_MP \
@@ -546,7 +555,7 @@ $VAL_RUTA_SPARK \
 --conf spark.datasource.hive.warehouse.user.name="rgenerator" \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
---queue capa_semantica \
+--queue $VAL_QUEUE \
 --name $ENTIDAD \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
@@ -602,7 +611,7 @@ $VAL_RUTA_SPARK \
 --conf spark.datasource.hive.warehouse.user.name="rgenerator" \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
---queue capa_semantica \
+--queue $VAL_QUEUE \
 --name $ENTIDAD \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \

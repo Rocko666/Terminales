@@ -24,7 +24,7 @@ CREATE TABLE db_rbm.otc_t_terminales_nc
 COMMENT 'Tabla particionada con la informacion de Oracle Notas de credito terminales'
 PARTITIONED BY (pt_fecha bigint)
 STORED AS PARQUET
-TBLPROPERTIES('transactional'='false');
+TBLPROPERTIES('transactional'='false','external.table.purge'='true');
 
 
 
@@ -52,5 +52,5 @@ CREATE TABLE db_rbm.otc_t_terminales_fact
 COMMENT 'Tabla particionada con la informacion de Oracle Facturacion terminales'
 PARTITIONED BY (pt_fecha bigint)
 STORED AS PARQUET
-TBLPROPERTIES('transactional'='false');
+TBLPROPERTIES('transactional'='false','external.table.purge'='true');
 

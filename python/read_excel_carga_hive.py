@@ -42,7 +42,6 @@ spark = SparkSession\
     .builder\
     .appName(vApp)\
     .enableHiveSupport()\
-    .config("spark.yarn.queue", "reportes") \
     .getOrCreate()
 sc = spark.sparkContext
 sc.setLogLevel("ERROR")

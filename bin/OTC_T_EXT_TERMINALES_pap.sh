@@ -44,6 +44,7 @@ VAL_DIR_HDFS_CAT=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTI
 VAL_SFTP_NOM_ARCHIVO=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VAL_SFTP_NOM_ARCHIVO';"`
 VAL_SFTP_RUTA=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VAL_SFTP_RUTA';"` 
 VTFINAL=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND PARAMETRO = 'VTFINAL';"` 
+VAL_QUEUE=`mysql -N  <<<"select valor from params where ENTIDAD = '"$ENTIDAD"' AND parametro = 'VAL_QUEUE';"`
 
 #PARAMETROS GENERICOS
 VAL_RUTA_SPARK=`mysql -N  <<<"select valor from params where ENTIDAD = 'SPARK_GENERICO' AND parametro = 'VAL_RUTA_SPARK';"`
@@ -57,7 +58,8 @@ VAL_TRREMOTEDIR=`echo $VAL_SFTP_RUTA|sed "s/\~}</ /g"`
 VAL_REMOTEDIRFINAL=${VAL_TRREMOTEDIR}
 
 #PARAMETROS CALCULADOS Y AUTOGENERADOS
-VAL_FEC_AYER=`date -d "${VAL_FECHA_EJEC} -1 day"  +"%Y%m%d"`
+VAL_FECHA_PARAM=`date -d "${VAL_FECHA_EJEC}"  +"%Y%m04"`
+VAL_FEC_AYER=`date -d "${VAL_FECHA_PARAM} -1 day"  +"%Y%m%d"`
 VAL_DIA_UNO=`date -d "${VAL_FEC_AYER} -1 day"  +"%Y%m01"` #fecha fin
 VAL_FECHA_INI=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m01"` #fecha ini
 VAL_FECHA_FORMATO_PRE=`date -d "${VAL_DIA_UNO} -1 day"  +"%Y%m%d"`
@@ -83,8 +85,9 @@ if  [ -z "$ENTIDAD" ] ||
 	[ -z "$VAL_SFTP_USER" ] || 
 	[ -z "$VAL_SFTP_PASS" ] || 
 	[ -z "$VAL_SFTP_RUTA" ] || 
-	[ -z "$VAL_DIR_HDFS_CAT" ] ||
-	[ -z "$VTFINAL" ] ||
+	[ -z "$VAL_DIR_HDFS_CAT" ] || 
+	[ -z "$VTFINAL" ] || 
+    [ -z "$VAL_QUEUE" ] || 
     [ -z "$VAL_LOG" ]; then
 	echo " ERROR: - uno de los parametros esta vacio o nulo"
 	exit 1
@@ -152,7 +155,7 @@ $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --name $ENTIDAD \
 --master $VAL_MASTER \
---queue capa_semantica \
+--queue $VAL_QUEUE \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
 --num-executors $VAL_NUM_EXECUTORS \
@@ -202,7 +205,7 @@ $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
 --master $VAL_MASTER \
 --name $ENTIDAD \
---queue capa_semantica \
+--queue $VAL_QUEUE \
 --driver-memory $VAL_DRIVER_MEMORY \
 --executor-memory $VAL_EXECUTOR_MEMORY \
 --num-executors $VAL_NUM_EXECUTORS \
@@ -241,6 +244,7 @@ echo "Archivo Destino:          ${VAL_RUTA}/output/$VAL_NOM_ARCHIVO_PREVIO" 2>&1
 
 $VAL_RUTA_SPARK \
 --conf spark.port.maxRetries=100 \
+--queue $VAL_QUEUE \
 --master $VAL_MASTER \
 --name $ENTIDAD \
 --driver-memory $VAL_DRIVER_MEMORY \

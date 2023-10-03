@@ -40,7 +40,6 @@ vTablaFinal=parametros.vtfinal
 spark = SparkSession \
     .builder \
     .config("hive.exec.dynamic.partition.mode", "nonstrict") \
-    .config("spark.rpc.askTimeout", "300s") \
     .appName(vEntidad) \
     .enableHiveSupport() \
     .getOrCreate()
