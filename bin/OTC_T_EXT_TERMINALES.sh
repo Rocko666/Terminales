@@ -17,6 +17,14 @@ set -e
 # 2023-07-14    Cristian Ortiz	Extractor con cambios de alcance para Comisiones    	                #			
 #########################################################################################################
 
+
+# sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_FACT.sh 20230802 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_NC.sh 20230802 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_CBM_BILL.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_V_USUARIOS.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/SH_TERMINALES_SIMCARDS.sh 20231002 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_EXT_TERMINALES.sh 20231006
+
+
+# sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_FACT.sh 20231002 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_TERMINALES_NC.sh 20231002 && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_R_CBM_BILL.sh && sh -x /home/nae108834/cp_terminales_simcards/bin/OTC_T_V_USUARIOS.sh && 
+# nohup /home/nae108834/cp_terminales_simcards/bin/SH_TERMINALES_SIMCARDS.sh 20230702 & 
+# nohup /home/nae108834/cp_terminales_simcards/bin/OTC_T_EXT_TERMINALES.sh 20230704 &
+
 ##############
 # VARIABLES #
 ##############
