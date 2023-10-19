@@ -602,7 +602,7 @@ AND
 
 def sql_file():
     qry="""
-SELECT 
+SELECT DISTINCT 
 fecha_proceso
 , fecha_factura
 , linea_negocio
