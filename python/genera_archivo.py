@@ -81,8 +81,6 @@ except Exception as e:
     exit(msg_e_ejecucion(vStpFin,str(e)))
 
 spark.stop()
-spark.stop()
 timeend = datetime.now()
 print(etq_info(msg_d_duracion_ejecucion(vEntidad,vle_duracion(timestart,timeend))))
 print(lne_dvs())
-

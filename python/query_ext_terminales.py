@@ -7,19 +7,6 @@ from datetime import datetime
 import os
 from pyspark.sql.functions import col, substring_index
 
-#db_desarrollo2021.otc_t_catalogo_terminales -> db_desarrollo2021.otc_t_catalogo_terminales_prycldr 
-#db_desarrollo2021.otc_t_terminales_fact -> db_desarrollo2021.otc_t_terminales_fact_prycldr
-#db_desarrollo2021.otc_t_terminales_nc -> db_desarrollo2021.otc_t_terminales_nc_prycldr
-#db_rdb.otc_t_r_cbm_bill -> db_desarrollo2021.otc_t_r_cbm_bill_prycldr
-#db_rdb.otc_t_r_am_cpe -> db_desarrollo2021.otc_t_r_am_cpe_prycldr
-#db_rdb.otc_t_v_usuarios -> db_desarrollo2021.otc_t_v_usuarios_prycldr
-#db_cs_terminales.otc_t_catalogo_ruc_das_retail -> db_desarrollo2021.otc_t_catalogo_ruc_das_retail_prycldr
-#db_cs_terminales.otc_t_catalogo_tipo_canal ->  db_desarrollo2021.otc_t_catalogo_tipo_canal_prycldr
-#db_cs_terminales.otc_t_catalogo_canal_online ->  db_desarrollo2021.otc_t_catalogo_canal_online_prycldr
-#db_cs_terminales.otc_t_asigna_canal_ventas -> db_desarrollo2021.otc_t_asigna_canal_ventas_prycldr
-#db_cs_terminales.otc_t_ctl_cat_seg_sub_seg -> db_desarrollo2021.otc_t_ctl_cat_seg_sub_seg_prycldr
-#db_cs_terminales.otc_t_ctl_seg_terminal -> db_desarrollo2021.otc_t_ctl_seg_terminal_prycldr
-
 ##**************************************************************--
 ##******  Cambio de alcance (2023-04-12)  (Cristian Ortiz) ****--
 ##**************************************************************--
@@ -135,7 +122,7 @@ SELECT
 		, (CASE WHEN tipo_documento = 'NOTA DE CREDITO'
             THEN 'NO' END) AS aplica_comision
 	FROM
-        db_desarrollo2021.otc_t_terminales_simcards
+        db_cs_terminales.otc_t_terminales_simcards
 	WHERE
 		p_fecha_factura >= {val_fecha_ini}
 		AND p_fecha_factura < {val_dia_uno}
@@ -263,7 +250,7 @@ END) AS tipo_doc_cliente
         , (CASE WHEN a.num_factura = b.num_factura_relacionada
         THEN 'NO' ELSE 'SI' END) AS aplica_comision
 	FROM
-		db_desarrollo2021.otc_t_terminales_simcards a
+		db_cs_terminales.otc_t_terminales_simcards a
     LEFT JOIN tmp_terminales_simcards_nc b
     ON (a.telefono = b.telefono)
     AND (a.account_num = b.account_num)
@@ -475,8 +462,8 @@ UNION ALL
     """.format(fecha_antes_ayer=fecha_antes_ayer)
     print(qry)
     return qry  
-#4 TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES
-def otc_t_ext_terminales_ajst():
+#4 TABLA PREVIA PARA REPORTE DE EXTRACTOR DE TERMINALES
+def otc_t_ext_terminales_ajst_tmp():
     qry="""
 SELECT
 	tsim.fecha_proceso AS fecha_proceso
@@ -602,7 +589,7 @@ SELECT
 FROM
 	tmp_terminales_simcards t
 INNER JOIN 
-    db_desarrollo2021.otc_t_ajsts_terminales ajt
+    db_reportes.otc_t_ajsts_terminales ajt
 ON  
     (ajt.fecha_proceso=t.fecha_proceso)
 AND 
@@ -612,10 +599,76 @@ AND
     """
     print(qry)
     return qry
+#5 Query para la generacion de tabla final para inclucion de SELECT DISTINCT
+def otc_t_ext_terminales_ajst():
+    qry="""
+SELECT DISTINCT 
+fecha_proceso
+, fecha_factura
+, linea_negocio
+, segmento
+, sub_segmento
+, segmento_final
+, telefono
+, clasificacion
+, tipo_documento
+, num_factura
+, num_factura_relacionada
+, fecha_factura_relacionada
+, oficina
+, account_num
+, nombre_cliente
+, tipo_doc_cliente
+, identificacion_cliente
+, modelo_terminal
+, imei
+, tipo_cargo
+, modelo_guia_comercial
+, clasificacion_terminal
+, cantidad
+, monto
+, num_abonado
+, movimiento
+, id_tipo_movimiento
+, id_producto
+, plan_codigo
+, plan_nombre
+, tarifa_basica
+, usuario_final
+, nombre_usuario_final
+, tipo_venta
+, cuotas_financiadas
+, ejecutivo_perimetro
+, jefe_perimetro
+, gerente_perimetro
+, nota_credito_masiva
+, forma_pago_factura
+, cuota_inicial
+, canal_comercial
+, id_canal
+, nom_distribuidor
+, ruc_distribuidor
+, codigo_plaza
+, nom_plaza
+, ciudad
+, provincia
+, region
+, nuevo_subcanal
+, id_sub_canal
+, tipo_movimiento_mes
+, fecha_alta
+, antiguedad_meses
+, linea_negocio_homologado
+, id_hash
+, aplica_comision
+FROM otc_t_ext_terminales_ajst_tmp
+    """
+    print(qry)
+    return qry
 
 def sql_file():
     qry="""
-SELECT DISTINCT 
+SELECT  
 fecha_proceso
 , fecha_factura
 , linea_negocio

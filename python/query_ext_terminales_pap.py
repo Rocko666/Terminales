@@ -462,8 +462,8 @@ UNION ALL
     """.format(fecha_antes_ayer=fecha_antes_ayer)
     print(qry)
     return qry  
-#4 TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES
-def otc_t_ext_terminales_ajst():
+#4 TABLA PREVIA PARA REPORTE DE EXTRACTOR DE TERMINALES
+def otc_t_ext_terminales_ajst_tmp():
     qry="""
 SELECT
 	tsim.fecha_proceso AS fecha_proceso
@@ -599,10 +599,76 @@ AND
     """
     print(qry)
     return qry
+#5 Query para la generacion de tabla final para inclucion de SELECT DISTINCT
+def otc_t_ext_terminales_ajst():
+    qry="""
+SELECT DISTINCT 
+fecha_proceso
+, fecha_factura
+, linea_negocio
+, segmento
+, sub_segmento
+, segmento_final
+, telefono
+, clasificacion
+, tipo_documento
+, num_factura
+, num_factura_relacionada
+, fecha_factura_relacionada
+, oficina
+, account_num
+, nombre_cliente
+, tipo_doc_cliente
+, identificacion_cliente
+, modelo_terminal
+, imei
+, tipo_cargo
+, modelo_guia_comercial
+, clasificacion_terminal
+, cantidad
+, monto
+, num_abonado
+, movimiento
+, id_tipo_movimiento
+, id_producto
+, plan_codigo
+, plan_nombre
+, tarifa_basica
+, usuario_final
+, nombre_usuario_final
+, tipo_venta
+, cuotas_financiadas
+, ejecutivo_perimetro
+, jefe_perimetro
+, gerente_perimetro
+, nota_credito_masiva
+, forma_pago_factura
+, cuota_inicial
+, canal_comercial
+, id_canal
+, nom_distribuidor
+, ruc_distribuidor
+, codigo_plaza
+, nom_plaza
+, ciudad
+, provincia
+, region
+, nuevo_subcanal
+, id_sub_canal
+, tipo_movimiento_mes
+, fecha_alta
+, antiguedad_meses
+, linea_negocio_homologado
+, id_hash
+, aplica_comision
+FROM otc_t_ext_terminales_ajst_tmp
+    """
+    print(qry)
+    return qry
 
 def sql_file():
     qry="""
-SELECT DISTINCT 
+SELECT  
 fecha_proceso
 , fecha_factura
 , linea_negocio

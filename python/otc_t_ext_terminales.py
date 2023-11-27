@@ -96,16 +96,30 @@ try:
     
     vStp01="Paso 4"
     print(lne_dvs())
-    print(etq_info("Paso [4]: Ejecucion de funcion [otc_t_ext_terminales_ajst] - TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES"))
+    print(etq_info("Paso [4]: Ejecucion de funcion [otc_t_ext_terminales_ajst_tmp] - TABLA PREVIA PARA REPORTE DE EXTRACTOR DE TERMINALES"))
     print(lne_dvs())
-    df4=spark.sql(otc_t_ext_terminales_ajst()).cache()
+    df4=spark.sql(otc_t_ext_terminales_ajst_tmp()).cache()
     df4.printSchema()
     ts_step_tbl = datetime.now()
-    df4.write.mode('overwrite').format('parquet').saveAsTable(vTablaFinal)
+    df4.createOrReplaceTempView("otc_t_ext_terminales_ajst_tmp")
     print(etq_info(msg_t_total_registros_obtenidos("df4",str(df4.count())))) 
     te_step_tbl = datetime.now()
     print(etq_info(msg_d_duracion_hive("df4",vle_duracion(ts_step_tbl,te_step_tbl))))
     spark.catalog.dropTempView("tmp_terminales_simcards")
+    del df4
+    
+    vStp01="Paso 5"
+    print(lne_dvs())
+    print(etq_info("Paso [5]: Ejecucion de funcion [otc_t_ext_terminales_ajst] - TABLA FINAL PARA REPORTE DE EXTRACTOR DE TERMINALES"))
+    print(lne_dvs())
+    df5=spark.sql(otc_t_ext_terminales_ajst()).cache()
+    df5.printSchema()
+    ts_step_tbl = datetime.now()
+    df5.write.mode('overwrite').format('parquet').saveAsTable(vTablaFinal)
+    print(etq_info(msg_t_total_registros_obtenidos("df5",str(df5.count())))) 
+    te_step_tbl = datetime.now()
+    print(etq_info(msg_d_duracion_hive("df5",vle_duracion(ts_step_tbl,te_step_tbl))))
+    spark.catalog.dropTempView("otc_t_ext_terminales_ajst_tmp")
     
 except Exception as e:
 	exit(etq_error(msg_e_ejecucion(vStp01,str(e))))
@@ -116,7 +130,7 @@ print(lne_dvs())
 
 try:
     ts_step = datetime.now()
-    del df4
+    del df5
     te_step = datetime.now()
     print(etq_info(msg_d_duracion_ejecucion(vStpFin,vle_duracion(ts_step,te_step))))
 except Exception as e:
